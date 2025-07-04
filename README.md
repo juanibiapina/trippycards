@@ -38,4 +38,7 @@ Start by changing the schema in `prisma/schema.prisma` then run:
 npm run migrate
 ```
 
-Type the name of the migration and that's it :)
+and:
+```bash
+npm run generate
+```
