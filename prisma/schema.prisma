@@ -20,3 +20,8 @@ model User {
   email String
   name   String
 }
+
+model Trip {
+  id   Int    @id @default(autoincrement())
+  name String
+}
