@@ -23,4 +23,26 @@ app.get("/api/", async (c) => {
   return c.json({name: user.name})
 });
 
+app.get("/api/trips/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const id = parseInt(c.req.param("id"));
+
+  if (isNaN(id)) {
+    return c.json({ error: "Invalid trip ID" }, 400);
+  }
+
+  const trip = await prisma.trip.findUnique({
+    where: { id },
+  });
+
+  if (!trip) {
+    return c.json({ error: "Trip not found" }, 404);
+  }
+
+  return c.json(trip);
+});
+
 export default app;

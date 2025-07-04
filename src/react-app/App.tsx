@@ -9,7 +9,7 @@ import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
-  const [name, setName] = useState("unknown");
+  const [tripName, setTripName] = useState("unknown");
 
   return (
     <>
@@ -46,16 +46,16 @@ function App() {
       <div className="card">
         <button
           onClick={() => {
-            fetch("/api/")
+            fetch("/api/trips/1")
               .then((res) => res.json() as Promise<{ name: string }>)
-              .then((data) => setName(data.name));
+              .then((data) => setTripName(data.name));
           }}
-          aria-label="get name"
+          aria-label="get trip name"
         >
-          Name from API is: {name}
+          Trip name from API is: {tripName}
         </button>
         <p>
-          Edit <code>worker/index.ts</code> to change the name
+          Edit <code>worker/index.ts</code> to change the trip data
         </p>
       </div>
       <p className="read-the-docs">Click on the logos to learn more</p>
