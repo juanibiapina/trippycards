@@ -2,8 +2,12 @@ import { Hono } from "hono";
 import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
+import { TripDO } from "./trip";
+export { TripDO } from "./trip";
+
 export interface Env {
   DATABASE_URL: string;
+  TRIPDO: DurableObjectNamespace<TripDO>;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -41,6 +45,17 @@ app.get("/api/trips/:id", async (c) => {
   if (!trip) {
     return c.json({ error: "Trip not found" }, 404);
   }
+
+  return c.json(trip);
+});
+
+app.get("/api/trips/v2/:tripId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+
+  const id:DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  const trip = await stub.get();
 
   return c.json(trip);
 });
