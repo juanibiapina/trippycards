@@ -14,7 +14,7 @@ describe("TripCard", () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       json: vi.fn().mockResolvedValue({ name: "Test Trip" }),
-    } as Response);
+    } as unknown as Response);
 
     render(<TripCard />);
     
@@ -25,7 +25,7 @@ describe("TripCard", () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       json: vi.fn().mockResolvedValue({ name: "Red Rock Climbing Adventure" }),
-    } as Response);
+    } as unknown as Response);
 
     render(<TripCard />);
     
@@ -59,7 +59,7 @@ describe("TripCard", () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       json: vi.fn().mockResolvedValue({ name: "Test Trip" }),
-    } as Response);
+    } as unknown as Response);
 
     render(<TripCard />);
     
