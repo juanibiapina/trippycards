@@ -26,7 +26,7 @@ function AppContent() {
 
 function App() {
   return (
-    <SessionProvider>
+    <SessionProvider basePath="/api/auth">
         <button onClick={() => signOut()}>
           Sign Out
         </button>
