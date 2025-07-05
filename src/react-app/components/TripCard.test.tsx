@@ -59,20 +59,4 @@ describe("TripCard", () => {
 
     consoleSpy.mockRestore();
   });
-
-  it("renders AttendanceCard component when trip is loaded", async () => {
-    const mockFetch = vi.mocked(fetch);
-    mockFetch.mockResolvedValue({
-      json: vi.fn().mockResolvedValue({ name: "Test Trip" }),
-    } as unknown as Response);
-
-    render(<TripCard />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Test Trip")).toBeInTheDocument();
-    });
-
-    // Check that AttendanceCard is rendered
-    expect(screen.getByText("Are you going?")).toBeInTheDocument();
-  });
 });

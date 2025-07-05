@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styles from "./TripCard.module.css";
-import AttendanceCard from "./AttendanceCard";
 
 interface Trip {
   name: string;
@@ -36,7 +35,6 @@ const TripCard = () => {
       <header className={styles.header}>
         <h1 className={styles.tripName}>{trip.name}</h1>
       </header>
-      <AttendanceCard />
     </div>
   );
 };

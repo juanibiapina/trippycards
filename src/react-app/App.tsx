@@ -19,11 +19,11 @@ function App() {
 
   return (
     <div>
+      <TripCard />
+
       <button onClick={() => signOut()}>
         Sign Out
       </button>
-
-      <TripCard />
     </div>
   );
 }
