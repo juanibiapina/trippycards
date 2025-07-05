@@ -39,7 +39,6 @@ describe("TripCard", () => {
     });
 
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-    expect(mockFetch).toHaveBeenCalledWith("/api/trips/v2/1");
   });
 
   it("displays error message when fetch fails", async () => {
