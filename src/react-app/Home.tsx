@@ -4,9 +4,11 @@ import { useSession, signIn } from '@hono/auth-js/react';
 import { signOut } from '@hono/auth-js/react';
 
 import Button from './components/Button.tsx';
+import { useNavigate } from 'react-router';
 
 function Home() {
   const { data: session } = useSession();
+  const navigate = useNavigate();
 
   if (!session) {
     return (
@@ -19,10 +21,8 @@ function Home() {
   }
 
   const createTrip = async () => {
-    // the create trip button simply needs to redirect to /api/trips/v2/<tripId>,
-    // where <tripId> is a random UUID
     const tripId = crypto.randomUUID();
-    window.location.href = `/api/trips/v2/${tripId}`;
+    navigate(`/trips/${tripId}`);
   };
 
   return (
