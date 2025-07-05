@@ -36,28 +36,30 @@ A full-stack web application built with React and Cloudflare Workers for managin
 
 ## Authentication
 
-This application uses OAuth authentication with GitHub via @hono/auth-js. To enable authentication, you need to set up the following environment variables:
+This application uses OAuth authentication with Google via @hono/auth-js. To enable authentication, you need to set up the following environment variables:
 
 ### Required Environment Variables
 
 - `AUTH_SECRET` - A secret key for encrypting sessions (generate a random string)
-- `GITHUB_ID` - Your GitHub OAuth App Client ID 
-- `GITHUB_SECRET` - Your GitHub OAuth App Client Secret
+- `GOOGLE_ID` - Your Google OAuth Client ID 
+- `GOOGLE_SECRET` - Your Google OAuth Client Secret
 
-### Setting up GitHub OAuth
+### Setting up Google OAuth
 
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Create a new OAuth App
-3. Set the Authorization callback URL to: `https://your-domain.com/api/auth/callback/github`
-4. Copy the Client ID and Client Secret to your environment variables
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Create OAuth 2.0 credentials (Web application)
+5. Set the authorized redirect URI to: `https://your-domain.com/api/auth/callback/google`
+6. Copy the Client ID and Client Secret to your environment variables
 
 ### For Development
 
 Create a `.dev.vars` file in the project root:
 ```
 AUTH_SECRET=your-random-secret-string
-GITHUB_ID=your-github-client-id  
-GITHUB_SECRET=your-github-client-secret
+GOOGLE_ID=your-google-client-id  
+GOOGLE_SECRET=your-google-client-secret
 ```
 
 ### For Production

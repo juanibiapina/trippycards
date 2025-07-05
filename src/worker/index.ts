@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js';
-import GitHub from '@auth/core/providers/github';
+import Google from '@auth/core/providers/google';
 
 import { TripDO } from "./trip";
 export { TripDO } from "./trip";
@@ -11,8 +11,8 @@ export interface Env {
   DATABASE_URL: string;
   TRIPDO: DurableObjectNamespace<TripDO>;
   AUTH_SECRET: string;
-  GITHUB_ID: string;
-  GITHUB_SECRET: string;
+  GOOGLE_ID: string;
+  GOOGLE_SECRET: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -23,9 +23,9 @@ app.use(
   initAuthConfig((c) => ({
     secret: c.env.AUTH_SECRET,
     providers: [
-      GitHub({
-        clientId: c.env.GITHUB_ID,
-        clientSecret: c.env.GITHUB_SECRET,
+      Google({
+        clientId: c.env.GOOGLE_ID,
+        clientSecret: c.env.GOOGLE_SECRET,
       }),
     ],
   }))

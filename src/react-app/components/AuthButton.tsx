@@ -106,7 +106,7 @@ const AuthButton = () => {
           cursor: 'pointer'
         }}
       >
-        Sign In with GitHub
+        Sign In with Google
       </button>
     </div>
   );

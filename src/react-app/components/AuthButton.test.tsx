@@ -36,7 +36,7 @@ describe("AuthButton", () => {
 
     await waitFor(() => {
       expect(screen.getByText("You are not signed in.")).toBeInTheDocument();
-      expect(screen.getByText("Sign In with GitHub")).toBeInTheDocument();
+      expect(screen.getByText("Sign In with Google")).toBeInTheDocument();
     });
   });
 
