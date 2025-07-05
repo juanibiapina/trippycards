@@ -119,7 +119,7 @@ describe("TripNameForm", () => {
     render(<TripNameForm />);
     
     const input = screen.getByLabelText("Trip Name");
-    const submitButton = screen.getByText("Save Trip Name");
+    const submitButton = screen.getByText("Save Trip Name") as HTMLButtonElement;
     
     fireEvent.change(input, { target: { value: "My Trip" } });
     fireEvent.click(submitButton);
