@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { logger } from "hono/logger";
 import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
@@ -11,6 +12,8 @@ export interface Env {
 }
 
 const app = new Hono<{ Bindings: Env }>();
+
+app.use(logger());
 
 app.get("/api/", async (c) => {
   const prisma = new PrismaClient({
