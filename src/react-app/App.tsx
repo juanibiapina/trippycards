@@ -1,10 +1,10 @@
 // src/App.tsx
 
-import { SessionProvider, useSession, signIn, signOut } from '@hono/auth-js/react';
+import { useSession, signIn, signOut } from '@hono/auth-js/react';
 import TripCard from "./components/TripCard";
 import "./App.css";
 
-function AppContent() {
+function App() {
   const { data: session } = useSession();
 
   if (!session) {
@@ -19,19 +19,12 @@ function AppContent() {
 
   return (
     <div>
+      <button onClick={() => signOut()}>
+        Sign Out
+      </button>
+
       <TripCard />
     </div>
-  );
-}
-
-function App() {
-  return (
-    <SessionProvider>
-        <button onClick={() => signOut()}>
-          Sign Out
-        </button>
-      <AppContent />
-    </SessionProvider>
   );
 }
 
