@@ -11,8 +11,6 @@ export class TripDO extends DurableObject<Env> {
   }
 
   async get(): Promise<Trip> {
-    return {
-      name: "Red Rock Climbing",
-    };
+    return {};
   }
 }

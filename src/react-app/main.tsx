@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 
 import "./main.css";
 import Home from "./Home.tsx";
-import TripCard from "./components/TripCard.tsx";
+import TripPage from "./components/TripPage.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/trips/:tripId" element={<TripCard />} />
+          <Route path="/trips/:tripId" element={<TripPage />} />
         </Routes>
       </BrowserRouter>
     </SessionProvider>

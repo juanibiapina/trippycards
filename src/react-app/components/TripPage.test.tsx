@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "../../test/utils";
-import TripCard from "./TripCard";
+import TripPage from "./TripPage";
 
 // Mock the fetch function
 global.fetch = vi.fn();
 
-describe("TripCard", () => {
+describe("TripPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -16,7 +16,7 @@ describe("TripCard", () => {
       json: vi.fn().mockResolvedValue({ name: "Test Trip" }),
     } as unknown as Response);
 
-    render(<TripCard />);
+    render(<TripPage />);
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
@@ -32,7 +32,7 @@ describe("TripCard", () => {
       json: vi.fn().mockResolvedValue({ name: "Red Rock Climbing Adventure" }),
     } as unknown as Response);
 
-    render(<TripCard />);
+    render(<TripPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Red Rock Climbing Adventure")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("TripCard", () => {
 
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    render(<TripCard />);
+    render(<TripPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Failed to load trip")).toBeInTheDocument();
