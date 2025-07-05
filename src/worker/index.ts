@@ -79,4 +79,20 @@ app.get("/api/trips/v2/:tripId", async (c) => {
   return c.json(trip);
 });
 
+app.put("/api/trips/v2/:tripId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const { name } = await c.req.json();
+
+  if (!name || typeof name !== 'string') {
+    return c.json({ error: "Invalid trip name" }, 400);
+  }
+
+  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  await stub.updateName(name);
+
+  return c.json({ success: true });
+});
+
 export default app;
