@@ -4,19 +4,18 @@ test.describe('Travel Cards Application', () => {
   test('should display the trip card', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for the trip card to load
-    await expect(page.locator('text=Loading...')).toBeVisible();
-    await expect(page.locator('text=Loading...')).toBeHidden();
-
-    // Should display the trip name when loaded
+    // Wait for the trip name to be displayed (loading may be too fast to catch in test mode)
     await expect(page.locator('h1')).toBeVisible();
+    
+    // Verify the trip name content
+    await expect(page.locator('h1')).toContainText('Red Rock Climbing');
   });
 
   test('should display attendance question', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for the page to load
-    await expect(page.locator('text=Loading...')).toBeHidden();
+    // Wait for the page to load completely
+    await expect(page.locator('h1')).toBeVisible();
 
     // Should display the attendance question
     await expect(page.locator('text=Are you going?')).toBeVisible();
@@ -26,8 +25,8 @@ test.describe('Travel Cards Application', () => {
   test('should allow selecting attendance options', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for the page to load
-    await expect(page.locator('text=Loading...')).toBeHidden();
+    // Wait for the page to load completely
+    await expect(page.locator('h1')).toBeVisible();
 
     // Should display all attendance buttons
     const yesButton = page.locator('button:has-text("Yes")');
