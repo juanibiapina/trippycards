@@ -10,15 +10,20 @@ describe("TripCard", () => {
     vi.clearAllMocks();
   });
 
-  it("shows loading state initially", () => {
+  it("shows loading state initially", async () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       json: vi.fn().mockResolvedValue({ name: "Test Trip" }),
     } as unknown as Response);
 
     render(<TripCard />);
-    
+
     expect(screen.getByText("Loading...")).toBeInTheDocument();
+
+    // Wait for the async operations to complete to avoid act warnings
+    await waitFor(() => {
+      expect(screen.getByText("Test Trip")).toBeInTheDocument();
+    });
   });
 
   it("displays trip name when data is loaded successfully", async () => {
@@ -28,11 +33,11 @@ describe("TripCard", () => {
     } as unknown as Response);
 
     render(<TripCard />);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Red Rock Climbing Adventure")).toBeInTheDocument();
     });
-    
+
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     expect(mockFetch).toHaveBeenCalledWith("/api/trips/v2/1");
   });
@@ -44,14 +49,14 @@ describe("TripCard", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     render(<TripCard />);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Failed to load trip")).toBeInTheDocument();
     });
-    
+
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     expect(consoleSpy).toHaveBeenCalledWith("Error fetching trip:", expect.any(Error));
-    
+
     consoleSpy.mockRestore();
   });
 
@@ -62,11 +67,11 @@ describe("TripCard", () => {
     } as unknown as Response);
 
     render(<TripCard />);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Test Trip")).toBeInTheDocument();
     });
-    
+
     // Check that AttendanceCard is rendered
     expect(screen.getByText("Are you going?")).toBeInTheDocument();
   });
