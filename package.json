@@ -15,6 +15,8 @@
     "publish": true
   },
   "dependencies": {
+    "@auth/core": "^0.40.0",
+    "@hono/auth-js": "^1.0.17",
     "@prisma/extension-accelerate": "^2.0.1",
     "hono": "^4.8.4",
     "react": "^19.0.0",
