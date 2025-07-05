@@ -6,7 +6,7 @@ test.describe('Travel Cards Application', () => {
 
     // Wait for the trip name to be displayed (loading may be too fast to catch in test mode)
     await expect(page.locator('h1')).toBeVisible();
-    
+
     // Verify the trip name content
     await expect(page.locator('h1')).toContainText('Red Rock Climbing');
   });
