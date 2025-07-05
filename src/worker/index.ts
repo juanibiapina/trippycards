@@ -14,6 +14,7 @@ export interface Env {
   AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  TEST_MODE?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -39,10 +40,81 @@ app.use(
     ],
   }))
 )
+// Mock session endpoint for test mode - must come before authHandler
+app.get('/api/auth/session', async (c) => {
+  if (c.env.TEST_MODE === 'true') {
+    // Return a mock session in test mode
+    return c.json({
+      user: {
+        id: 'test-user-1',
+        name: 'Test User',
+        email: 'test@example.com',
+        image: null,
+      },
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    });
+  }
+  // In production, this will be handled by authHandler below
+  return c.notFound();
+});
+
 app.use('/api/auth/*', authHandler())
 
-// Verify authentication for all API routes
-app.use('/api/*', verifyAuth())
+// Test authentication endpoint - only available in test mode
+app.post('/api/auth/test-login', async (c) => {
+  // Only allow in test mode
+  if (c.env.TEST_MODE !== 'true') {
+    return c.json({ error: 'Not available in production' }, 404);
+  }
+
+  const { user } = await c.req.json();
+
+  // Create a test session that mimics the real auth session
+  const testSession = {
+    user: {
+      id: user?.id || 'test-user-1',
+      name: user?.name || 'Test User',
+      email: user?.email || 'test@example.com',
+      image: user?.image || null,
+    },
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+  };
+
+  // Set the session cookie similar to how auth.js does it
+  const cookieValue = JSON.stringify(testSession);
+  const encodedCookie = btoa(cookieValue);
+
+  c.header('Set-Cookie', `next-auth.session-token=${encodedCookie}; Path=/; HttpOnly; SameSite=Lax`);
+
+  return c.json({ session: testSession });
+});
+
+// Verify authentication for all API routes (except test routes)
+app.use('/api/*', async (c, next) => {
+  // Skip auth verification in test mode for test-login endpoint
+  if (c.env.TEST_MODE === 'true' && c.req.path === '/api/auth/test-login') {
+    return next();
+  }
+
+  // In test mode, set a mock auth user context for all other API routes
+  if (c.env.TEST_MODE === 'true') {
+    c.set('authUser', {
+      session: {
+        user: {
+          id: 'test-user-1',
+          name: 'Test User',
+          email: 'test@example.com',
+          image: null,
+        },
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      },
+    });
+    return next();
+  }
+
+  // Use normal auth verification in production
+  return verifyAuth()(c, next);
+});
 
 app.get("/api/trips/:id", async (c) => {
   const prisma = new PrismaClient({
