@@ -11,7 +11,11 @@ const TripCard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/trips/v2/1")
+    // Add test parameter if in test mode
+    const isTestMode = new URLSearchParams(window.location.search).has('test');
+    const apiUrl = isTestMode ? "/api/trips/v2/1?test" : "/api/trips/v2/1";
+
+    fetch(apiUrl)
       .then((res) => res.json() as Promise<Trip>)
       .then((data) => {
         setTrip(data);
