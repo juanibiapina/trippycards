@@ -50,7 +50,7 @@ describe("TripPage", () => {
     render(<TripPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to load trip")).toBeInTheDocument();
+      expect(screen.getByText("We couldn't load your trip. Please try again.")).toBeInTheDocument();
     });
 
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();

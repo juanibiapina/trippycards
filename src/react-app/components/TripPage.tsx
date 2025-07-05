@@ -24,7 +24,7 @@ const TripPage = () => {
         console.error("Error fetching trip:", error);
         setLoading(false);
       });
-  }, []);
+  }, [params.tripId]);
 
   if (loading) {
     return <LoadingCard />;
