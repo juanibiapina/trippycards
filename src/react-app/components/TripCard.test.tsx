@@ -5,6 +5,21 @@ import TripCard from "./TripCard";
 // Mock the fetch function
 global.fetch = vi.fn();
 
+// Mock the auth client
+vi.mock("../../lib/auth-client", () => ({
+  useSession: () => ({
+    data: {
+      user: {
+        id: "test-user-id",
+        name: "Test User",
+        email: "test@example.com",
+        image: "https://example.com/avatar.jpg",
+      },
+    },
+    isPending: false,
+  }),
+}));
+
 describe("TripCard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -74,5 +89,22 @@ describe("TripCard", () => {
 
     // Check that AttendanceCard is rendered
     expect(screen.getByText("Are you going?")).toBeInTheDocument();
+  });
+
+  it("shows welcome message when user is not authenticated", async () => {
+    // Mock unauthenticated state
+    vi.doMock("../../lib/auth-client", () => ({
+      useSession: () => ({
+        data: null,
+        isPending: false,
+      }),
+    }));
+
+    const { unmount } = render(<TripCard />);
+
+    expect(screen.getByText("Welcome to Travel Cards")).toBeInTheDocument();
+    expect(screen.getByText("Please sign in to view your trips and manage your travel cards.")).toBeInTheDocument();
+
+    unmount();
   });
 });
