@@ -4,7 +4,7 @@ import { signOut } from '@hono/auth-js/react';
 const Home = ({ session }: { session: Session }) => {
   return (
     <div>
-      <h1>Hey Lovely Girl ❤️</h1>
+      <h1>Hey {session.user?.name}!</h1>
 
       {session.user?.image && (
         <div>
