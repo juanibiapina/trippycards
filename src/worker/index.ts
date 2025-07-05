@@ -44,6 +44,8 @@ app.use('/api/auth/*', authHandler())
 // Verify authentication for all API routes
 app.use('/api/*', verifyAuth())
 
+// routes
+
 app.get("/api/trips/:id", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
