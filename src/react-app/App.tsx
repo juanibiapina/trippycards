@@ -1,8 +1,8 @@
 // src/App.tsx
 
-import { useSession, signIn, signOut } from '@hono/auth-js/react';
-import TripCard from "./components/TripCard";
+import { useSession, signIn } from '@hono/auth-js/react';
 import "./App.css";
+import Home from "./components/Home";
 
 function App() {
   const { data: session } = useSession();
@@ -17,15 +17,7 @@ function App() {
     );
   }
 
-  return (
-    <div>
-      <TripCard />
-
-      <button onClick={() => signOut()}>
-        Sign Out
-      </button>
-    </div>
-  );
+  return ( <Home session={session} /> );
 }
 
 export default App;
