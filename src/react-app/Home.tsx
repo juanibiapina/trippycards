@@ -5,7 +5,7 @@ import { signOut } from '@hono/auth-js/react';
 
 import Button from './components/Button.tsx';
 
-function App() {
+function Home() {
   const { data: session } = useSession();
 
   if (!session) {
@@ -38,4 +38,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

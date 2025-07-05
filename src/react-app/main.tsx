@@ -4,14 +4,14 @@ import { SessionProvider } from '@hono/auth-js/react';
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import "./main.css";
-import App from "./App.tsx";
+import Home from "./Home.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <SessionProvider>
       <BrowserRouter>
         <Routes>
-          <Route index element={<App />} />
+          <Route index element={<Home />} />
         </Routes>
       </BrowserRouter>
     </SessionProvider>
