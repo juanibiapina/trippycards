@@ -43,7 +43,7 @@ A full-stack web application built with React and Cloudflare Workers for managin
 Start by changing the schema in `prisma/schema.prisma` then run:
 
 ```bash
-npm run migrate
+npm run db:migrate
 ```
 
 and:
