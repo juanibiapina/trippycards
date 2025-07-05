@@ -92,7 +92,10 @@ describe("TripCard", () => {
   });
 
   it("shows welcome message when user is not authenticated", async () => {
-    // Mock unauthenticated state
+    // Clear the existing mock and create a new one for unauthenticated state
+    vi.clearAllMocks();
+    vi.resetModules();
+
     vi.doMock("../../lib/auth-client", () => ({
       useSession: () => ({
         data: null,
@@ -100,7 +103,10 @@ describe("TripCard", () => {
       }),
     }));
 
-    const { unmount } = render(<TripCard />);
+    // Re-import the component with the new mock
+    const { default: TripCardComponent } = await import("./TripCard");
+
+    const { unmount } = render(<TripCardComponent />);
 
     expect(screen.getByText("Welcome to Travel Cards")).toBeInTheDocument();
     expect(screen.getByText("Please sign in to view your trips and manage your travel cards.")).toBeInTheDocument();
