@@ -41,22 +41,22 @@ describe("API Routes Structure", () => {
 
   it("demonstrates basic API endpoint structure", () => {
     const app = new Hono();
-    
+
     // Test route setup
     app.get("/api/test", (c) => {
       return c.json({ message: "test" });
     });
-    
+
     expect(app).toBeDefined();
   });
 
   it("validates trip ID parsing logic", () => {
     const validId = "123";
     const invalidId = "abc";
-    
+
     const parsedValid = parseInt(validId);
     const parsedInvalid = parseInt(invalidId);
-    
+
     expect(isNaN(parsedValid)).toBe(false);
     expect(isNaN(parsedInvalid)).toBe(true);
   });
@@ -64,7 +64,7 @@ describe("API Routes Structure", () => {
   it("demonstrates error response structure", () => {
     const errorResponse = { error: "Invalid trip ID" };
     const successResponse = { name: "Test Trip" };
-    
+
     expect(errorResponse).toHaveProperty("error");
     expect(successResponse).toHaveProperty("name");
   });

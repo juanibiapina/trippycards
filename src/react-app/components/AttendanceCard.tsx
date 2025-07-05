@@ -16,7 +16,7 @@ const AttendanceCard = () => {
       <p className={styles.subtitle}>
         Please confirm your attendance for the Red Rock climbing trip
       </p>
-      
+
       <div className={styles.buttonContainer}>
         <button
           className={`${styles.button} ${styles.yesButton} ${
@@ -27,7 +27,7 @@ const AttendanceCard = () => {
           <span className={styles.icon}>✓</span>
           <span className={styles.label}>Yes</span>
         </button>
-        
+
         <button
           className={`${styles.button} ${styles.maybeButton} ${
             attendance === "maybe" ? styles.selected : ""
@@ -37,7 +37,7 @@ const AttendanceCard = () => {
           <span className={styles.icon}>⏰</span>
           <span className={styles.label}>Maybe</span>
         </button>
-        
+
         <button
           className={`${styles.button} ${styles.noButton} ${
             attendance === "no" ? styles.selected : ""
