@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js';
+import GitHub from '@auth/core/providers/github';
 
 import { TripDO } from "./trip";
 export { TripDO } from "./trip";
@@ -8,9 +10,37 @@ export { TripDO } from "./trip";
 export interface Env {
   DATABASE_URL: string;
   TRIPDO: DurableObjectNamespace<TripDO>;
+  AUTH_SECRET: string;
+  GITHUB_ID: string;
+  GITHUB_SECRET: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
+
+// Configure Auth.js
+app.use(
+  '*',
+  initAuthConfig((c) => ({
+    secret: c.env.AUTH_SECRET,
+    providers: [
+      GitHub({
+        clientId: c.env.GITHUB_ID,
+        clientSecret: c.env.GITHUB_SECRET,
+      }),
+    ],
+  }))
+);
+
+// Auth routes
+app.use('/api/auth/*', authHandler());
+
+// Protected routes
+app.use('/api/protected/*', verifyAuth());
+
+app.get('/api/protected/user', (c) => {
+  const auth = c.get('authUser');
+  return c.json(auth);
+});
 
 app.get("/api/", async (c) => {
   const prisma = new PrismaClient({
