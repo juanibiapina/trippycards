@@ -1,14 +1,19 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { SessionProvider } from '@hono/auth-js/react';
+import { BrowserRouter, Routes, Route } from "react-router";
 
-import "./index.css";
+import "./main.css";
 import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <SessionProvider>
-      <App />
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<App />} />
+        </Routes>
+      </BrowserRouter>
     </SessionProvider>
   </StrictMode>,
 );

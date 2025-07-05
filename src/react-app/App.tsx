@@ -1,8 +1,9 @@
 // src/App.tsx
 
 import { useSession, signIn } from '@hono/auth-js/react';
-import "./App.css";
-import Home from "./components/Home";
+import { signOut } from '@hono/auth-js/react';
+
+import Button from './components/Button.tsx';
 
 function App() {
   const { data: session } = useSession();
@@ -10,14 +11,31 @@ function App() {
   if (!session) {
     return (
       <div>
-        <button onClick={() => signIn('google')}>
-          Sign In
-        </button>
+        <Button onClick={() => signIn('google')}>
+          Sign In with Google
+        </Button>
       </div>
     );
   }
 
-  return ( <Home session={session} /> );
+  const createTrip = async () => {
+    // the create trip button simply needs to redirect to /api/trips/v2/<tripId>,
+    // where <tripId> is a random UUID
+    const tripId = crypto.randomUUID();
+    window.location.href = `/api/trips/v2/${tripId}`;
+  };
+
+  return (
+    <div>
+      <Button onClick={() => createTrip()}>
+        Create Trip
+      </Button>
+
+      <Button onClick={() => signOut()}>
+        Sign Out
+      </Button>
+    </div>
+  );
 }
 
 export default App;
