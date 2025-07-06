@@ -24,7 +24,7 @@ vi.mock('@prisma/extension-accelerate', () => ({
 async function persistUser(user: User, profile: Profile | undefined, databaseUrl: string) {
   const { PrismaClient } = await import('../generated/prisma/client');
   const { withAccelerate } = await import('@prisma/extension-accelerate');
-  
+
   const prisma = new PrismaClient({
     datasourceUrl: databaseUrl,
   }).$extends(withAccelerate());
@@ -133,7 +133,7 @@ describe('User Persistence', () => {
 
   it('should handle errors gracefully without throwing', async () => {
     mockUpsert.mockRejectedValueOnce(new Error('Database error'));
-    
+
     const user: User = {
       id: '123',
       email: 'test@example.com',
