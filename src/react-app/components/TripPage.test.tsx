@@ -26,10 +26,29 @@ describe("TripPage", () => {
     });
   });
 
+  it("displays TripNameForm when trip has no name (fresh trip)", async () => {
+    const mockFetch = vi.mocked(fetch);
+    mockFetch.mockResolvedValue({
+      json: vi.fn().mockResolvedValue({ fresh: true }),
+    } as unknown as Response);
+
+    render(<TripPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Name Your Trip")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+  });
+
   it("displays trip name when data is loaded successfully", async () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
-      json: vi.fn().mockResolvedValue({ name: "Red Rock Climbing Adventure" }),
+      json: vi.fn().mockResolvedValue({ 
+        name: "Red Rock Climbing Adventure", 
+        fresh: false, 
+        owner: "user@example.com" 
+      }),
     } as unknown as Response);
 
     render(<TripPage />);

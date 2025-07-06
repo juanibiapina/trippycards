@@ -6,6 +6,8 @@ import Card from "./Card";
 
 interface Trip {
   name?: string;
+  fresh?: boolean;
+  owner?: string;
 }
 
 const TripPage = () => {

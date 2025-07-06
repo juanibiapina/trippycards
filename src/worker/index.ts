@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
+import { authHandler, initAuthConfig, verifyAuth, getAuthUser } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
 import type { User, Profile } from '@auth/core/types'
 
@@ -123,10 +123,14 @@ app.put("/api/trips/v2/:tripId", async (c) => {
     return c.json({ error: "Invalid trip name" }, 400);
   }
 
+  // Get the authenticated user
+  const authUser = await getAuthUser(c);
+  const userEmail = authUser?.session?.user?.email || undefined;
+
   const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
   const stub = c.env.TRIPDO.get(id);
 
-  await stub.updateName(name);
+  await stub.updateName(name, userEmail);
 
   return c.json({ success: true });
 });
