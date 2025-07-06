@@ -11,6 +11,11 @@ export class TripDO extends DurableObject<Env> {
   }
 
   async get(): Promise<Trip> {
-    return {};
+    const name = await this.ctx.storage.get<string>('name');
+    return { name };
+  }
+
+  async updateName(name: string): Promise<void> {
+    await this.ctx.storage.put('name', name);
   }
 }
