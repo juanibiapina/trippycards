@@ -16,8 +16,7 @@ function Home() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <Card centered>
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">Travel Cards</h1>
-            <p className="text-gray-600 mb-8">Plan and organize your trips with ease</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">Trippy</h1>
             <Button onClick={() => signIn('google')}>
               Sign In with Google
             </Button>
@@ -36,12 +35,11 @@ function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card centered>
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back!</h1>
-          <p className="text-gray-600 mb-8">Ready to plan your next adventure?</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">Hi {session.user?.name}!</h1>
 
           <div className="space-y-4">
             <Button onClick={() => createTrip()}>
-              Create New Trip
+              New Trip
             </Button>
 
             <button

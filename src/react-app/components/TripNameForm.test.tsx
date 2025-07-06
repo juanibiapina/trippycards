@@ -28,14 +28,14 @@ describe("TripNameForm", () => {
     render(<TripNameForm />);
 
     expect(screen.getByText("Name Your Trip")).toBeInTheDocument();
-    expect(screen.getByLabelText("Trip Name")).toBeInTheDocument();
-    expect(screen.getByText("Save Trip Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter trip name...")).toBeInTheDocument();
+    expect(screen.getByText("Let's Go!")).toBeInTheDocument();
   });
 
   it("updates input value when user types", () => {
     render(<TripNameForm />);
 
-    const input = screen.getByLabelText("Trip Name") as HTMLInputElement;
+    const input = screen.getByPlaceholderText("Enter trip name...") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "My Trip" } });
 
     expect(input.value).toBe("My Trip");
@@ -44,7 +44,7 @@ describe("TripNameForm", () => {
   it("enables submit button regardless of input value", () => {
     render(<TripNameForm />);
 
-    const submitButton = screen.getByText("Save Trip Name") as HTMLButtonElement;
+    const submitButton = screen.getByText("Let's Go!") as HTMLButtonElement;
     expect(submitButton.disabled).toBe(false);
   });
 
@@ -70,8 +70,8 @@ describe("TripNameForm", () => {
 
     render(<TripNameForm />);
 
-    const input = screen.getByLabelText("Trip Name");
-    const submitButton = screen.getByText("Save Trip Name");
+    const input = screen.getByPlaceholderText("Enter trip name...");
+    const submitButton = screen.getByText("Let's Go!");
 
     fireEvent.change(input, { target: { value: "My Amazing Trip" } });
     fireEvent.click(submitButton);
@@ -99,8 +99,8 @@ describe("TripNameForm", () => {
 
     render(<TripNameForm />);
 
-    const input = screen.getByLabelText("Trip Name");
-    const submitButton = screen.getByText("Save Trip Name");
+    const input = screen.getByPlaceholderText("Enter trip name...");
+    const submitButton = screen.getByText("Let's Go!");
 
     fireEvent.change(input, { target: { value: "My Trip" } });
     fireEvent.click(submitButton);
@@ -118,8 +118,8 @@ describe("TripNameForm", () => {
 
     render(<TripNameForm />);
 
-    const input = screen.getByLabelText("Trip Name");
-    const submitButton = screen.getByText("Save Trip Name") as HTMLButtonElement;
+    const input = screen.getByPlaceholderText("Enter trip name...");
+    const submitButton = screen.getByText("Let's Go!") as HTMLButtonElement;
 
     fireEvent.change(input, { target: { value: "My Trip" } });
     fireEvent.click(submitButton);

@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import Card from "./Card";
 
 const TripNameForm = () => {
-  const params = useParams<{ tripId: string }>();
+  const { tripId } = useParams<{ tripId: string }>();
   const [tripName, setTripName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ const TripNameForm = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/trips/v2/${params.tripId}`, {
+      const response = await fetch(`/api/trips/v2/${tripId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -46,20 +46,11 @@ const TripNameForm = () => {
       <Card centered>
         <form onSubmit={handleSubmit}>
           <div className="text-center mb-6">
-            <div className="text-blue-500 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Name Your Trip</h2>
-            <p className="text-gray-600">Give your trip a memorable name</p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="tripName" className="block text-sm font-medium text-gray-700 mb-2">
-                Trip Name
-              </label>
               <input
                 type="text"
                 id="tripName"
@@ -83,7 +74,7 @@ const TripNameForm = () => {
               disabled={loading}
               className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition-colors"
             >
-              {loading ? "Saving..." : "Save Trip Name"}
+              {loading ? "Saving..." : "Let's Go!"}
             </button>
           </div>
         </form>
