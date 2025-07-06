@@ -10,7 +10,7 @@ const TripNameForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!tripName.trim()) {
       setError("Please enter a trip name");
       return;
@@ -78,7 +78,7 @@ const TripNameForm = () => {
               </div>
             )}
 
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition-colors"

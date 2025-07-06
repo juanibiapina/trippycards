@@ -26,7 +26,7 @@ describe("TripNameForm", () => {
 
   it("renders the form correctly", () => {
     render(<TripNameForm />);
-    
+
     expect(screen.getByText("Name Your Trip")).toBeInTheDocument();
     expect(screen.getByLabelText("Trip Name")).toBeInTheDocument();
     expect(screen.getByText("Save Trip Name")).toBeInTheDocument();
@@ -34,28 +34,28 @@ describe("TripNameForm", () => {
 
   it("updates input value when user types", () => {
     render(<TripNameForm />);
-    
+
     const input = screen.getByLabelText("Trip Name") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "My Trip" } });
-    
+
     expect(input.value).toBe("My Trip");
   });
 
   it("enables submit button regardless of input value", () => {
     render(<TripNameForm />);
-    
+
     const submitButton = screen.getByText("Save Trip Name") as HTMLButtonElement;
     expect(submitButton.disabled).toBe(false);
   });
 
   it("shows error when submitting empty form", async () => {
     render(<TripNameForm />);
-    
+
     // Find the form element and submit it directly
     const form = document.querySelector('form');
     expect(form).not.toBeNull();
     fireEvent.submit(form!);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Please enter a trip name")).toBeInTheDocument();
     });
@@ -69,13 +69,13 @@ describe("TripNameForm", () => {
     } as unknown as Response);
 
     render(<TripNameForm />);
-    
+
     const input = screen.getByLabelText("Trip Name");
     const submitButton = screen.getByText("Save Trip Name");
-    
+
     fireEvent.change(input, { target: { value: "My Amazing Trip" } });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith("/api/trips/v2/123", {
         method: "PUT",
@@ -85,7 +85,7 @@ describe("TripNameForm", () => {
         body: JSON.stringify({ name: "My Amazing Trip" }),
       });
     });
-    
+
     await waitFor(() => {
       expect(window.location.reload).toHaveBeenCalled();
     });
@@ -98,13 +98,13 @@ describe("TripNameForm", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     render(<TripNameForm />);
-    
+
     const input = screen.getByLabelText("Trip Name");
     const submitButton = screen.getByText("Save Trip Name");
-    
+
     fireEvent.change(input, { target: { value: "My Trip" } });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Failed to save trip name. Please try again.")).toBeInTheDocument();
     });
@@ -117,17 +117,17 @@ describe("TripNameForm", () => {
     mockFetch.mockReturnValue(new Promise(() => {})); // Never resolves
 
     render(<TripNameForm />);
-    
+
     const input = screen.getByLabelText("Trip Name");
     const submitButton = screen.getByText("Save Trip Name") as HTMLButtonElement;
-    
+
     fireEvent.change(input, { target: { value: "My Trip" } });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Saving...")).toBeInTheDocument();
     });
-    
+
     expect(submitButton.disabled).toBe(true);
   });
 });
