@@ -4,6 +4,7 @@ import { PrismaClient } from "../generated/prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
+import type { User, Profile } from '@auth/core/types'
 
 import { TripDO } from "./trip";
 export { TripDO } from "./trip";
@@ -19,6 +20,32 @@ export interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 app.use(logger());
+
+// Function to persist user in database
+async function persistUser(user: User, profile: Profile | undefined, databaseUrl: string) {
+  const prisma = new PrismaClient({
+    datasourceUrl: databaseUrl,
+  }).$extends(withAccelerate());
+
+  try {
+    // Use upsert to either create new user or update existing one
+    await prisma.user.upsert({
+      where: { email: user.email! },
+      update: {
+        name: user.name || '',
+        picture: user.image || profile?.picture || null,
+      },
+      create: {
+        email: user.email!,
+        name: user.name || '',
+        picture: user.image || profile?.picture || null,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to persist user:', error);
+    // Don't throw error to avoid breaking the sign-in flow
+  }
+}
 
 app.use(
   '*',
@@ -37,6 +64,15 @@ app.use(
         //},
       }),
     ],
+    callbacks: {
+      async signIn({ user, profile }) {
+        // Persist user when they sign in
+        if (user.email) {
+          await persistUser(user, profile, c.env.DATABASE_URL);
+        }
+        return true;
+      },
+    },
   }))
 )
 app.use('/api/auth/*', authHandler())
