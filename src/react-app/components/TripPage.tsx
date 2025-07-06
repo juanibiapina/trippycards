@@ -53,18 +53,13 @@ const TripPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card centered className="max-w-2xl">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">{trip.name}</h1>
-
-          <div className="space-y-4">
-            <div className="text-gray-500">
-              <p>Trip planning features coming soon...</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-teal-700 text-white px-4 py-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold">{trip.name}</h1>
         </div>
-      </Card>
+      </header>
     </div>
   );
 };
