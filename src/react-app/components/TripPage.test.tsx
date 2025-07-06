@@ -44,10 +44,10 @@ describe("TripPage", () => {
   it("displays trip name when data is loaded successfully", async () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
-      json: vi.fn().mockResolvedValue({ 
-        name: "Red Rock Climbing Adventure", 
-        fresh: false, 
-        owner: "user@example.com" 
+      json: vi.fn().mockResolvedValue({
+        name: "Red Rock Climbing Adventure",
+        fresh: false,
+        owner: "user@example.com"
       }),
     } as unknown as Response);
 
