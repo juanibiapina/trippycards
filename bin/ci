@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -e
+
+export CI=true
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_step() {
+    echo -e "\n${BLUE}=== $1 ===${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠ $1${NC}"
+}
+
+# Function to run a step and track time
+run_step() {
+    local step_name="$1"
+    local command="$2"
+
+    print_step "$step_name"
+
+    local start_time=$(date +%s)
+
+    if eval "$command"; then
+        local end_time=$(date +%s)
+        local duration=$((end_time - start_time))
+        print_success "$step_name completed in ${duration}s"
+        return 0
+    else
+        local end_time=$(date +%s)
+        local duration=$((end_time - start_time))
+        print_error "$step_name failed after ${duration}s"
+        return 1
+    fi
+}
+
+# Main CI pipeline
+main() {
+    echo -e "${BLUE}🚀 Running CI Pipeline${NC}"
+    echo -e "${BLUE}====================${NC}"
+
+    local total_start_time=$(date +%s)
+
+    # Step 0: Generate Prisma Client
+    run_step "Generate Prisma Client" "npm run generate" || exit 1
+
+    # Step 1: ESLint
+    run_step "ESLint" "npm run lint" || exit 1
+
+    # Step 2: TypeScript Check
+    run_step "TypeScript Check" "npx tsc --noEmit" || exit 1
+
+    # Step 3: Unit Tests with Coverage
+    run_step "Unit Tests" "npm run test:coverage" || exit 1
+
+    # Step 4: Build
+    run_step "Build" "npm run build" || exit 1
+
+    # Step 5: Deploy Dry Run
+    run_step "Deploy Dry Run" "npx wrangler deploy --dry-run" || exit 1
+
+    local total_end_time=$(date +%s)
+    local total_duration=$((total_end_time - total_start_time))
+
+    echo -e "\n${GREEN}🎉 All CI checks passed!${NC}"
+    echo -e "${GREEN}Total time: ${total_duration}s${NC}"
+}
+
+# Run main function
+main "$@"
