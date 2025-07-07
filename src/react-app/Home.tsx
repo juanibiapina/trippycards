@@ -1,5 +1,3 @@
-// src/App.tsx
-
 import { useSession, signIn } from '@hono/auth-js/react';
 import { signOut } from '@hono/auth-js/react';
 
