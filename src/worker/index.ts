@@ -131,4 +131,77 @@ app.put("/api/trips/v2/:tripId", async (c) => {
   return c.json({ success: true });
 });
 
+// Card API endpoints
+app.post("/api/trips/v2/:tripId/cards", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const { title } = await c.req.json();
+
+  if (!title || typeof title !== 'string') {
+    return c.json({ error: "Invalid card title" }, 400);
+  }
+
+  const cardId = crypto.randomUUID();
+  const card = { id: cardId, title: title.trim() };
+
+  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  await stub.addCard(card);
+
+  return c.json(card);
+});
+
+app.get("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+
+  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  const card = await stub.getCard(cardId);
+
+  if (!card) {
+    return c.json({ error: "Card not found" }, 404);
+  }
+
+  return c.json(card);
+});
+
+app.put("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+  const { title } = await c.req.json();
+
+  if (!title || typeof title !== 'string') {
+    return c.json({ error: "Invalid card title" }, 400);
+  }
+
+  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  const success = await stub.updateCard(cardId, title.trim());
+
+  if (!success) {
+    return c.json({ error: "Card not found" }, 404);
+  }
+
+  return c.json({ success: true });
+});
+
+app.delete("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+
+  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(id);
+
+  const success = await stub.deleteCard(cardId);
+
+  if (!success) {
+    return c.json({ error: "Card not found" }, 404);
+  }
+
+  return c.json({ success: true });
+});
+
 export default app;
