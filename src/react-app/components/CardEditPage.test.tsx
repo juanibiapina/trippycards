@@ -29,7 +29,7 @@ describe("CardEditPage", () => {
   it("renders new card form correctly", async () => {
     // Set up for new card
     mockParams.cardId = "new";
-    
+
     render(<CardEditPage />);
 
     await waitFor(() => {
@@ -45,7 +45,7 @@ describe("CardEditPage", () => {
   it("creates new card when form is submitted", async () => {
     // Set up for new card
     mockParams.cardId = "new";
-    
+
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       ok: true,
@@ -83,7 +83,7 @@ describe("CardEditPage", () => {
   it("loads existing card for editing", async () => {
     // Set up for existing card
     mockParams.cardId = "card-456";
-    
+
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValue({
       ok: true,
@@ -97,7 +97,7 @@ describe("CardEditPage", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith("/api/trips/v2/123/cards/card-456");
-    
+
     await waitFor(() => {
       const titleInput = screen.getByLabelText("Title") as HTMLInputElement;
       expect(titleInput.value).toBe("Existing Card");
@@ -107,7 +107,7 @@ describe("CardEditPage", () => {
   it("updates existing card when form is submitted", async () => {
     // Set up for existing card
     mockParams.cardId = "card-456";
-    
+
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -151,7 +151,7 @@ describe("CardEditPage", () => {
   it("shows error when title is empty", async () => {
     // Set up for new card
     mockParams.cardId = "new";
-    
+
     render(<CardEditPage />);
 
     await waitFor(() => {
@@ -171,7 +171,7 @@ describe("CardEditPage", () => {
   it("navigates back when cancel is clicked", async () => {
     // Set up for new card
     mockParams.cardId = "new";
-    
+
     render(<CardEditPage />);
 
     await waitFor(() => {
