@@ -4,8 +4,10 @@ import TripNameForm from "./TripNameForm";
 
 // Mock react-router
 const mockParams = { tripId: "123" };
+const mockNavigate = vi.fn();
 vi.mock("react-router", () => ({
   useParams: () => mockParams,
+  useNavigate: () => mockNavigate,
 }));
 
 // Mock window.location.reload

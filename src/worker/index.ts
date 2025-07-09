@@ -131,4 +131,69 @@ app.put("/api/trips/v2/:tripId", async (c) => {
   return c.json({ success: true });
 });
 
+// Card endpoints
+app.post("/api/trips/v2/:tripId/cards", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const { id, title } = await c.req.json();
+
+  if (!id || !title || typeof id !== 'string' || typeof title !== 'string') {
+    return c.json({ error: "Invalid card data" }, 400);
+  }
+
+  const durableId: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(durableId);
+
+  await stub.addCard({ id, title });
+
+  return c.json({ success: true });
+});
+
+app.get("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+
+  const durableId: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(durableId);
+
+  const card = await stub.getCard(cardId);
+
+  if (!card) {
+    return c.json({ error: "Card not found" }, 404);
+  }
+
+  return c.json(card);
+});
+
+app.put("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+  const { title } = await c.req.json();
+
+  if (!title || typeof title !== 'string') {
+    return c.json({ error: "Invalid card title" }, 400);
+  }
+
+  const durableId: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(durableId);
+
+  try {
+    await stub.updateCard(cardId, { title });
+    return c.json({ success: true });
+  } catch {
+    return c.json({ error: "Card not found" }, 404);
+  }
+});
+
+app.delete("/api/trips/v2/:tripId/cards/:cardId", async (c) => {
+  const tripId = parseInt(c.req.param("tripId"));
+  const cardId = c.req.param("cardId");
+
+  const durableId: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
+  const stub = c.env.TRIPDO.get(durableId);
+
+  await stub.deleteCard(cardId);
+
+  return c.json({ success: true });
+});
+
 export default app;

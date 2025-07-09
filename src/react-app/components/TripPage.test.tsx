@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "../../test/utils";
 import TripPage from "./TripPage";
 
+// Mock react-router
+const mockNavigate = vi.fn();
+vi.mock("react-router", () => ({
+  useParams: () => ({ tripId: "123" }),
+  useNavigate: () => mockNavigate,
+}));
+
 // Mock the fetch function
 global.fetch = vi.fn();
 
