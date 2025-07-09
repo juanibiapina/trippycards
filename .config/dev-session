@@ -1,0 +1,4 @@
+default_windows
+
+new_window "dev"
+run_cmd "npm run dev"
