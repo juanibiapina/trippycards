@@ -20,7 +20,19 @@ const CardEditPage = () => {
 
   const isNew = params.cardId === "new";
 
+  // Debug: Log the current URL and params
   useEffect(() => {
+    // Check if we're in the CardEditPage but the URL doesn't match card routes
+    const currentPath = window.location.pathname;
+    const tripPattern = /^\/trips\/[^/]+$/;
+
+    if (tripPattern.test(currentPath)) {
+      // If we're in CardEditPage but the URL matches a trip route, redirect to TripPage
+      console.log("CardEditPage: Trip route detected, redirecting to TripPage");
+      navigate(`/trips/${params.tripId}`, { replace: true });
+      return;
+    }
+
     if (isNew) {
       // For new cards, generate a UUID and initialize with empty title
       const newCard: CardData = {
@@ -50,7 +62,7 @@ const CardEditPage = () => {
           setLoading(false);
         });
     }
-  }, [params.tripId, params.cardId, isNew]);
+  }, [params.tripId, params.cardId, isNew, navigate]);
 
   const handleSave = async () => {
     if (!title.trim()) {
