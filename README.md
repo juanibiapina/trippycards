@@ -14,7 +14,7 @@ A full-stack web application built with React and Cloudflare Workers for managin
    npm install
    ```
 
-2. Start the development server:
+2. Start the development server: (it's automatically started in the tmux session `cf-travelcards`, window `5:dev`.
    ```bash
    npm run dev
    ```
