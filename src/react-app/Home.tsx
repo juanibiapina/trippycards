@@ -29,6 +29,26 @@ function Home() {
     navigate(`/trips/${tripId}`);
   };
 
+  const createActivity = async () => {
+    try {
+      const response = await fetch('/api/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create activity');
+      }
+
+      const { activityId } = await response.json();
+      navigate(`/activities/${activityId}`);
+    } catch (error) {
+      console.error('Error creating activity:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card centered>
@@ -38,6 +58,10 @@ function Home() {
           <div className="space-y-4">
             <Button onClick={() => createTrip()}>
               New Trip
+            </Button>
+
+            <Button onClick={() => createActivity()}>
+              New Activity
             </Button>
 
             <button

@@ -18,6 +18,10 @@
       {
         "name": "TRIPDO",
         "class_name": "TripDO"
+      },
+      {
+        "name": "ACTIVITYDO",
+        "class_name": "ActivityDO"
       }
     ]
   },
@@ -26,6 +30,12 @@
       "tag": "v1",
       "new_sqlite_classes": [
         "TripDO"
+      ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": [
+        "ActivityDO"
       ]
     }
   ]

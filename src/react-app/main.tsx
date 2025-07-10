@@ -9,6 +9,7 @@ import "./main.css";
 import App from "./App.tsx";
 import Home from "./Home.tsx";
 import TripPage from "./components/TripPage.tsx";
+import ActivityPage from "./components/ActivityPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "trips/:tripId", element: <TripPage /> },
+      { path: "activities/:activityId", element: <ActivityPage /> },
     ],
   },
 ]);

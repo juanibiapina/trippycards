@@ -8,10 +8,13 @@ import type { User, Profile } from '@auth/core/types'
 
 import { TripDO } from "./trip";
 export { TripDO } from "./trip";
+import { ActivityDO } from "./activity";
+export { ActivityDO } from "./activity";
 
 export interface Env {
   DATABASE_URL: string;
   TRIPDO: DurableObjectNamespace<TripDO>;
+  ACTIVITYDO: DurableObjectNamespace<ActivityDO>;
   AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
@@ -127,6 +130,64 @@ app.put("/api/trips/v2/:tripId", async (c) => {
   const stub = c.env.TRIPDO.get(id);
 
   await stub.updateName(name);
+
+  return c.json({ success: true });
+});
+
+// Activity routes
+app.post("/api/activities", async (c) => {
+  const activityId = crypto.randomUUID();
+  const id: DurableObjectId = c.env.ACTIVITYDO.idFromName(activityId);
+  const stub = c.env.ACTIVITYDO.get(id);
+
+  // Initialize empty activity
+  await stub.get();
+
+  return c.json({ activityId });
+});
+
+app.get("/api/activities/:activityId", async (c) => {
+  const activityId = c.req.param("activityId");
+
+  const id: DurableObjectId = c.env.ACTIVITYDO.idFromName(activityId);
+  const stub = c.env.ACTIVITYDO.get(id);
+
+  const activity = await stub.get();
+
+  return c.json(activity);
+});
+
+app.post("/api/activities/:activityId/questions", async (c) => {
+  const activityId = c.req.param("activityId");
+  const { text } = await c.req.json();
+  const auth = c.get('authUser');
+
+  if (!text || typeof text !== 'string') {
+    return c.json({ error: "Invalid question text" }, 400);
+  }
+
+  const id: DurableObjectId = c.env.ACTIVITYDO.idFromName(activityId);
+  const stub = c.env.ACTIVITYDO.get(id);
+
+  const question = await stub.createQuestion(text, auth.session?.user?.email || 'anonymous');
+
+  return c.json(question);
+});
+
+app.post("/api/activities/:activityId/questions/:questionId/responses", async (c) => {
+  const activityId = c.req.param("activityId");
+  const questionId = c.req.param("questionId");
+  const { response } = await c.req.json();
+  const auth = c.get('authUser');
+
+  if (!response || (response !== 'yes' && response !== 'no')) {
+    return c.json({ error: "Invalid response" }, 400);
+  }
+
+  const id: DurableObjectId = c.env.ACTIVITYDO.idFromName(activityId);
+  const stub = c.env.ACTIVITYDO.get(id);
+
+  await stub.submitResponse(questionId, auth.session?.user?.email || 'anonymous', response);
 
   return c.json({ success: true });
 });
