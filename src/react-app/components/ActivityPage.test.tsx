@@ -28,8 +28,8 @@ describe("ActivityPage", () => {
   });
 
   it("redirects to home when user is not authenticated", async () => {
-    mockUseSession.mockReturnValue({ 
-      data: null, 
+    mockUseSession.mockReturnValue({
+      data: null,
       status: "unauthenticated",
       update: vi.fn()
     });
@@ -42,8 +42,8 @@ describe("ActivityPage", () => {
   });
 
   it("renders nothing while not authenticated", () => {
-    mockUseSession.mockReturnValue({ 
-      data: null, 
+    mockUseSession.mockReturnValue({
+      data: null,
       status: "unauthenticated",
       update: vi.fn()
     });
@@ -58,8 +58,8 @@ describe("ActivityPage", () => {
       user: { email: 'test@example.com', name: 'Test User' },
       expires: '2025-01-01T00:00:00Z'
     };
-    mockUseSession.mockReturnValue({ 
-      data: mockSession, 
+    mockUseSession.mockReturnValue({
+      data: mockSession,
       status: "authenticated",
       update: vi.fn()
     });
@@ -84,8 +84,8 @@ describe("ActivityPage", () => {
       user: { email: 'test@example.com', name: 'Test User' },
       expires: '2025-01-01T00:00:00Z'
     };
-    mockUseSession.mockReturnValue({ 
-      data: mockSession, 
+    mockUseSession.mockReturnValue({
+      data: mockSession,
       status: "authenticated",
       update: vi.fn()
     });
