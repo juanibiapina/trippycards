@@ -16,10 +16,6 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "TRIPDO",
-        "class_name": "TripDO"
-      },
-      {
         "name": "ACTIVITYDO",
         "class_name": "ActivityDO"
       }
@@ -36,6 +32,12 @@
       "tag": "v2",
       "new_sqlite_classes": [
         "ActivityDO"
+      ]
+    },
+    {
+      "tag": "v3",
+      "deleted_classes": [
+        "TripDO"
       ]
     }
   ]

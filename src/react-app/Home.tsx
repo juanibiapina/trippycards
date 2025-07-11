@@ -24,10 +24,6 @@ function Home() {
     );
   }
 
-  const createTrip = async () => {
-    const tripId = crypto.randomUUID();
-    navigate(`/trips/${tripId}`);
-  };
 
   const createActivity = async () => {
     try {
@@ -56,10 +52,6 @@ function Home() {
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Hi {session.user?.name}!</h1>
 
           <div className="space-y-4">
-            <Button onClick={() => createTrip()}>
-              New Trip
-            </Button>
-
             <Button onClick={() => createActivity()}>
               New Activity
             </Button>

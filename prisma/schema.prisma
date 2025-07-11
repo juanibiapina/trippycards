@@ -21,8 +21,3 @@ model User {
   name    String
   picture String?
 }
-
-model Trip {
-  id   Int    @id @default(autoincrement())
-  name String
-}

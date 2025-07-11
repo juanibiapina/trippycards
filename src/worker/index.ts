@@ -6,14 +6,11 @@ import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
 import type { User, Profile } from '@auth/core/types'
 
-import { TripDO } from "./trip";
-export { TripDO } from "./trip";
 import { ActivityDO } from "./activity";
 export { ActivityDO } from "./activity";
 
 export interface Env {
   DATABASE_URL: string;
-  TRIPDO: DurableObjectNamespace<TripDO>;
   ACTIVITYDO: DurableObjectNamespace<ActivityDO>;
   AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
@@ -84,55 +81,6 @@ app.use('/api/auth/*', authHandler())
 app.use('/api/*', verifyAuth())
 
 // routes
-
-app.get("/api/trips/:id", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
-  const id = parseInt(c.req.param("id"));
-
-  if (isNaN(id)) {
-    return c.json({ error: "Invalid trip ID" }, 400);
-  }
-
-  const trip = await prisma.trip.findUnique({
-    where: { id },
-  });
-
-  if (!trip) {
-    return c.json({ error: "Trip not found" }, 404);
-  }
-
-  return c.json(trip);
-});
-
-app.get("/api/trips/v2/:tripId", async (c) => {
-  const tripId = parseInt(c.req.param("tripId"));
-
-  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
-  const stub = c.env.TRIPDO.get(id);
-
-  const trip = await stub.get();
-
-  return c.json(trip);
-});
-
-app.put("/api/trips/v2/:tripId", async (c) => {
-  const tripId = parseInt(c.req.param("tripId"));
-  const { name } = await c.req.json();
-
-  if (!name || typeof name !== 'string') {
-    return c.json({ error: "Invalid trip name" }, 400);
-  }
-
-  const id: DurableObjectId = c.env.TRIPDO.idFromName(tripId.toString());
-  const stub = c.env.TRIPDO.get(id);
-
-  await stub.updateName(name);
-
-  return c.json({ success: true });
-});
 
 // Activity routes
 app.post("/api/activities", async (c) => {

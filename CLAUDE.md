@@ -1,3 +1,3 @@
 # Instructions for Claude
 
-- Check @README.md for how to work with this application.
+- Check @README.md for installation instructions and commands

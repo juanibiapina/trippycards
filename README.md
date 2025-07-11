@@ -1,6 +1,6 @@
 # Travel Cards
 
-A full-stack web application built with React and Cloudflare Workers for managing trips.
+A full-stack web application built with React and Cloudflare Workers for managing activities.
 
 ## Prerequisites
 
