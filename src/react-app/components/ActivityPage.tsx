@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
+import { useSession } from '@hono/auth-js/react';
 import LoadingCard from "./LoadingCard";
 import Card from "./Card";
 import QuestionCard from "./QuestionCard";
@@ -17,6 +18,8 @@ interface Activity {
 }
 
 const ActivityPage = () => {
+  const { data: session } = useSession();
+  const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,8 @@ const ActivityPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchActivity = useCallback(() => {
+    if (!session) return;
+
     fetch(`/api/activities/${params.activityId}`)
       .then((res) => res.json() as Promise<Activity>)
       .then((data) => {
@@ -34,15 +39,24 @@ const ActivityPage = () => {
         console.error("Error fetching activity:", error);
         setLoading(false);
       });
-  }, [params.activityId]);
+  }, [params.activityId, session]);
 
   useEffect(() => {
+    if (!session) {
+      navigate('/');
+      return;
+    }
     fetchActivity();
-  }, [params.activityId, fetchActivity]);
+  }, [session, navigate, fetchActivity]);
+
+  // Don't render anything if not authenticated
+  if (!session) {
+    return null;
+  }
 
   const createQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!questionText.trim() || isSubmitting) return;
+    if (!questionText.trim() || isSubmitting || !session) return;
 
     setIsSubmitting(true);
     try {
@@ -68,6 +82,8 @@ const ActivityPage = () => {
   };
 
   const submitResponse = async (questionId: string, response: 'yes' | 'no') => {
+    if (!session) return;
+
     try {
       const res = await fetch(`/api/activities/${params.activityId}/questions/${questionId}/responses`, {
         method: 'POST',
