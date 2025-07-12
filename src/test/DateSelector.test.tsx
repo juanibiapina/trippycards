@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DateSelector from '../react-app/components/DateSelector';
 
@@ -87,10 +87,10 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
     const endDateInput = screen.getByLabelText('End Date (Optional)');
-    
+
     await user.type(startDateInput, '2025-07-20');
     await user.type(endDateInput, '2025-07-18');
     await user.click(screen.getByText('Save'));
@@ -110,10 +110,10 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
     const endDateInput = screen.getByLabelText('End Date (Optional)');
-    
+
     await user.type(startDateInput, '2025-07-16');
     await user.type(endDateInput, '2025-07-18');
     await user.click(screen.getByText('Save'));
@@ -132,9 +132,9 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
-    
+
     await user.type(startDateInput, '2025-07-16');
     await user.click(screen.getByText('Save'));
 
@@ -153,11 +153,11 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
     await user.clear(startDateInput);
     await user.type(startDateInput, '2025-07-20');
-    
+
     await user.click(screen.getByText('Cancel'));
 
     expect(screen.getByText('2025-07-16')).toBeInTheDocument();
@@ -175,10 +175,10 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
     await user.type(startDateInput, '2025-07-16');
-    
+
     fireEvent.keyDown(startDateInput, { key: 'Enter' });
 
     expect(mockOnDateChange).toHaveBeenCalledWith('2025-07-16', undefined);
@@ -196,7 +196,7 @@ describe('DateSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /select activity date/i }));
-    
+
     const startDateInput = screen.getByLabelText('Activity Date *');
     fireEvent.keyDown(startDateInput, { key: 'Escape' });
 

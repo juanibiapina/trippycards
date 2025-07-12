@@ -152,10 +152,10 @@ test.describe('Activity Date Selector', () => {
     // Edit name again to make sure date selector is still accessible
     await page.click('text=Rock Climbing Trip');
     await expect(page.locator('input[placeholder="Enter activity name"]')).toBeVisible();
-    
+
     // Cancel name edit
     await page.keyboard.press('Escape');
-    
+
     // Verify date selector is still visible and functional
     await expect(page.locator('text=2025-07-16 – 2025-07-18')).toBeVisible();
   });
