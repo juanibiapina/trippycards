@@ -30,3 +30,11 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
+      - name: Create .dev.vars for E2E tests
+        run: |
+          echo "MOCK_AUTH=true" > .dev.vars
+          echo "AUTH_SECRET=test-secret-for-ci" >> .dev.vars
+          echo "GOOGLE_CLIENT_ID=test-client-id" >> .dev.vars
+          echo "GOOGLE_CLIENT_SECRET=test-client-secret" >> .dev.vars
+          echo "DATABASE_URL=test-database-url" >> .dev.vars
