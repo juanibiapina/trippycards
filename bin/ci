@@ -50,31 +50,18 @@ run_step() {
     fi
 }
 
-# Main CI pipeline
 main() {
-    echo -e "${BLUE}🚀 Running CI Pipeline${NC}"
+    echo -e "${BLUE}🚀 Running Local CI Pipeline${NC}"
     echo -e "${BLUE}====================${NC}"
 
     local total_start_time=$(date +%s)
 
     run_step "Generate worker types" "npm run cf-typegen" || exit 1
-
-    # Step 0: Generate Prisma Client
     run_step "Generate Prisma Client" "npm run generate" || exit 1
-
-    # Step 1: ESLint
     run_step "ESLint" "npm run lint" || exit 1
-
-    # Step 2: TypeScript Check
     run_step "TypeScript Check" "npx tsc --noEmit" || exit 1
-
-    # Step 3: Unit Tests with Coverage
     run_step "Unit Tests" "npm run test:coverage" || exit 1
-
-    # Step 4: Build
     run_step "Build" "npm run build" || exit 1
-
-    # Step 5: Deploy Dry Run
     run_step "Deploy Dry Run" "npx wrangler deploy --dry-run" || exit 1
 
     local total_end_time=$(date +%s)
@@ -84,5 +71,4 @@ main() {
     echo -e "${GREEN}Total time: ${total_duration}s${NC}"
 }
 
-# Run main function
 main "$@"
