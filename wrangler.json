@@ -25,19 +25,7 @@
     {
       "tag": "v1",
       "new_sqlite_classes": [
-        "TripDO"
-      ]
-    },
-    {
-      "tag": "v2",
-      "new_sqlite_classes": [
         "ActivityDO"
-      ]
-    },
-    {
-      "tag": "v3",
-      "deleted_classes": [
-        "TripDO"
       ]
     }
   ]
