@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Travel Cards Application', () => {
+test.use({ storageState: { cookies: [], origins: [] } });
+
+test.describe('Home - Not Authenticated', () => {
   test('home', async ({ page }) => {
     await page.goto('/');
 

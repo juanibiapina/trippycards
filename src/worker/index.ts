@@ -5,6 +5,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
 import type { User, Profile } from '@auth/core/types'
+import { handleMockSignIn } from './test-helpers'
 
 import { ActivityDO } from "./activity";
 export { ActivityDO } from "./activity";
@@ -15,6 +16,7 @@ export interface Env {
   AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  MOCK_AUTH?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -75,6 +77,10 @@ app.use(
     },
   }))
 )
+
+// Test-only mock authentication endpoint (must be before authHandler)
+app.post('/api/auth/test-signin', handleMockSignIn);
+
 app.use('/api/auth/*', authHandler())
 
 // Verify authentication for all API routes
