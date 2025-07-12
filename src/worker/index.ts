@@ -49,10 +49,20 @@ app.use(
       },
     },
   }))
-)
+);
 
 // Test-only mock authentication endpoint (must be before authHandler)
 app.post('/api/auth/test-signin', handleMockSignIn);
+
+// API with logging
+app.get('/api/log', (c) => {
+  console.log(JSON.stringify({
+    action: 'log',
+    message: 'This is a test log message',
+    timestamp: new Date().toISOString(),
+  }));
+  return c.json({ status: 'ok', message: 'Logged successfully' });
+});
 
 app.use('/api/auth/*', authHandler())
 
