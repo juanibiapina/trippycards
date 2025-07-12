@@ -51,4 +51,12 @@ test.describe('Activity Integration Flow', () => {
     await expect(page.locator(`text=${questionText}`)).toBeVisible();
     await expect(page.locator(`text=${secondQuestionText}`)).toBeVisible();
   });
+
+  test('direct link to activity page', async ({ page }) => {
+    // Navigate to activity page directly
+    await page.goto('/activities/dc479e30-5113-4418-8655-26b1f75fa056');
+
+    // Wait for activity page to load
+    await expect(page.locator('text=Activity Questions')).toBeVisible();
+  });
 });

@@ -27,7 +27,13 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] use partysocket in the frontend
 - [x] write integration test
 - [x] fix issues
-- [ ] refactor
+- [x] refactor
+- [x] fix websocket issue
+- [x] fix linking to trips
+
+### Milestone 3
+
+- [ ] define milestone 3
 
 ### Milestone X - It can be used to plan a climbing trip
 

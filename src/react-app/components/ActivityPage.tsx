@@ -7,7 +7,7 @@ import QuestionCard from "./QuestionCard";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 const ActivityPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
   const [questionText, setQuestionText] = useState("");
@@ -16,13 +16,19 @@ const ActivityPage = () => {
   const { activity, loading, createQuestion, submitVote, isConnected } = useActivityRoom(params.activityId || '');
 
   useEffect(() => {
-    if (!session) {
+    // Only redirect if authentication is complete and user is not authenticated
+    if (status !== "loading" && !session) {
       navigate('/');
       return;
     }
-  }, [session, navigate]);
+  }, [session, status, navigate]);
 
-  // Don't render anything if not authenticated
+  // Show loading while authentication status is being determined
+  if (status === "loading") {
+    return <LoadingCard />;
+  }
+
+  // Don't render anything if not authenticated (after loading is complete)
   if (!session) {
     return null;
   }
