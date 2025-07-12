@@ -11,7 +11,7 @@ function Home() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card centered>
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Trippy</h1>
@@ -31,7 +31,7 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card centered>
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Hi {session.user?.name}!</h1>
