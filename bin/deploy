@@ -2,5 +2,7 @@
 
 set -e
 
+npm run cf-typegen
+npm run generate
 npm run build
 npm run deploy
