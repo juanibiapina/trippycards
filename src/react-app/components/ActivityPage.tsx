@@ -4,6 +4,7 @@ import { useSession } from '@hono/auth-js/react';
 import LoadingCard from "./LoadingCard";
 import Card from "./Card";
 import QuestionCard from "./QuestionCard";
+import DateSelector from "./DateSelector";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 const ActivityPage = () => {
@@ -15,7 +16,7 @@ const ActivityPage = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameText, setNameText] = useState("");
 
-  const { activity, loading, createQuestion, submitVote, updateName, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, createQuestion, submitVote, updateName, updateDates, isConnected } = useActivityRoom(params.activityId || '');
 
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
@@ -79,6 +80,11 @@ const ActivityPage = () => {
     }
   };
 
+  const handleDateChange = (startDate: string, endDate?: string) => {
+    if (!isConnected) return;
+    updateDates(startDate, endDate);
+  };
+
   if (loading) {
     return <LoadingCard />;
   }
@@ -130,12 +136,20 @@ const ActivityPage = () => {
                 </button>
               </div>
             ) : (
-              <h1
-                className="text-2xl font-semibold cursor-pointer hover:text-gray-200 transition-colors"
-                onClick={handleNameClick}
-              >
-                {activity?.name || "Click to name this activity"}
-              </h1>
+              <div className="space-y-2">
+                <h1
+                  className="text-2xl font-semibold cursor-pointer hover:text-gray-200 transition-colors"
+                  onClick={handleNameClick}
+                >
+                  {activity?.name || "Click to name this activity"}
+                </h1>
+                <DateSelector
+                  startDate={activity?.startDate}
+                  endDate={activity?.endDate}
+                  onDateChange={handleDateChange}
+                  disabled={!isConnected}
+                />
+              </div>
             )}
           </div>
         </div>
