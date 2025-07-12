@@ -48,7 +48,7 @@ async function persistUser(user: User, profile: Profile | undefined, databaseUrl
   }
 }
 
-app.use("*", partyserverMiddleware());
+app.use("/parties/*", partyserverMiddleware());
 
 app.use(
   '*',
