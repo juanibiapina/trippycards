@@ -25,24 +25,9 @@ function Home() {
   }
 
 
-  const createActivity = async () => {
-    try {
-      const response = await fetch('/api/activities', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create activity');
-      }
-
-      const { activityId } = await response.json();
-      navigate(`/activities/${activityId}`);
-    } catch (error) {
-      console.error('Error creating activity:', error);
-    }
+  const createActivity = () => {
+    const activityId = crypto.randomUUID();
+    navigate(`/activities/${activityId}`);
   };
 
   return (

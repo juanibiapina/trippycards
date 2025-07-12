@@ -1,0 +1,99 @@
+import { useState, useEffect, useCallback } from 'react';
+import PartySocket from 'partysocket';
+import type { Activity, Question, Message } from '../../shared';
+
+interface UseActivityRoomResult {
+  activity: Activity | null;
+  isConnected: boolean;
+  createQuestion: (text: string, userId: string) => void;
+  submitVote: (questionId: string, vote: 'yes' | 'no', userId: string) => void;
+  loading: boolean;
+}
+
+export function useActivityRoom(activityId: string): UseActivityRoomResult {
+  const [socket, setSocket] = useState<PartySocket | null>(null);
+  const [activity, setActivity] = useState<Activity | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!activityId) return;
+
+    const partySocket = new PartySocket({
+      host: window.location.host,
+      room: activityId,
+      party: 'activitydo',
+      protocol: window.location.protocol === 'https:' ? 'wss' : 'ws',
+    });
+
+    partySocket.addEventListener('open', () => {
+      setIsConnected(true);
+    });
+
+    partySocket.addEventListener('close', () => {
+      setIsConnected(false);
+    });
+
+    partySocket.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data) as Message;
+
+      if (message.type === 'activity') {
+        setActivity(message.activity);
+        setLoading(false);
+      } else if (message.type === 'question') {
+        setActivity(prev => {
+          if (!prev) return { questions: { [message.question.id]: message.question } };
+          return {
+            ...prev,
+            questions: {
+              ...prev.questions,
+              [message.question.id]: message.question,
+            },
+          };
+        });
+      }
+    });
+
+    setSocket(partySocket);
+
+    return () => {
+      partySocket.close();
+    };
+  }, [activityId]);
+
+  const createQuestion = useCallback((text: string, userId: string) => {
+    if (!socket || !isConnected) return;
+
+    const question: Question = {
+      id: crypto.randomUUID(),
+      text,
+      createdBy: userId,
+      createdAt: new Date().toISOString(),
+      responses: {},
+    };
+
+    socket.send(JSON.stringify({
+      type: 'question',
+      question,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
+  const submitVote = useCallback((questionId: string, vote: 'yes' | 'no', userId: string) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'vote',
+      questionId,
+      vote,
+      userId,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
+  return {
+    activity,
+    isConnected,
+    createQuestion,
+    submitVote,
+    loading,
+  };
+}

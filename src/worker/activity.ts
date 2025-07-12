@@ -1,57 +1,61 @@
-import { DurableObject } from "cloudflare:workers";
+import {
+  type Connection,
+  Server,
+  type WSMessage,
+} from "partyserver";
 
-export interface Question {
-  id: string;
-  text: string;
-  createdBy: string;
-  createdAt: Date;
-  responses: Record<string, 'yes' | 'no'>;
-}
+import type { Activity, Question, Message } from "../shared";
 
-export interface Activity {
-  questions: Record<string, Question>;
-}
+export class ActivityDO extends Server<Env> {
+  static options = { hibernate: true };
 
-export class ActivityDO extends DurableObject<Env> {
-  constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env);
+  activity = {} as Activity;
+
+  broadcastMessage(message: Message, exclude?: string[]) {
+    this.broadcast(JSON.stringify(message), exclude);
   }
 
-  async get(): Promise<Activity> {
-    const questions = await this.ctx.storage.get<Record<string, Question>>('questions') || {};
-    return { questions };
+  async addQuestion(question: Question) {
+    this.activity.questions[question.id] = question;
+    await this.ctx.storage.put("activity", this.activity);
   }
 
-  async createQuestion(text: string, createdBy: string): Promise<Question> {
-    const questionId = crypto.randomUUID();
-    const question: Question = {
-      id: questionId,
-      text,
-      createdBy,
-      createdAt: new Date(),
-      responses: {}
-    };
+  async submitVote(questionId: string, userId: string, vote: 'yes' | 'no') {
+    if (this.activity.questions[questionId]) {
+      this.activity.questions[questionId].responses[userId] = vote;
+      await this.ctx.storage.put("activity", this.activity);
 
-    const activity = await this.get();
-    activity.questions[questionId] = question;
-    await this.ctx.storage.put('questions', activity.questions);
-
-    return question;
-  }
-
-  async submitResponse(questionId: string, userId: string, response: 'yes' | 'no'): Promise<void> {
-    const activity = await this.get();
-
-    if (!activity.questions[questionId]) {
-      throw new Error('Question not found');
+      // Broadcast the question update to all clients
+      this.broadcastMessage({
+        type: "question",
+        question: this.activity.questions[questionId],
+      });
     }
-
-    activity.questions[questionId].responses[userId] = response;
-    await this.ctx.storage.put('questions', activity.questions);
   }
 
-  async getQuestion(questionId: string): Promise<Question | null> {
-    const activity = await this.get();
-    return activity.questions[questionId] || null;
+  async onStart() {
+    this.activity = await this.ctx.storage.get<Activity>("activity") || { questions: {} };
+  }
+
+  onConnect(connection: Connection) {
+    connection.send(
+      JSON.stringify({
+        type: "activity",
+        activity: this.activity,
+      } satisfies Message),
+    );
+  }
+
+  async onMessage(_connection: Connection, message: WSMessage) {
+    const parsed = JSON.parse(message as string) as Message;
+
+    if (parsed.type === "question") {
+      await this.addQuestion(parsed.question);
+      this.broadcast(message);
+    } else if (parsed.type === "vote") {
+      // Use authenticated user ID from the message
+      const userId = parsed.userId;
+      await this.submitVote(parsed.questionId, userId, parsed.vote);
+    }
   }
 }
