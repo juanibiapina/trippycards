@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import PartySocket from 'partysocket';
+import { useState, useCallback } from 'react';
+import { usePartySocket } from 'partysocket/react';
 import type { Activity, Question, Message } from '../../shared';
 
 interface UseActivityRoomResult {
@@ -11,30 +11,20 @@ interface UseActivityRoomResult {
 }
 
 export function useActivityRoom(activityId: string): UseActivityRoomResult {
-  const [socket, setSocket] = useState<PartySocket | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!activityId) return;
-
-    const partySocket = new PartySocket({
-      host: window.location.host,
-      room: activityId,
-      party: 'activitydo',
-      protocol: window.location.protocol === 'https:' ? 'wss' : 'ws',
-    });
-
-    partySocket.addEventListener('open', () => {
+  const socket = usePartySocket({
+    room: activityId,
+    party: 'activitydo',
+    onOpen: () => {
       setIsConnected(true);
-    });
-
-    partySocket.addEventListener('close', () => {
+    },
+    onClose: () => {
       setIsConnected(false);
-    });
-
-    partySocket.addEventListener('message', (event) => {
+    },
+    onMessage: (event) => {
       const message = JSON.parse(event.data) as Message;
 
       if (message.type === 'activity') {
@@ -52,14 +42,8 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
           };
         });
       }
-    });
-
-    setSocket(partySocket);
-
-    return () => {
-      partySocket.close();
-    };
-  }, [activityId]);
+    },
+  });
 
   const createQuestion = useCallback((text: string, userId: string) => {
     if (!socket || !isConnected) return;
