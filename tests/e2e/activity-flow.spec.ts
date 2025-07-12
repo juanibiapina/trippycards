@@ -53,10 +53,62 @@ test.describe('Activity Integration Flow', () => {
   });
 
   test('direct link to activity page', async ({ page }) => {
+    // Generate a random activity ID for this test
+    const activityId = crypto.randomUUID();
+
     // Navigate to activity page directly
-    await page.goto('/activities/dc479e30-5113-4418-8655-26b1f75fa056');
+    await page.goto(`/activities/${activityId}`);
 
     // Wait for activity page to load
-    await expect(page.locator('text=Activity Questions')).toBeVisible();
+    await expect(page.locator('text=Create a new question')).toBeVisible();
+    await expect(page.locator('text=Click to name this activity')).toBeVisible();
+  });
+
+  test('activity name editing and persistence', async ({ page }) => {
+    // Generate a random activity ID for this test
+    const activityId = crypto.randomUUID();
+
+    // Navigate to activity page directly
+    await page.goto(`/activities/${activityId}`);
+
+    // Verify placeholder text is shown when no name is set
+    await expect(page.locator('text=Click to name this activity')).toBeVisible();
+
+    // Click on placeholder to enter edit mode
+    await page.click('text=Click to name this activity');
+
+    // Verify edit mode is active (input field appears)
+    await expect(page.locator('input[placeholder="Enter activity name"]')).toBeVisible();
+
+    // Enter activity name
+    const activityName = 'Rock Climbing Adventure';
+    await page.fill('input[placeholder="Enter activity name"]', activityName);
+
+    // Submit the name change
+    await page.click('button:has-text("Save")');
+
+    // Verify name is displayed
+    await expect(page.locator(`text=${activityName}`)).toBeVisible();
+
+    // Verify placeholder is no longer shown
+    await expect(page.locator('text=Click to name this activity')).not.toBeVisible();
+
+    // Reload page to test persistence
+    await page.reload();
+
+    // Wait for page to load and verify name persists
+    await expect(page.locator(`text=${activityName}`)).toBeVisible();
+
+    // Test changing existing name
+    await page.click(`text=${activityName}`);
+    await expect(page.locator('input[placeholder="Enter activity name"]')).toBeVisible();
+
+    const newName = 'Mountain Hiking Trip';
+    await page.fill('input[placeholder="Enter activity name"]', newName);
+    await page.click('button:has-text("Save")');
+
+    // Verify new name is displayed
+    await expect(page.locator(`text=${newName}`)).toBeVisible();
+    await expect(page.locator(`text=${activityName}`)).not.toBeVisible();
   });
 });

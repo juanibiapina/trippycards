@@ -7,6 +7,7 @@ interface UseActivityRoomResult {
   isConnected: boolean;
   createQuestion: (text: string, userId: string) => void;
   submitVote: (questionId: string, vote: 'yes' | 'no', userId: string) => void;
+  updateName: (name: string) => void;
   loading: boolean;
 }
 
@@ -41,6 +42,14 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
             },
           };
         });
+      } else if (message.type === 'name') {
+        setActivity(prev => {
+          if (!prev) return { name: message.name, questions: {} };
+          return {
+            ...prev,
+            name: message.name,
+          };
+        });
       }
     },
   });
@@ -73,11 +82,21 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
+  const updateName = useCallback((name: string) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'name',
+      name,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
   return {
     activity,
     isConnected,
     createQuestion,
     submitVote,
+    updateName,
     loading,
   };
 }

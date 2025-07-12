@@ -1,4 +1,5 @@
 export type Activity = {
+  name?: string;
   questions: Record<string, Question>;
 }
 
@@ -24,4 +25,8 @@ export type Message =
       questionId: string;
       vote: 'yes' | 'no';
       userId: string;
+    }
+  | {
+      type: "name";
+      name: string;
     };

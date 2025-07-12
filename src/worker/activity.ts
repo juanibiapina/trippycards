@@ -33,6 +33,11 @@ export class ActivityDO extends Server<Env> {
     }
   }
 
+  async updateName(name: string) {
+    this.activity.name = name;
+    await this.ctx.storage.put("activity", this.activity);
+  }
+
   async onStart() {
     this.activity = await this.ctx.storage.get<Activity>("activity") || { questions: {} };
   }
@@ -56,6 +61,12 @@ export class ActivityDO extends Server<Env> {
       // Use authenticated user ID from the message
       const userId = parsed.userId;
       await this.submitVote(parsed.questionId, userId, parsed.vote);
+    } else if (parsed.type === "name") {
+      await this.updateName(parsed.name);
+      this.broadcastMessage({
+        type: "name",
+        name: parsed.name,
+      });
     }
   }
 }

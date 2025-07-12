@@ -12,8 +12,10 @@ const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
   const [questionText, setQuestionText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameText, setNameText] = useState("");
 
-  const { activity, loading, createQuestion, submitVote, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, createQuestion, submitVote, updateName, isConnected } = useActivityRoom(params.activityId || '');
 
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
@@ -55,6 +57,28 @@ const ActivityPage = () => {
     submitVote(questionId, response, userEmail);
   };
 
+  const handleNameClick = () => {
+    setIsEditingName(true);
+    setNameText(activity?.name || "");
+  };
+
+  const handleNameSubmit = () => {
+    if (nameText.trim() && isConnected) {
+      updateName(nameText.trim());
+    }
+    setIsEditingName(false);
+    setNameText("");
+  };
+
+  const handleNameKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleNameSubmit();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+      setNameText("");
+    }
+  };
+
   if (loading) {
     return <LoadingCard />;
   }
@@ -86,7 +110,34 @@ const ActivityPage = () => {
       {/* Header */}
       <header className="bg-teal-700 text-white px-4 py-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold">Activity Questions</h1>
+          <div className="flex-1">
+            {isEditingName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={nameText}
+                  onChange={(e) => setNameText(e.target.value)}
+                  onKeyDown={handleNameKeyPress}
+                  className="text-2xl font-semibold bg-white text-gray-900 px-3 py-1 rounded border-none outline-none focus:ring-2 focus:ring-teal-300"
+                  placeholder="Enter activity name"
+                  autoFocus
+                />
+                <button
+                  onClick={handleNameSubmit}
+                  className="bg-teal-600 hover:bg-teal-500 text-white px-3 py-1 rounded text-sm"
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <h1
+                className="text-2xl font-semibold cursor-pointer hover:text-teal-200 transition-colors"
+                onClick={handleNameClick}
+              >
+                {activity?.name || "Click to name this activity"}
+              </h1>
+            )}
+          </div>
         </div>
       </header>
 
