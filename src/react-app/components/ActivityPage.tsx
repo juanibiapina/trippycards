@@ -85,7 +85,7 @@ const ActivityPage = () => {
 
   if (!activity) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card centered>
           <div className="text-center">
             <div className="text-red-500 mb-4">
@@ -108,7 +108,7 @@ const ActivityPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-teal-700 text-white px-4 py-6">
+      <header className="bg-gray-800 text-white px-4 py-6">
         <div className="flex justify-between items-center">
           <div className="flex-1">
             {isEditingName ? (
@@ -118,20 +118,20 @@ const ActivityPage = () => {
                   value={nameText}
                   onChange={(e) => setNameText(e.target.value)}
                   onKeyDown={handleNameKeyPress}
-                  className="text-2xl font-semibold bg-white text-gray-900 px-3 py-1 rounded border-none outline-none focus:ring-2 focus:ring-teal-300"
+                  className="text-2xl font-semibold bg-white text-gray-900 px-3 py-1 rounded border-none outline-none focus:ring-2 focus:ring-gray-500"
                   placeholder="Enter activity name"
                   autoFocus
                 />
                 <button
                   onClick={handleNameSubmit}
-                  className="bg-teal-600 hover:bg-teal-500 text-white px-3 py-1 rounded text-sm"
+                  className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-sm"
                 >
                   Save
                 </button>
               </div>
             ) : (
               <h1
-                className="text-2xl font-semibold cursor-pointer hover:text-teal-200 transition-colors"
+                className="text-2xl font-semibold cursor-pointer hover:text-gray-200 transition-colors"
                 onClick={handleNameClick}
               >
                 {activity?.name || "Click to name this activity"}
@@ -156,14 +156,14 @@ const ActivityPage = () => {
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="e.g., Can you lead climb?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 disabled={isSubmitting}
               />
             </div>
             <button
               type="submit"
               disabled={!questionText.trim() || isSubmitting || !isConnected}
-              className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-md transition-colors shadow-md hover:shadow-lg"
+              className="w-full bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-md transition-colors shadow-md hover:shadow-lg"
             >
 {isSubmitting ? 'Creating...' : isConnected ? 'Create Question' : 'Connecting...'}
             </button>
