@@ -8,12 +8,10 @@ import type { User, Profile } from '@auth/core/types'
 import { handleMockSignIn } from './test-helpers'
 import { partyserverMiddleware } from "hono-party";
 
-import { ActivityDO } from "./activity";
 export { ActivityDO } from "./activity";
 
 export interface Env {
   DATABASE_URL: string;
-  ACTIVITYDO: DurableObjectNamespace<ActivityDO>;
   AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;

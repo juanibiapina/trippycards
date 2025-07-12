@@ -16,7 +16,7 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "ACTIVITYDO",
+        "name": "activitydo",
         "class_name": "ActivityDO"
       }
     ]
