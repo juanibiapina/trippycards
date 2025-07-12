@@ -65,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install --with-deps
 
       - name: Create .dev.vars for E2E tests
         run: |
