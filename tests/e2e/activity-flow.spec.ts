@@ -111,4 +111,40 @@ test.describe('Activity Integration Flow', () => {
     await expect(page.locator(`text=${newName}`)).toBeVisible();
     await expect(page.locator(`text=${activityName}`)).not.toBeVisible();
   });
+
+  test('activity name editing cancel functionality', async ({ page }) => {
+    // Generate a random activity ID for this test
+    const activityId = crypto.randomUUID();
+
+    // Navigate to activity page directly
+    await page.goto(`/activities/${activityId}`);
+
+    // Click on placeholder to enter edit mode
+    await page.click('text=Click to name this activity');
+
+    // Verify edit mode is active and both buttons are present
+    await expect(page.locator('input[placeholder="Enter activity name"]')).toBeVisible();
+    await expect(page.locator('button:has-text("Save")')).toBeVisible();
+    await expect(page.locator('button:has-text("Cancel")')).toBeVisible();
+
+    // Enter activity name
+    const activityName = 'Rock Climbing Adventure';
+    await page.fill('input[placeholder="Enter activity name"]', activityName);
+
+    // Click Cancel button
+    await page.click('button:has-text("Cancel")');
+
+    // Verify edit mode is closed and original placeholder is shown
+    await expect(page.locator('text=Click to name this activity')).toBeVisible();
+    await expect(page.locator('input[placeholder="Enter activity name"]')).not.toBeVisible();
+
+    // Test escape key functionality
+    await page.click('text=Click to name this activity');
+    await page.fill('input[placeholder="Enter activity name"]', activityName);
+    await page.keyboard.press('Escape');
+
+    // Verify edit mode is closed again
+    await expect(page.locator('text=Click to name this activity')).toBeVisible();
+    await expect(page.locator('input[placeholder="Enter activity name"]')).not.toBeVisible();
+  });
 });
