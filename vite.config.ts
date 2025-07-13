@@ -11,9 +11,5 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     globals: true,
     exclude: ["**/node_modules/**", "**/tests/e2e/**"],
-    pool: "threads",
-    testTimeout: 30000,
-    hookTimeout: 30000,
-    fileParallelism: false,
   },
 });
