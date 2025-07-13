@@ -7,8 +7,8 @@ import {
 
 import "./main.css";
 import App from "./App.tsx";
-import Home from "./Home.tsx";
-import ActivityPage from "./components/ActivityPage.tsx";
+import Home from "./pages/Home.tsx";
+import ActivityPage from "./pages/ActivityPage.tsx";
 
 const router = createBrowserRouter([
   {

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ActivityPage from '../react-app/components/ActivityPage';
+import ActivityPage from './ActivityPage';
 
 // Mock the useActivityRoom hook
-vi.mock('../react-app/hooks/useActivityRoom', () => ({
+vi.mock('../hooks/useActivityRoom', () => ({
   useActivityRoom: vi.fn(() => ({
     activity: {
       id: 'test-id',

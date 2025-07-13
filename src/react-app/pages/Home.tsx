@@ -1,8 +1,8 @@
 import { useSession, signIn } from '@hono/auth-js/react';
 import { signOut } from '@hono/auth-js/react';
 
-import Button from './components/Button.tsx';
-import Card from './components/Card.tsx';
+import Button from '../components/Button.tsx';
+import Card from '../components/Card.tsx';
 import { useNavigate } from 'react-router';
 
 function Home() {

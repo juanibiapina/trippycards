@@ -1,10 +1,10 @@
 import { useEffect, useReducer, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
-import LoadingCard from "./LoadingCard";
-import Card from "./Card";
-import QuestionCard from "./QuestionCard";
-import ActivityHeader from "./ActivityHeader";
+import LoadingCard from "../components/LoadingCard";
+import Card from "../components/Card";
+import QuestionCard from "../components/QuestionCard";
+import ActivityHeader from "../components/ActivityHeader";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 interface QuestionFormState {
