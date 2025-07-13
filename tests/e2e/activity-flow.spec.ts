@@ -159,7 +159,7 @@ test.describe('Activity Page', () => {
     await expect(page.locator('text=Create a new question')).toBeVisible();
 
     // Step 1: Select start date
-    const button = page.locator('button:has-text("Select activity date")');
+    const button = page.locator('button:has-text("Select date")');
     await button.click();
 
     // Find the hidden date input and set a start date

@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { formatDateToLocale, validateEndDate } from "../utils/dates";
 
 interface DateSelectorProps {
   startDate?: string;
@@ -13,20 +14,6 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const formatDateToLocale = (dateString: string) => {
-    if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat(navigator.language, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }).format(date);
-    } catch {
-      // Fallback to original string if parsing fails
-      return dateString;
-    }
-  };
 
 
   const handleDateChange = (value: string) => {
@@ -49,7 +36,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
 
   const handleEndDateChange = (value: string) => {
     // Validate that end date is not before start date
-    if (value && startDate && new Date(value) < new Date(startDate)) {
+    if (!validateEndDate(value, startDate)) {
       return; // Don't update if end date is before start date
     }
     onDateChange(startDate || '', value);
@@ -172,9 +159,9 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
             onClick={handleStartDateClick}
             className="text-sm hover:text-blue-200 transition-colors disabled:text-gray-400"
             disabled={disabled}
-            aria-label="Select activity date"
+            aria-label="Select date"
           >
-            Select activity date
+            Select date
           </button>
         ) : (
           <div className="flex items-center gap-1 text-sm">

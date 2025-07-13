@@ -31,9 +31,10 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] fix websocket issue
 - [x] fix linking to trips
 
-### Milestone 3 - Name and Dates
+### Milestone 3 - Editing name and dates
 
-- [x] define milestone 3
+User's can edit activity name and dates.
+
 - [x] Edit activity name
 - [x] edit activity date
 - [x] edit activity optional end date
@@ -41,8 +42,17 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] improve activity name editing (add cancel button and fix layout on small screens)
 - [x] improve date display (use default user's date format)
 - [x] add option to set end date
-- [ ] add event to google calendar (name, date, link to activity)
-- [ ] refactor
+- [x] refactor
+
+### Milestone 4
+
+Use the app to plan playing beach volleyball.
+
+- [ ] option to set a specific time
+- [ ] hide questions feature
+- [ ] going: yes, no, maybe
+- [ ] shows who's going (with user pictures)
+- [ ] add link to the place
 
 ### Milestone X - It can be used to plan a climbing trip
 
@@ -50,6 +60,7 @@ The app can be used to plan a climbing trip.
 
 ### Unrefined backlog
 
+- [ ] google calendar integration
 - [ ] maintenance: fix vitest unit tests timeout
 - [ ] use an icon pack to replace AI drawn svgs
 - [ ] Unify frontend and backend models using zod

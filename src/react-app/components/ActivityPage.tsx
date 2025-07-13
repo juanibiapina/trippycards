@@ -1,22 +1,79 @@
-import { useState, useEffect } from "react";
+import { useEffect, useReducer, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
 import LoadingCard from "./LoadingCard";
 import Card from "./Card";
 import QuestionCard from "./QuestionCard";
-import DateSelector from "./DateSelector";
+import ActivityHeader from "./ActivityHeader";
 import { useActivityRoom } from "../hooks/useActivityRoom";
+
+interface QuestionFormState {
+  text: string;
+  isSubmitting: boolean;
+}
+
+type QuestionFormAction =
+  | { type: 'SET_TEXT'; payload: string }
+  | { type: 'SET_SUBMITTING'; payload: boolean }
+  | { type: 'RESET' };
+
+const questionFormReducer = (state: QuestionFormState, action: QuestionFormAction): QuestionFormState => {
+  switch (action.type) {
+    case 'SET_TEXT':
+      return { ...state, text: action.payload };
+    case 'SET_SUBMITTING':
+      return { ...state, isSubmitting: action.payload };
+    case 'RESET':
+      return { text: '', isSubmitting: false };
+    default:
+      return state;
+  }
+};
 
 const ActivityPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
-  const [questionText, setQuestionText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [nameText, setNameText] = useState("");
+
+  const [questionForm, dispatchQuestionForm] = useReducer(questionFormReducer, {
+    text: '',
+    isSubmitting: false
+  });
 
   const { activity, loading, createQuestion, submitVote, updateName, updateDates, isConnected } = useActivityRoom(params.activityId || '');
+
+  const handleSubmitResponse = useCallback((questionId: string, response: 'yes' | 'no') => {
+    if (!session || !isConnected) return;
+    const userEmail = session.user?.email || 'anonymous';
+    submitVote(questionId, response, userEmail);
+  }, [session, isConnected, submitVote]);
+
+  const handleNameUpdate = useCallback((name: string) => {
+    if (isConnected) {
+      updateName(name);
+    }
+  }, [isConnected, updateName]);
+
+  const handleDateChange = useCallback((startDate: string, endDate?: string) => {
+    if (!isConnected) return;
+    updateDates(startDate, endDate);
+  }, [isConnected, updateDates]);
+
+  const handleCreateQuestion = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!questionForm.text.trim() || questionForm.isSubmitting || !session || !isConnected) return;
+
+    dispatchQuestionForm({ type: 'SET_SUBMITTING', payload: true });
+    try {
+      const userEmail = session.user?.email || 'anonymous';
+      createQuestion(questionForm.text, userEmail);
+      dispatchQuestionForm({ type: 'RESET' });
+    } catch (error) {
+      console.error('Error creating question:', error);
+    } finally {
+      dispatchQuestionForm({ type: 'SET_SUBMITTING', payload: false });
+    }
+  }, [questionForm.text, questionForm.isSubmitting, session, isConnected, createQuestion]);
 
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
@@ -35,59 +92,6 @@ const ActivityPage = () => {
   if (!session) {
     return null;
   }
-
-  const handleCreateQuestion = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!questionText.trim() || isSubmitting || !session || !isConnected) return;
-
-    setIsSubmitting(true);
-    try {
-      const userEmail = session.user?.email || 'anonymous';
-      createQuestion(questionText, userEmail);
-      setQuestionText("");
-    } catch (error) {
-      console.error('Error creating question:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSubmitResponse = (questionId: string, response: 'yes' | 'no') => {
-    if (!session || !isConnected) return;
-    const userEmail = session.user?.email || 'anonymous';
-    submitVote(questionId, response, userEmail);
-  };
-
-  const handleNameClick = () => {
-    setIsEditingName(true);
-    setNameText(activity?.name || "");
-  };
-
-  const handleNameSubmit = () => {
-    if (nameText.trim() && isConnected) {
-      updateName(nameText.trim());
-    }
-    setIsEditingName(false);
-    setNameText("");
-  };
-
-  const handleNameCancel = () => {
-    setIsEditingName(false);
-    setNameText("");
-  };
-
-  const handleNameKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleNameSubmit();
-    } else if (e.key === 'Escape') {
-      handleNameCancel();
-    }
-  };
-
-  const handleDateChange = (startDate: string, endDate?: string) => {
-    if (!isConnected) return;
-    updateDates(startDate, endDate);
-  };
 
   if (loading) {
     return <LoadingCard />;
@@ -117,57 +121,14 @@ const ActivityPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-800 text-white px-4 py-6 shadow-md">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-start">
-            <div className="flex-1 min-w-0">
-              {isEditingName ? (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 max-w-full">
-                  <input
-                    type="text"
-                    value={nameText}
-                    onChange={(e) => setNameText(e.target.value)}
-                    onKeyDown={handleNameKeyPress}
-                    className="flex-1 min-w-0 text-xl sm:text-2xl font-semibold bg-white text-gray-900 px-3 py-2 rounded border-none outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter activity name"
-                    autoFocus
-                  />
-                  <div className="flex gap-2 shrink-0">
-                    <button
-                      onClick={handleNameCancel}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleNameSubmit}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <h1
-                    className="text-2xl sm:text-3xl font-bold cursor-pointer hover:text-blue-200 transition-colors break-words"
-                    onClick={handleNameClick}
-                  >
-                    {activity?.name || "Click to name this activity"}
-                  </h1>
-                  <DateSelector
-                    startDate={activity?.startDate}
-                    endDate={activity?.endDate}
-                    onDateChange={handleDateChange}
-                    disabled={!isConnected}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <ActivityHeader
+        activityName={activity?.name}
+        startDate={activity?.startDate}
+        endDate={activity?.endDate}
+        onNameUpdate={handleNameUpdate}
+        onDateChange={handleDateChange}
+        disabled={!isConnected}
+      />
 
       {/* Content */}
       <div className="max-w-2xl mx-auto p-4 space-y-6">
@@ -181,19 +142,19 @@ const ActivityPage = () => {
               <input
                 type="text"
                 id="question"
-                value={questionText}
-                onChange={(e) => setQuestionText(e.target.value)}
+                value={questionForm.text}
+                onChange={(e) => dispatchQuestionForm({ type: 'SET_TEXT', payload: e.target.value })}
                 placeholder="e.g., Can you lead climb?"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                disabled={isSubmitting}
+                disabled={questionForm.isSubmitting}
               />
             </div>
             <button
               type="submit"
-              disabled={!questionText.trim() || isSubmitting || !isConnected}
+              disabled={!questionForm.text.trim() || questionForm.isSubmitting || !isConnected}
               className="w-full bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-md transition-colors shadow-md hover:shadow-lg"
             >
-{isSubmitting ? 'Creating...' : isConnected ? 'Create Question' : 'Connecting...'}
+{questionForm.isSubmitting ? 'Creating...' : isConnected ? 'Create Question' : 'Connecting...'}
             </button>
           </form>
         </Card>
