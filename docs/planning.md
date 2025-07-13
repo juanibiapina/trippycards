@@ -49,7 +49,7 @@ User's can edit activity name and dates.
 Use the app to plan playing beach volleyball.
 
 - [x] option to set a specific time
-- [ ] hide questions feature
+- [x] hide questions feature
 - [ ] going: yes, no, maybe
 - [ ] shows who's going (with user pictures)
 - [ ] add link to the place
@@ -60,6 +60,7 @@ The app can be used to plan a climbing trip.
 
 ### Unrefined backlog
 
+- [ ] polish: Asked by name, not e-mail (needs to know the user of other people 😱)
 - [ ] google calendar integration
 - [ ] maintenance: fix vitest unit tests timeout
 - [ ] use an icon pack to replace AI drawn svgs
