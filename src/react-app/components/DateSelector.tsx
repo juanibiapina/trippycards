@@ -18,10 +18,25 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
     setTempEndDate(endDate || '');
   }, [startDate, endDate]);
 
+  const formatDateToLocale = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(navigator.language, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }).format(date);
+    } catch {
+      // Fallback to original string if parsing fails
+      return dateString;
+    }
+  };
+
   const formatDateRange = () => {
     if (!startDate) return '';
-    if (!endDate) return startDate;
-    return `${startDate} – ${endDate}`;
+    if (!endDate) return formatDateToLocale(startDate);
+    return `${formatDateToLocale(startDate)} – ${formatDateToLocale(endDate)}`;
   };
 
   const handleDateSubmit = () => {

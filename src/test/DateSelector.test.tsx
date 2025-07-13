@@ -26,7 +26,7 @@ describe('DateSelector', () => {
       />
     );
 
-    expect(screen.getByText('2025-07-16 – 2025-07-18')).toBeInTheDocument();
+    expect(screen.getByText('Jul 16, 2025 – Jul 18, 2025')).toBeInTheDocument();
     expect(screen.queryByText('Please select an activity date.')).not.toBeInTheDocument();
   });
 
@@ -39,7 +39,7 @@ describe('DateSelector', () => {
       />
     );
 
-    expect(screen.getByText('2025-07-16')).toBeInTheDocument();
+    expect(screen.getByText('Jul 16, 2025')).toBeInTheDocument();
     expect(screen.queryByText('Please select an activity date.')).not.toBeInTheDocument();
   });
 
@@ -160,7 +160,7 @@ describe('DateSelector', () => {
 
     await user.click(screen.getByText('Cancel'));
 
-    expect(screen.getByText('2025-07-16')).toBeInTheDocument();
+    expect(screen.getByText('Jul 16, 2025')).toBeInTheDocument();
     expect(mockOnDateChange).not.toHaveBeenCalled();
   });
 
@@ -200,7 +200,7 @@ describe('DateSelector', () => {
     const startDateInput = screen.getByLabelText('Activity Date *');
     fireEvent.keyDown(startDateInput, { key: 'Escape' });
 
-    expect(screen.getByText('2025-07-16')).toBeInTheDocument();
+    expect(screen.getByText('Jul 16, 2025')).toBeInTheDocument();
     expect(mockOnDateChange).not.toHaveBeenCalled();
   });
 

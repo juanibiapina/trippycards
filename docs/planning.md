@@ -38,7 +38,7 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] edit activity date
 - [x] edit activity optional end date
 - [x] fix mobile firefox issues
-- [ ] improve activity name editing (add cancel button and fix layout on small screens)
+- [x] improve activity name editing (add cancel button and fix layout on small screens)
 - [ ] improve date display (use default user's date format)
 - [ ] add event to google calendar (name, date, link to activity)
 - [ ] refactor
