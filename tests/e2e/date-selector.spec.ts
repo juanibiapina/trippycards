@@ -32,7 +32,7 @@ test.describe('Activity Date Selector', () => {
     await page.click('button:has-text("Save")');
 
     // Verify dates are displayed in the correct format
-    await expect(page.locator('text=2025-07-16 – 2025-07-18')).toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025 – Jul 18, 2025')).toBeVisible();
     await expect(page.locator('text=Select activity date')).not.toBeVisible();
     await expect(page.locator('text=Please select an activity date.')).not.toBeVisible();
 
@@ -40,7 +40,7 @@ test.describe('Activity Date Selector', () => {
     await page.reload();
 
     // Wait for page to load and verify dates persist
-    await expect(page.locator('text=2025-07-16 – 2025-07-18')).toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025 – Jul 18, 2025')).toBeVisible();
   });
 
   test('handles single date selection', async ({ page }) => {
@@ -63,8 +63,8 @@ test.describe('Activity Date Selector', () => {
     await page.click('button:has-text("Save")');
 
     // Verify only start date is displayed
-    await expect(page.locator('text=2025-07-16')).toBeVisible();
-    await expect(page.locator('text=2025-07-16 – 2025-07-18')).not.toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025 – Jul 18, 2025')).not.toBeVisible();
   });
 
   test('validates date selection', async ({ page }) => {
@@ -121,6 +121,6 @@ test.describe('Activity Date Selector', () => {
 
     // Verify we're back to the original state
     await expect(page.locator('text=Select activity date')).toBeVisible();
-    await expect(page.locator('text=2025-07-16 – 2025-07-18')).not.toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025 – Jul 18, 2025')).not.toBeVisible();
   });
 });
