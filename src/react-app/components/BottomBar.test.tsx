@@ -3,8 +3,16 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BottomBar from './BottomBar';
 
+interface Question {
+  id: string;
+  text: string;
+  createdAt: string;
+  createdBy: string;
+  responses: Record<string, 'yes' | 'no'>;
+}
+
 describe('BottomBar', () => {
-  const mockQuestions = [
+  const mockQuestions: Question[] = [
     {
       id: '1',
       text: 'Test question 1',
