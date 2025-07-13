@@ -5,8 +5,9 @@ interface ActivityHeaderProps {
   activityName?: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
   onNameUpdate: (name: string) => void;
-  onDateChange: (startDate: string, endDate?: string) => void;
+  onDateChange: (startDate: string, endDate?: string, startTime?: string) => void;
   disabled?: boolean;
 }
 
@@ -14,6 +15,7 @@ const ActivityHeader = ({
   activityName,
   startDate,
   endDate,
+  startTime,
   onNameUpdate,
   onDateChange,
   disabled = false
@@ -92,6 +94,7 @@ const ActivityHeader = ({
                 <DateSelector
                   startDate={startDate}
                   endDate={endDate}
+                  startTime={startTime}
                   onDateChange={onDateChange}
                   disabled={disabled}
                 />

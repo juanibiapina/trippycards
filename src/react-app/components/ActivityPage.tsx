@@ -54,9 +54,9 @@ const ActivityPage = () => {
     }
   }, [isConnected, updateName]);
 
-  const handleDateChange = useCallback((startDate: string, endDate?: string) => {
+  const handleDateChange = useCallback((startDate: string, endDate?: string, startTime?: string) => {
     if (!isConnected) return;
-    updateDates(startDate, endDate);
+    updateDates(startDate, endDate, startTime);
   }, [isConnected, updateDates]);
 
   const handleCreateQuestion = useCallback(async (e: React.FormEvent) => {
@@ -125,6 +125,7 @@ const ActivityPage = () => {
         activityName={activity?.name}
         startDate={activity?.startDate}
         endDate={activity?.endDate}
+        startTime={activity?.startTime}
         onNameUpdate={handleNameUpdate}
         onDateChange={handleDateChange}
         disabled={!isConnected}

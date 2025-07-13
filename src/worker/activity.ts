@@ -38,9 +38,10 @@ export class ActivityDO extends Server<Env> {
     await this.ctx.storage.put("activity", this.activity);
   }
 
-  async updateDates(startDate: string, endDate?: string) {
+  async updateDates(startDate: string, endDate?: string, startTime?: string) {
     this.activity.startDate = startDate;
     this.activity.endDate = endDate;
+    this.activity.startTime = startTime;
     await this.ctx.storage.put("activity", this.activity);
   }
 
@@ -74,11 +75,12 @@ export class ActivityDO extends Server<Env> {
         name: parsed.name,
       });
     } else if (parsed.type === "dates") {
-      await this.updateDates(parsed.startDate, parsed.endDate);
+      await this.updateDates(parsed.startDate, parsed.endDate, parsed.startTime);
       this.broadcastMessage({
         type: "dates",
         startDate: parsed.startDate,
         endDate: parsed.endDate,
+        startTime: parsed.startTime,
       });
     }
   }

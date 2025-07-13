@@ -2,6 +2,7 @@ export type Activity = {
   name?: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
   questions: Record<string, Question>;
 }
 
@@ -36,4 +37,5 @@ export type Message =
       type: "dates";
       startDate: string;
       endDate?: string;
+      startTime?: string;
     };

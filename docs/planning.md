@@ -48,7 +48,7 @@ User's can edit activity name and dates.
 
 Use the app to plan playing beach volleyball.
 
-- [ ] option to set a specific time
+- [x] option to set a specific time
 - [ ] hide questions feature
 - [ ] going: yes, no, maybe
 - [ ] shows who's going (with user pictures)

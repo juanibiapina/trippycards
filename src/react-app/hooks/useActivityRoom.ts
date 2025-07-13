@@ -8,7 +8,7 @@ interface UseActivityRoomResult {
   createQuestion: (text: string, userId: string) => void;
   submitVote: (questionId: string, vote: 'yes' | 'no', userId: string) => void;
   updateName: (name: string) => void;
-  updateDates: (startDate: string, endDate?: string) => void;
+  updateDates: (startDate: string, endDate?: string, startTime?: string) => void;
   loading: boolean;
 }
 
@@ -53,11 +53,12 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'dates') {
         setActivity(prev => {
-          if (!prev) return { startDate: message.startDate, endDate: message.endDate, questions: {} };
+          if (!prev) return { startDate: message.startDate, endDate: message.endDate, startTime: message.startTime, questions: {} };
           return {
             ...prev,
             startDate: message.startDate,
             endDate: message.endDate,
+            startTime: message.startTime,
           };
         });
       }
@@ -101,13 +102,14 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
-  const updateDates = useCallback((startDate: string, endDate?: string) => {
+  const updateDates = useCallback((startDate: string, endDate?: string, startTime?: string) => {
     if (!socket || !isConnected) return;
 
     socket.send(JSON.stringify({
       type: 'dates',
       startDate,
       endDate,
+      startTime,
     } satisfies Message));
   }, [socket, isConnected]);
 

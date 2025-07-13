@@ -202,4 +202,107 @@ test.describe('Activity Page', () => {
     await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
     await expect(page.locator('text=Jul 20, 2025')).not.toBeVisible();
   });
+
+  test('activity start time', async ({ page }) => {
+    // Generate a random activity ID for this test
+    const activityId = crypto.randomUUID();
+
+    // Navigate to activity page directly
+    await page.goto(`/activities/${activityId}`);
+
+    // Wait for activity page to load
+    await expect(page.locator('text=Create a new question')).toBeVisible();
+
+    // Step 1: First set a start date
+    const button = page.locator('button:has-text("Select date")');
+    await button.click();
+
+    // Set a start date
+    const dateInput = page.locator('input[type="date"]').first();
+    await dateInput.fill('2025-07-16');
+
+    // Verify start date is displayed
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+
+    // Step 2: Set start time
+    // Click on the date dropdown to access time options
+    const dropdownButton = page.locator('button[aria-label="Date options"]');
+    await dropdownButton.click();
+
+    // Click "Set start time" option
+    await page.click('text=Set start time');
+
+    // Wait for the time picker popup to appear
+    await expect(page.locator('text=Set Start Time')).toBeVisible();
+
+    // Find the time input in the popup and set the time
+    const timeInput = page.locator('input[type="time"]');
+    await timeInput.fill('14:30'); // 2:30 PM
+
+    // Click Save button
+    await page.click('text=Save');
+
+    // Wait for popup to close
+    await expect(page.locator('text=Set Start Time')).not.toBeVisible();
+
+    // Wait a bit for state to update
+    await page.waitForTimeout(1000);
+
+    // Verify time is displayed alongside date (format depends on locale, but should show time)
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    // Look for the time display more specifically - should be in the date/time section
+    await expect(page.locator('.group').locator('text=at')).toBeVisible(); // Should show "at [time]"
+    await expect(page.locator('.group').locator('text=2:30')).toBeVisible(); // Should show formatted time
+
+    // Step 3: Change the time
+    // Click on the time dropdown again
+    await dropdownButton.click();
+
+    // Click "Change start time" option
+    await page.click('text=Change start time');
+
+    // Wait for the time picker popup to appear
+    await expect(page.locator('text=Set Start Time')).toBeVisible();
+
+    // Change the time
+    await timeInput.fill('09:15'); // 9:15 AM
+
+    // Click Save button
+    await page.click('text=Save');
+
+    // Verify updated time is displayed
+    await expect(page.locator('text=9:15')).toBeVisible();
+
+    // Step 4: Remove start time
+    // Click on the dropdown again
+    await dropdownButton.click();
+
+    // Click "Remove start time" option
+    await page.click('text=Remove start time');
+
+    // Verify time is removed but date remains
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('.group').locator('text=at')).not.toBeVisible();
+    await expect(page.locator('.group').locator('text=9:15')).not.toBeVisible();
+
+    // Test persistence after setting time again
+    await dropdownButton.click();
+    await page.click('text=Set start time');
+
+    // Wait for the time picker popup to appear
+    await expect(page.locator('text=Set Start Time')).toBeVisible();
+
+    await timeInput.fill('16:00'); // 4:00 PM
+
+    // Click Save button
+    await page.click('text=Save');
+
+    // Verify time is displayed
+    await expect(page.locator('text=4:00')).toBeVisible();
+
+    // Reload page to test persistence
+    await page.reload();
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=4:00')).toBeVisible();
+  });
 });
