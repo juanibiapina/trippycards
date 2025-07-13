@@ -31,7 +31,7 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] fix websocket issue
 - [x] fix linking to trips
 
-### Milestone 3
+### Milestone 3 - Name and Dates
 
 - [x] define milestone 3
 - [x] Edit activity name
@@ -39,7 +39,8 @@ The first major milestone for this app is to organize our climbing trips, but la
 - [x] edit activity optional end date
 - [x] fix mobile firefox issues
 - [x] improve activity name editing (add cancel button and fix layout on small screens)
-- [ ] improve date display (use default user's date format)
+- [x] improve date display (use default user's date format)
+- [x] add option to set end date
 - [ ] add event to google calendar (name, date, link to activity)
 - [ ] refactor
 

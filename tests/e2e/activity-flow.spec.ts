@@ -158,33 +158,48 @@ test.describe('Activity Page', () => {
     // Wait for activity page to load
     await expect(page.locator('text=Create a new question')).toBeVisible();
 
-    // Verify the button is clickable and has proper accessibility
+    // Step 1: Select start date
     const button = page.locator('button:has-text("Select activity date")');
-
-    // Click on date selector button
     await button.click();
 
-    // Find the hidden date input and set a date
+    // Find the hidden date input and set a start date
     const dateInput = page.locator('input[type="date"]').first();
     await dateInput.fill('2025-07-16');
 
-    // Verify date is displayed in the correct format
+    // Verify start date is displayed
     await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
     await expect(page.locator('text=Select activity date')).not.toBeVisible();
 
-    // Change date to test updates
-    await dateInput.fill('2025-07-20');
-    await expect(page.locator('text=Jul 20, 2025')).toBeVisible();
-    await expect(page.locator('text=Jul 16, 2025')).not.toBeVisible();
+    // Step 2: Select end date
+    // Click on the date dropdown to access options
+    const dropdownButton = page.locator('button[aria-label="Date options"]');
+    await dropdownButton.click();
 
-    // Refresh page to test persistence
+    // Click "Set end date" option
+    await page.click('text=Set end date');
+
+    // Set the end date
+    const endDateInput = page.locator('input[type="date"]').nth(1);
+    await endDateInput.fill('2025-07-20');
+
+    // Verify date range is displayed
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=Jul 20, 2025')).toBeVisible();
+
+    // Step 3: Remove end date
+    // Click on the date dropdown again
+    await dropdownButton.click();
+
+    // Click "Remove end date" option
+    await page.click('text=Remove end date');
+
+    // Verify only start date is displayed (end date removed)
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=Jul 20, 2025')).not.toBeVisible();
+
+    // Test persistence after reload
     await page.reload();
-
-    // Wait for page to load and verify date persists
-    await expect(page.locator('text=Jul 20, 2025')).toBeVisible();
-
-    // Verify the input still has the correct value
-    const reloadedDateInput = page.locator('input[type="date"]').first();
-    await expect(reloadedDateInput).toHaveValue('2025-07-20');
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=Jul 20, 2025')).not.toBeVisible();
   });
 });
