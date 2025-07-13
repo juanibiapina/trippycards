@@ -66,7 +66,7 @@
     "db:reset": "dotenv -e .dev.vars -- npx prisma migrate reset",
     "generate": "dotenv -e .dev.vars -- npx prisma generate --no-engine",
     "studio": "dotenv -e .dev.vars -- npx prisma studio",
-    "test": "vitest",
+    "test": "vitest run --no-watch",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
