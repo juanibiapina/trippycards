@@ -5,7 +5,12 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [react(), cloudflare(), tailwindcss()],
+  plugins: [
+    react(),
+    // Only load cloudflare plugin when not in test mode to avoid file handle leaks
+    ...(process.env.NODE_ENV !== 'test' ? [cloudflare()] : []),
+    tailwindcss()
+  ],
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
