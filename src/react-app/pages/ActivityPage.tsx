@@ -1,10 +1,12 @@
-import { useEffect, useReducer, useCallback } from "react";
+import { useEffect, useReducer, useCallback, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import QuestionCard from "../components/QuestionCard";
 import ActivityHeader from "../components/ActivityHeader";
+import BottomBar from "../components/BottomBar";
+import OverviewModal from "../components/OverviewModal";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 interface QuestionFormState {
@@ -34,6 +36,7 @@ const ActivityPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
+  const [isOverviewOpen, setIsOverviewOpen] = useState(false);
 
   const [questionForm, dispatchQuestionForm] = useReducer(questionFormReducer, {
     text: '',
@@ -74,6 +77,14 @@ const ActivityPage = () => {
       dispatchQuestionForm({ type: 'SET_SUBMITTING', payload: false });
     }
   }, [questionForm.text, questionForm.isSubmitting, session, isConnected, createQuestion]);
+
+  const handleOverviewClick = useCallback(() => {
+    setIsOverviewOpen(true);
+  }, []);
+
+  const handleOverviewClose = useCallback(() => {
+    setIsOverviewOpen(false);
+  }, []);
 
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
@@ -120,7 +131,7 @@ const ActivityPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20"> {/* Added pb-20 for bottom bar space */}
       <ActivityHeader
         activityName={activity?.name}
         startDate={activity?.startDate}
@@ -179,6 +190,19 @@ const ActivityPage = () => {
           )}
         </div>
       </div>
+
+      {/* Bottom Bar */}
+      <BottomBar
+        questions={questions}
+        onOverviewClick={handleOverviewClick}
+      />
+
+      {/* Overview Modal */}
+      <OverviewModal
+        questions={questions}
+        isOpen={isOverviewOpen}
+        onClose={handleOverviewClose}
+      />
     </div>
   );
 };
