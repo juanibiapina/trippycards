@@ -2,7 +2,40 @@
 
 set -e
 
-npm run cf-typegen
-npm run generate
-npm run build
-npm run deploy
+print_step() {
+  gum style --foreground 212 --border thick --margin "1 0 0 0" --padding "0 4" --width $(($(tput cols) / 2)) "$1"
+}
+
+print_success() {
+  gum style --foreground 76 --border thick --padding "0 4" --width $(($(tput cols) / 2)) "✓ $1"
+}
+
+print_error() {
+  gum style --foreground 196 --border thick --padding "0 4" --width $(($(tput cols) / 2)) "✗ $1"
+}
+
+run_step() {
+    local command="$1"
+    local step_name="$2"
+
+    print_step "$step_name"
+
+    local start_time=$(date +%s)
+
+    if eval "$command"; then
+        local end_time=$(date +%s)
+        local duration=$((end_time - start_time))
+        print_success "$step_name completed in ${duration}s"
+        return 0
+    else
+        local end_time=$(date +%s)
+        local duration=$((end_time - start_time))
+        print_error "$step_name failed after ${duration}s"
+        return 1
+    fi
+}
+
+run_step "npm run cf-typegen"    "Generate worker types"   || exit 1
+run_step "npm run generate"     "Generate Prisma Client" || exit 1
+run_step "npm run build"        "Build"                  || exit 1
+run_step "npm run deploy"       "Deploy"                 || exit 1

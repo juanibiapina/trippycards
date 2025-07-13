@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 
 # Function to print colored output
 print_step() {
-    echo -e "\n${BLUE}=== $1 ===${NC}"
+    gum style --foreground 212 --border thick --padding "0 4" --width $(($(tput cols) / 2)) "$1"
 }
 
 print_success() {
@@ -28,8 +28,8 @@ print_warning() {
 
 # Function to run a step and track time
 run_step() {
-    local step_name="$1"
-    local command="$2"
+    local command="$1"
+    local step_name="$2"
 
     print_step "$step_name"
 
@@ -54,14 +54,14 @@ main() {
 
     local total_start_time=$(date +%s)
 
-    run_step "Generate worker types" "npm run cf-typegen" || exit 1
-    run_step "Generate Prisma Client" "npm run generate" || exit 1
-    run_step "TypeScript Check" "npx tsc --noEmit" || exit 1
-    run_step "ESLint" "npm run lint" || exit 1
-    run_step "Unit Tests" "npm run test" || exit 1
-    run_step "Integration Tests" "npm run test:e2e" || exit 1
-    run_step "Build" "npm run build" || exit 1
-    run_step "Deploy Dry Run" "npx wrangler deploy --dry-run" || exit 1
+    run_step "npm run cf-typegen"              "Generate worker types"   || exit 1
+    run_step "npm run generate"               "Generate Prisma Client" || exit 1
+    run_step "npx tsc --noEmit"               "TypeScript Check"       || exit 1
+    run_step "npm run lint"                   "ESLint"                 || exit 1
+    run_step "npm run test"                   "Unit Tests"             || exit 1
+    run_step "npm run test:e2e"               "Integration Tests"      || exit 1
+    run_step "npm run build"                  "Build"                  || exit 1
+    run_step "npx wrangler deploy --dry-run"  "Deploy Dry Run"         || exit 1
 
     local total_end_time=$(date +%s)
     local total_duration=$((total_end_time - total_start_time))
