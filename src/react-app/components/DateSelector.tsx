@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 
 interface DateSelectorProps {
   startDate?: string;
@@ -8,15 +8,7 @@ interface DateSelectorProps {
 }
 
 const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelectorProps) => {
-  const [showPicker, setShowPicker] = useState(false);
-  const [tempStartDate, setTempStartDate] = useState(startDate || '');
-  const [tempEndDate, setTempEndDate] = useState(endDate || '');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    setTempStartDate(startDate || '');
-    setTempEndDate(endDate || '');
-  }, [startDate, endDate]);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const formatDateToLocale = (dateString: string) => {
     if (!dateString) return '';
@@ -39,115 +31,28 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
     return `${formatDateToLocale(startDate)} – ${formatDateToLocale(endDate)}`;
   };
 
-  const handleDateSubmit = () => {
-    setError('');
-
-    if (!tempStartDate) {
-      setError('Please select an activity date.');
-      return;
-    }
-
-    if (tempEndDate && tempEndDate < tempStartDate) {
-      setError('End date cannot be before the activity date.');
-      return;
-    }
-
-    onDateChange(tempStartDate, tempEndDate || undefined);
-    setShowPicker(false);
+  const handleDateChange = (value: string) => {
+    onDateChange(value, endDate);
   };
 
-  const handleStartDateChange = (value: string) => {
-    setTempStartDate(value);
-  };
-
-  const handleEndDateChange = (value: string) => {
-    setTempEndDate(value);
-  };
-
-  const handleCancel = () => {
-    setTempStartDate(startDate || '');
-    setTempEndDate(endDate || '');
-    setError('');
-    setShowPicker(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleDateSubmit();
-    } else if (e.key === 'Escape') {
-      handleCancel();
+  const handleButtonClick = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker();
     }
   };
-
-  if (showPicker) {
-    return (
-      <div className="space-y-4">
-        <div className="bg-white border border-gray-300 rounded-lg p-4 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-1">
-                Activity Date *
-              </label>
-              <input
-                type="date"
-                id="start-date"
-                value={tempStartDate}
-                onChange={(e) => handleStartDateChange(e.target.value)}
-                onInput={(e) => handleStartDateChange((e.target as HTMLInputElement).value)}
-                onBlur={(e) => handleStartDateChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
-                disabled={disabled}
-                autoFocus
-              />
-            </div>
-            <div>
-              <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-1">
-                End Date (Optional)
-              </label>
-              <input
-                type="date"
-                id="end-date"
-                value={tempEndDate}
-                onChange={(e) => handleEndDateChange(e.target.value)}
-                onInput={(e) => handleEndDateChange((e.target as HTMLInputElement).value)}
-                onBlur={(e) => handleEndDateChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
-                disabled={disabled}
-              />
-            </div>
-          </div>
-          {error && (
-            <div className="mt-2 text-sm text-red-600" role="alert">
-              {error}
-            </div>
-          )}
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              onClick={handleCancel}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-              disabled={disabled}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDateSubmit}
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:bg-gray-400"
-              disabled={disabled}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="relative flex items-center gap-2">
+      <input
+        ref={dateInputRef}
+        type="date"
+        value={startDate || ''}
+        onChange={(e) => handleDateChange(e.target.value)}
+        disabled={disabled}
+        className="absolute opacity-0 pointer-events-none"
+      />
       <button
-        onClick={() => setShowPicker(true)}
+        onClick={handleButtonClick}
         className="group flex items-center gap-2 text-gray-300 hover:text-blue-200 transition-colors disabled:text-gray-400"
         disabled={disabled}
         aria-label="Select activity date"
@@ -170,11 +75,6 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
           {formatDateRange() || 'Select activity date'}
         </span>
       </button>
-      {!startDate && (
-        <div className="text-sm text-red-600" role="alert">
-          Please select an activity date.
-        </div>
-      )}
     </div>
   );
 };

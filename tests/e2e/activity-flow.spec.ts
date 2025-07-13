@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Activity Integration Flow', () => {
+test.describe('Activity Page', () => {
   test('creates activity, adds question, and votes', async ({ page }) => {
     // Navigate to home page
     await page.goto('/');
@@ -146,5 +146,45 @@ test.describe('Activity Integration Flow', () => {
     // Verify edit mode is closed again
     await expect(page.locator('text=Click to name this activity')).toBeVisible();
     await expect(page.locator('input[placeholder="Enter activity name"]')).not.toBeVisible();
+  });
+
+  test('activity date', async ({ page }) => {
+    // Generate a random activity ID for this test
+    const activityId = crypto.randomUUID();
+
+    // Navigate to activity page directly
+    await page.goto(`/activities/${activityId}`);
+
+    // Wait for activity page to load
+    await expect(page.locator('text=Create a new question')).toBeVisible();
+
+    // Verify the button is clickable and has proper accessibility
+    const button = page.locator('button:has-text("Select activity date")');
+
+    // Click on date selector button
+    await button.click();
+
+    // Find the hidden date input and set a date
+    const dateInput = page.locator('input[type="date"]').first();
+    await dateInput.fill('2025-07-16');
+
+    // Verify date is displayed in the correct format
+    await expect(page.locator('text=Jul 16, 2025')).toBeVisible();
+    await expect(page.locator('text=Select activity date')).not.toBeVisible();
+
+    // Change date to test updates
+    await dateInput.fill('2025-07-20');
+    await expect(page.locator('text=Jul 20, 2025')).toBeVisible();
+    await expect(page.locator('text=Jul 16, 2025')).not.toBeVisible();
+
+    // Refresh page to test persistence
+    await page.reload();
+
+    // Wait for page to load and verify date persists
+    await expect(page.locator('text=Jul 20, 2025')).toBeVisible();
+
+    // Verify the input still has the correct value
+    const reloadedDateInput = page.locator('input[type="date"]').first();
+    await expect(reloadedDateInput).toHaveValue('2025-07-20');
   });
 });
