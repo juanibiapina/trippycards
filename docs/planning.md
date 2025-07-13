@@ -33,7 +33,15 @@ The first major milestone for this app is to organize our climbing trips, but la
 
 ### Milestone 3
 
-- [ ] define milestone 3
+- [x] define milestone 3
+- [x] Edit activity name
+- [x] edit activity date
+- [x] edit activity optional end date
+- [x] fix mobile firefox issues
+- [ ] improve activity name editing (add cancel button and fix layout on small screens)
+- [ ] improve date display (use default user's date format)
+- [ ] add event to google calendar (name, date, link to activity)
+- [ ] refactor
 
 ### Milestone X - It can be used to plan a climbing trip
 
@@ -41,6 +49,8 @@ The app can be used to plan a climbing trip.
 
 ### Unrefined backlog
 
+- [ ] maintenance: fix vitest unit tests timeout
+- [ ] use an icon pack to replace AI drawn svgs
 - [ ] Unify frontend and backend models using zod
 - [ ] Choose color scheme with Tailwind
   - https://tailwindpalette.app/
