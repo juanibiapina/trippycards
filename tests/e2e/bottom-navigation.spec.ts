@@ -11,23 +11,30 @@ test.describe('Bottom Navigation Bar', () => {
     // Click New Activity button
     await page.click('text=New Activity');
 
-    // Wait for activity page to load
+    // Wait for activity page to load (should redirect to questions)
     await expect(page.locator('text=Create a new question')).toBeVisible();
 
     // Check that the bottom navigation bar is present
     const overviewButton = page.getByRole('button', { name: 'Overview' });
+    const questionsButton = page.getByRole('button', { name: 'Questions' });
+
     await expect(overviewButton).toBeVisible();
+    await expect(questionsButton).toBeVisible();
 
     // Check that the bottom bar has proper styling
     const bottomBar = page.locator('[class*="fixed"][class*="bottom-0"]');
     await expect(bottomBar).toBeVisible();
 
-    // Check that the bottom bar contains the Overview icon
-    await expect(bottomBar.locator('svg')).toBeVisible();
+    // Check that the bottom bar contains both navigation icons
+    await expect(bottomBar.locator('svg')).toHaveCount(2);
 
     // Check that the Overview button can be clicked
     await overviewButton.click();
-    // Should not throw any errors
+    await expect(page.locator('text=Overview is coming soon!')).toBeVisible();
+
+    // Check that the Questions button can be clicked
+    await questionsButton.click();
+    await expect(page.locator('text=Create a new question')).toBeVisible();
   });
 
   test('bottom navigation bar does not interfere with content', async ({ page }) => {
@@ -53,7 +60,10 @@ test.describe('Bottom Navigation Bar', () => {
 
     // Check that the bottom navigation bar is present
     const overviewButton = page.getByRole('button', { name: 'Overview' });
+    const questionsButton = page.getByRole('button', { name: 'Questions' });
+
     await expect(overviewButton).toBeVisible();
+    await expect(questionsButton).toBeVisible();
 
     // Check that the question is still visible and not covered by the bottom bar
     const questionCard = page.locator(`text=${questionText}`);
