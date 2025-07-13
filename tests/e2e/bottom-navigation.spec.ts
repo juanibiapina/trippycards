@@ -17,7 +17,7 @@ test.describe('Bottom Navigation Bar', () => {
     // Check that the bottom navigation bar is present
     const overviewButton = page.getByRole('button', { name: 'Overview' });
     const questionsButton = page.getByRole('button', { name: 'Questions' });
-    
+
     await expect(overviewButton).toBeVisible();
     await expect(questionsButton).toBeVisible();
 
@@ -31,7 +31,7 @@ test.describe('Bottom Navigation Bar', () => {
     // Check that the Overview button can be clicked
     await overviewButton.click();
     await expect(page.locator('text=Overview is coming soon!')).toBeVisible();
-    
+
     // Check that the Questions button can be clicked
     await questionsButton.click();
     await expect(page.locator('text=Create a new question')).toBeVisible();
@@ -61,7 +61,7 @@ test.describe('Bottom Navigation Bar', () => {
     // Check that the bottom navigation bar is present
     const overviewButton = page.getByRole('button', { name: 'Overview' });
     const questionsButton = page.getByRole('button', { name: 'Questions' });
-    
+
     await expect(overviewButton).toBeVisible();
     await expect(questionsButton).toBeVisible();
 
