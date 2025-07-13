@@ -41,6 +41,14 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
     setShowPicker(false);
   };
 
+  const handleStartDateChange = (value: string) => {
+    setTempStartDate(value);
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setTempEndDate(value);
+  };
+
   const handleCancel = () => {
     setTempStartDate(startDate || '');
     setTempEndDate(endDate || '');
@@ -69,7 +77,9 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
                 type="date"
                 id="start-date"
                 value={tempStartDate}
-                onChange={(e) => setTempStartDate(e.target.value)}
+                onChange={(e) => handleStartDateChange(e.target.value)}
+                onInput={(e) => handleStartDateChange((e.target as HTMLInputElement).value)}
+                onBlur={(e) => handleStartDateChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 disabled={disabled}
@@ -84,7 +94,9 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
                 type="date"
                 id="end-date"
                 value={tempEndDate}
-                onChange={(e) => setTempEndDate(e.target.value)}
+                onChange={(e) => handleEndDateChange(e.target.value)}
+                onInput={(e) => handleEndDateChange((e.target as HTMLInputElement).value)}
+                onBlur={(e) => handleEndDateChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 disabled={disabled}
