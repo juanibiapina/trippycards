@@ -81,7 +81,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
                 onInput={(e) => handleStartDateChange((e.target as HTMLInputElement).value)}
                 onBlur={(e) => handleStartDateChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                 disabled={disabled}
                 autoFocus
               />
@@ -98,7 +98,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
                 onInput={(e) => handleEndDateChange((e.target as HTMLInputElement).value)}
                 onBlur={(e) => handleEndDateChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                 disabled={disabled}
               />
             </div>
@@ -133,12 +133,12 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
     <div className="flex items-center gap-2">
       <button
         onClick={() => setShowPicker(true)}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors disabled:text-gray-400"
+        className="group flex items-center gap-2 text-gray-300 hover:text-gray-800 transition-colors disabled:text-gray-400"
         disabled={disabled}
         aria-label="Select activity date"
       >
         <svg
-          className="w-5 h-5"
+          className="w-5 h-5 group-hover:text-white"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <span className="text-sm">
+        <span className="text-sm group-hover:text-white">
           {formatDateRange() || 'Select activity date'}
         </span>
       </button>
