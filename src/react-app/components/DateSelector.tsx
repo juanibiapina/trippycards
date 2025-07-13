@@ -118,7 +118,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
             </button>
             <button
               onClick={handleDateSubmit}
-              className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-800 text-white rounded-md transition-colors disabled:bg-gray-400"
+              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:bg-gray-400"
               disabled={disabled}
             >
               Save
@@ -133,12 +133,12 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
     <div className="flex items-center gap-2">
       <button
         onClick={() => setShowPicker(true)}
-        className="group flex items-center gap-2 text-gray-300 hover:text-gray-800 transition-colors disabled:text-gray-400"
+        className="group flex items-center gap-2 text-gray-300 hover:text-blue-200 transition-colors disabled:text-gray-400"
         disabled={disabled}
         aria-label="Select activity date"
       >
         <svg
-          className="w-5 h-5 group-hover:text-white"
+          className="w-5 h-5 group-hover:text-blue-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ const DateSelector = ({ startDate, endDate, onDateChange, disabled }: DateSelect
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <span className="text-sm group-hover:text-white">
+        <span className="text-sm group-hover:text-blue-200">
           {formatDateRange() || 'Select activity date'}
         </span>
       </button>
