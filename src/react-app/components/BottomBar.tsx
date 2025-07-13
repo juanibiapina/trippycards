@@ -1,11 +1,11 @@
-import { FiHome } from "react-icons/fi";
+import { FiHome, FiHelpCircle } from "react-icons/fi";
+import { useNavigate, useParams, useLocation } from "react-router";
 
 interface NavigationItem {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  action: () => void;
-  isActive?: boolean;
+  path: string;
 }
 
 interface BottomBarProps {
@@ -13,23 +13,38 @@ interface BottomBarProps {
 }
 
 const BottomBar = ({ className = "" }: BottomBarProps) => {
-  const handleOverviewClick = () => {
-    // For now, this is a no-op since we're already on the Activity page
-    // showing the questions list. In the future, this could scroll to top
-    // or refresh the view.
+  const navigate = useNavigate();
+  const params = useParams<{ activityId: string }>();
+  const location = useLocation();
+
+  const handleNavigation = (path: string) => {
+    if (params.activityId) {
+      navigate(`/activities/${params.activityId}/${path}`);
+    }
   };
 
-  // Navigation items structure - ready for future expansion
+  // Navigation items structure
   const navigationItems: NavigationItem[] = [
     {
       id: 'overview',
       label: 'Overview',
       icon: FiHome,
-      action: handleOverviewClick,
-      isActive: true, // Currently the only item, so always active
+      path: 'overview',
     },
-    // Future items can be added here
+    {
+      id: 'questions',
+      label: 'Questions',
+      icon: FiHelpCircle,
+      path: 'questions',
+    },
   ];
+
+  const getCurrentPath = () => {
+    const pathSegments = location.pathname.split('/');
+    return pathSegments[pathSegments.length - 1];
+  };
+
+  const currentPath = getCurrentPath();
 
   return (
     <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg ${className}`}>
@@ -37,12 +52,14 @@ const BottomBar = ({ className = "" }: BottomBarProps) => {
         <div className="flex space-x-8">
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
+            const isActive = currentPath === item.path;
+
             return (
               <button
                 key={item.id}
-                onClick={item.action}
+                onClick={() => handleNavigation(item.path)}
                 className={`flex flex-col items-center justify-center min-w-[44px] min-h-[44px] p-2 rounded-lg transition-colors ${
-                  item.isActive
+                  isActive
                     ? 'text-gray-800 bg-gray-100'
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                 }`}
