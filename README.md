@@ -33,6 +33,8 @@ A full-stack web application built with React and Cloudflare Workers for managin
 - `npm test` - Run unit tests with Vitest
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:e2e` - Run end-to-end tests with Playwright
+  - Tests run across multiple browsers: Desktop Chrome, Firefox, Safari, and Chrome Mobile (Pixel 5)
+  - Chrome Mobile configuration includes touch support and mobile viewport for mobile testing
 
 ## Deployment
 
