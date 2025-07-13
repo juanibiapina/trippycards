@@ -19,6 +19,7 @@
     "@hono/auth-js": "^1.0.17",
     "@prisma/extension-accelerate": "^2.0.2",
     "@tailwindcss/vite": "^4.1.11",
+    "googleapis": "^152.0.0",
     "hono": "^4.8.4",
     "hono-party": "^0.0.13",
     "partyserver": "^0.0.72",

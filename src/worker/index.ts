@@ -5,6 +5,7 @@ import Google from '@auth/core/providers/google'
 import { handleMockSignIn } from './test-helpers'
 import { partyserverMiddleware } from "hono-party";
 import { persistUser } from "./user";
+import { createGoogleCalendarEvent } from "../lib/googleCalendar";
 
 export { ActivityDO } from "./activity";
 
@@ -31,12 +32,11 @@ app.use(
       Google({
         clientId: c.env.GOOGLE_CLIENT_ID,
         clientSecret: c.env.GOOGLE_CLIENT_SECRET,
-        // The following block is useful for testing the entire flow in development
-        //authorization: {
-        //  params: {
-        //    prompt: "consent",
-        //  },
-        //},
+        authorization: {
+          params: {
+            scope: 'openid email profile https://www.googleapis.com/auth/calendar.events',
+          },
+        },
       }),
     ],
     callbacks: {
@@ -58,5 +58,42 @@ app.use('/api/auth/*', authHandler())
 
 // Verify authentication for all API routes
 app.use('/api/*', verifyAuth())
+
+// Google Calendar API route
+app.post('/api/createGoogleCalendarEvent', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { activityName, date, activityUrl, accessToken } = body;
+
+    // Validate required fields
+    if (!activityName || !date || !activityUrl || !accessToken) {
+      return c.json({
+        error: 'Missing required fields: activityName, date, activityUrl, accessToken'
+      }, 400);
+    }
+
+    // Create the calendar event
+    const result = await createGoogleCalendarEvent(accessToken, {
+      activityName,
+      date,
+      activityUrl
+    });
+
+    if (result.success) {
+      return c.json({
+        success: true,
+        eventId: result.eventId,
+        eventUrl: result.eventUrl
+      });
+    } else {
+      return c.json({ error: result.error }, 500);
+    }
+  } catch (error) {
+    console.error('Error in createGoogleCalendarEvent API:', error);
+    return c.json({
+      error: 'Internal server error'
+    }, 500);
+  }
+});
 
 export default app;

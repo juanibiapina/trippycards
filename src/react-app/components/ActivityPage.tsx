@@ -5,6 +5,7 @@ import LoadingCard from "./LoadingCard";
 import Card from "./Card";
 import QuestionCard from "./QuestionCard";
 import DateSelector from "./DateSelector";
+import GoogleCalendarEventButton from "./GoogleCalendarEventButton";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 const ActivityPage = () => {
@@ -150,12 +151,21 @@ const ActivityPage = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <h1
-                    className="text-2xl sm:text-3xl font-bold cursor-pointer hover:text-blue-200 transition-colors break-words"
-                    onClick={handleNameClick}
-                  >
-                    {activity?.name || "Click to name this activity"}
-                  </h1>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <h1
+                      className="text-2xl sm:text-3xl font-bold cursor-pointer hover:text-blue-200 transition-colors break-words"
+                      onClick={handleNameClick}
+                    >
+                      {activity?.name || "Click to name this activity"}
+                    </h1>
+                    <div className="flex-shrink-0">
+                      <GoogleCalendarEventButton
+                        activityName={activity?.name || ''}
+                        defaultDate={activity?.startDate || ''}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
                   <DateSelector
                     startDate={activity?.startDate}
                     endDate={activity?.endDate}
