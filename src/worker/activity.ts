@@ -38,6 +38,12 @@ export class ActivityDO extends Server<Env> {
     await this.ctx.storage.put("activity", this.activity);
   }
 
+  async updateDates(startDate: string, endDate?: string) {
+    this.activity.startDate = startDate;
+    this.activity.endDate = endDate;
+    await this.ctx.storage.put("activity", this.activity);
+  }
+
   async onStart() {
     this.activity = await this.ctx.storage.get<Activity>("activity") || { questions: {} };
   }
@@ -66,6 +72,13 @@ export class ActivityDO extends Server<Env> {
       this.broadcastMessage({
         type: "name",
         name: parsed.name,
+      });
+    } else if (parsed.type === "dates") {
+      await this.updateDates(parsed.startDate, parsed.endDate);
+      this.broadcastMessage({
+        type: "dates",
+        startDate: parsed.startDate,
+        endDate: parsed.endDate,
       });
     }
   }

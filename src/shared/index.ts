@@ -1,5 +1,7 @@
 export type Activity = {
   name?: string;
+  startDate?: string;
+  endDate?: string;
   questions: Record<string, Question>;
 }
 
@@ -29,4 +31,9 @@ export type Message =
   | {
       type: "name";
       name: string;
+    }
+  | {
+      type: "dates";
+      startDate: string;
+      endDate?: string;
     };
