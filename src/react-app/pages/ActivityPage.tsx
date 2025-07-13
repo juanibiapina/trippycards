@@ -6,6 +6,7 @@ import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import QuestionCard from "../components/QuestionCard";
 import ActivityHeader from "../components/ActivityHeader";
+import BottomBar from "../components/BottomBar";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 
 interface QuestionFormState {
@@ -130,8 +131,8 @@ const ActivityPage = () => {
         disabled={!isConnected}
       />
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto p-4 space-y-6">
+      {/* Content with bottom padding to account for fixed bottom bar */}
+      <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
         {/* Create Question Form */}
         <Card>
           <form onSubmit={handleCreateQuestion} className="space-y-4">
@@ -178,6 +179,9 @@ const ActivityPage = () => {
           )}
         </div>
       </div>
+
+      {/* Bottom Navigation Bar */}
+      <BottomBar />
     </div>
   );
 };

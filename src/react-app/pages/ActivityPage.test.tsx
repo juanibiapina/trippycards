@@ -44,6 +44,9 @@ describe('ActivityPage', () => {
     // Check that the title is displayed
     expect(screen.getByText('Test Activity')).toBeInTheDocument();
 
+    // Check that the bottom bar is rendered
+    expect(screen.getByRole('button', { name: 'Overview' })).toBeInTheDocument();
+
     // Click on the title to edit
     await user.click(screen.getByText('Test Activity'));
 
