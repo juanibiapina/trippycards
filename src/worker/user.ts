@@ -31,8 +31,5 @@ export async function persistUser(user: User, profile: Profile | undefined, data
   } catch (error) {
     console.error('Failed to persist user:', error);
     // Don't throw error to avoid breaking the sign-in flow
-  } finally {
-    // Always disconnect the Prisma client to clean up connections
-    await prisma.$disconnect();
   }
 }
