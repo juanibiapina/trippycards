@@ -14,28 +14,40 @@ vi.mock('partyserver', () => ({
 const { ActivityDO } = await import('./activity');
 
 // Mock the partyserver types
-const mockConnection = {
-  send: vi.fn(),
-} as any;
+interface MockConnection {
+  send: ReturnType<typeof vi.fn>;
+}
 
-const mockContext = {
+interface MockContext {
+  storage: {
+    get: ReturnType<typeof vi.fn>;
+    put: ReturnType<typeof vi.fn>;
+  };
+}
+
+const mockConnection: MockConnection = {
+  send: vi.fn(),
+};
+
+const mockContext: MockContext = {
   storage: {
     get: vi.fn(),
     put: vi.fn(),
   },
-} as any;
+};
 
 // Create a test environment for ActivityDO
 class TestActivityDO extends ActivityDO {
   constructor() {
-    super(mockContext, {});
-    // Ensure ctx is properly set
-    this.ctx = mockContext;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    super(mockContext as any, {} as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.ctx = mockContext as any;
   }
 
   // Expose broadcast method for testing
   public testBroadcast = vi.fn();
-  
+
   broadcast(message: string, exclude?: string[]) {
     this.testBroadcast(message, exclude);
   }
@@ -48,10 +60,10 @@ describe('ActivityDO Card CRUD Operations', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     activityDO = new TestActivityDO();
-    
+
     // Initialize with empty activity
     activityDO.activity = createEmptyActivity();
-    
+
     mockCard = {
       id: 'card-1',
       type: 'link',
@@ -101,7 +113,7 @@ describe('ActivityDO Card CRUD Operations', () => {
   describe('updateCard', () => {
     it('should update an existing card', async () => {
       activityDO.activity.cards = [mockCard];
-      
+
       const updatedCard: LinkCard = {
         ...mockCard,
         title: 'Updated Title',
@@ -116,7 +128,7 @@ describe('ActivityDO Card CRUD Operations', () => {
 
     it('should not update if card does not exist', async () => {
       activityDO.activity.cards = [mockCard];
-      
+
       const nonExistentCard: LinkCard = {
         ...mockCard,
         id: 'non-existent',
@@ -195,7 +207,8 @@ describe('ActivityDO Card CRUD Operations', () => {
         card: mockCard,
       });
 
-      await activityDO.onMessage(mockConnection, message);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activityDO.onMessage(mockConnection as any, message);
 
       expect(activityDO.activity.cards).toHaveLength(1);
       expect(activityDO.activity.cards![0]).toEqual(mockCard);
@@ -211,7 +224,7 @@ describe('ActivityDO Card CRUD Operations', () => {
 
     it('should handle card-update message', async () => {
       activityDO.activity.cards = [mockCard];
-      
+
       const updatedCard: LinkCard = {
         ...mockCard,
         title: 'Updated Title',
@@ -222,7 +235,8 @@ describe('ActivityDO Card CRUD Operations', () => {
         card: updatedCard,
       });
 
-      await activityDO.onMessage(mockConnection, message);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activityDO.onMessage(mockConnection as any, message);
 
       expect(activityDO.activity.cards![0]).toEqual(updatedCard);
       expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
@@ -243,7 +257,8 @@ describe('ActivityDO Card CRUD Operations', () => {
         cardId: 'card-1',
       });
 
-      await activityDO.onMessage(mockConnection, message);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activityDO.onMessage(mockConnection as any, message);
 
       expect(activityDO.activity.cards).toHaveLength(0);
       expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
