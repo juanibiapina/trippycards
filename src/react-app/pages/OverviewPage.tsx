@@ -101,20 +101,20 @@ const OverviewPage = () => {
 
       {/* Content with bottom padding to account for fixed bottom bar */}
       <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
-        <Card>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
-            >
-              <FiPlus size={16} />
-              <span>Create Card</span>
-            </button>
-          </div>
+        {/* Cards Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
+          >
+            <FiPlus size={16} />
+            <span>Create Card</span>
+          </button>
+        </div>
 
-          <CardsList cards={cards} />
-        </Card>
+        {/* Cards List */}
+        <CardsList cards={cards} />
 
         <CardCreationModal
           isOpen={isCreateModalOpen}
