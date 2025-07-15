@@ -5,6 +5,14 @@ export interface Card {
   updatedAt: string;
 }
 
+export interface LinkCard extends Card {
+  type: 'link';
+  url: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;

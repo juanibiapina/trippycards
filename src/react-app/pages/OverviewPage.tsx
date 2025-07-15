@@ -1,19 +1,42 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
-import { FiAlertTriangle } from "react-icons/fi";
+import { FiAlertTriangle, FiPlus } from "react-icons/fi";
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
 import BottomBar from "../components/BottomBar";
+import CardCreationModal from "../components/cards/CardCreationModal";
+import CardsList from "../components/cards/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
+import { Card as CardType, LinkCard } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [cards, setCards] = useState<CardType[]>([]);
 
   const { activity, loading, updateName, updateDates, isConnected } = useActivityRoom(params.activityId || '');
+
+  // Initialize cards from activity when it loads
+  useEffect(() => {
+    if (activity?.cards) {
+      setCards(activity.cards);
+    }
+  }, [activity]);
+
+  const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newCard: LinkCard = {
+      ...cardData,
+      id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setCards(prev => [...prev, newCard]);
+  };
 
   const handleNameUpdate = (name: string) => {
     if (isConnected) {
@@ -78,11 +101,26 @@ const OverviewPage = () => {
 
       {/* Content with bottom padding to account for fixed bottom bar */}
       <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
-        <Card>
-          <div className="text-center text-gray-600 py-8">
-            <p className="text-lg">Overview is coming soon!</p>
-          </div>
-        </Card>
+        {/* Cards Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
+          >
+            <FiPlus size={16} />
+            <span>Create Card</span>
+          </button>
+        </div>
+
+        {/* Cards List */}
+        <CardsList cards={cards} />
+
+        <CardCreationModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreateCard={handleCreateCard}
+        />
       </div>
 
       {/* Bottom Navigation Bar */}

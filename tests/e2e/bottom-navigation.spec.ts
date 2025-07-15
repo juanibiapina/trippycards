@@ -30,7 +30,7 @@ test.describe('Bottom Navigation Bar', () => {
 
     // Check that the Overview button can be clicked
     await overviewButton.click();
-    await expect(page.locator('text=Overview is coming soon!')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
 
     // Check that the Questions button can be clicked
     await questionsButton.click();
