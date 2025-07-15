@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, LinkCard as LinkCardType } from '../../../shared';
 import LinkCard from './LinkCard';
+import CardComponent from '../Card';
 
 interface CardsListProps {
   cards: Card[];
@@ -23,12 +24,18 @@ export const CardsList: React.FC<CardsListProps> = ({ cards }) => {
       {cards.map((card) => {
         switch (card.type) {
           case 'link':
-            return <LinkCard key={card.id} card={card as LinkCardType} />;
+            return (
+              <CardComponent key={card.id}>
+                <LinkCard card={card as LinkCardType} />
+              </CardComponent>
+            );
           default:
             return (
-              <div key={card.id} className="p-4 border rounded-lg bg-gray-50">
-                <p className="text-gray-600">Unknown card type: {card.type}</p>
-              </div>
+              <CardComponent key={card.id}>
+                <div className="p-4 border rounded-lg bg-gray-50">
+                  <p className="text-gray-600">Unknown card type: {card.type}</p>
+                </div>
+              </CardComponent>
             );
         }
       })}
