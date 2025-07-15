@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import CardCreationModal from './CardCreationModal';
-import { LinkCard } from '../../../shared';
 
 describe('CardCreationModal', () => {
   const mockOnClose = vi.fn();
@@ -154,7 +153,7 @@ describe('CardCreationModal', () => {
 
     const urlInput = screen.getByLabelText('URL *') as HTMLInputElement;
     fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
-    
+
     fireEvent.click(screen.getByText('Cancel'));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
 

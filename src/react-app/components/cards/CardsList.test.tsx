@@ -6,7 +6,7 @@ import { Card, LinkCard } from '../../../shared';
 describe('CardsList', () => {
   it('renders empty state when no cards', () => {
     render(<CardsList cards={[]} />);
-    
+
     expect(screen.getByText('No cards yet')).toBeInTheDocument();
     expect(screen.getByText('Create your first card to get started')).toBeInTheDocument();
   });
@@ -23,7 +23,7 @@ describe('CardsList', () => {
     };
 
     render(<CardsList cards={[linkCard]} />);
-    
+
     expect(screen.getByText('Example Title')).toBeInTheDocument();
     expect(screen.getByText('Example description')).toBeInTheDocument();
     expect(screen.getByText('https://example.com')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('CardsList', () => {
     };
 
     render(<CardsList cards={[unknownCard]} />);
-    
+
     expect(screen.getByText('Unknown card type: unknown')).toBeInTheDocument();
   });
 
@@ -63,7 +63,7 @@ describe('CardsList', () => {
     ];
 
     render(<CardsList cards={cards} />);
-    
+
     expect(screen.getByText('Title 1')).toBeInTheDocument();
     expect(screen.getByText('Title 2')).toBeInTheDocument();
     expect(screen.getByText('https://example1.com')).toBeInTheDocument();
