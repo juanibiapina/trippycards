@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
-import type { Activity, Question, Message } from '../../shared';
+import type { Activity, Question, Message, Card } from '../../shared';
 import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
@@ -10,6 +10,9 @@ interface UseActivityRoomResult {
   submitVote: (questionId: string, vote: 'yes' | 'no', userId: string) => void;
   updateName: (name: string) => void;
   updateDates: (startDate: string, endDate?: string, startTime?: string) => void;
+  createCard: (card: Card) => void;
+  updateCard: (card: Card) => void;
+  deleteCard: (cardId: string) => void;
   loading: boolean;
 }
 
@@ -60,6 +63,32 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
             startDate: message.startDate,
             endDate: message.endDate,
             startTime: message.startTime,
+          };
+        });
+      } else if (message.type === 'card-create') {
+        setActivity(prev => {
+          if (!prev) return { ...createEmptyActivity(), cards: [message.card] };
+          return {
+            ...prev,
+            cards: [...(prev.cards || []), message.card],
+          };
+        });
+      } else if (message.type === 'card-update') {
+        setActivity(prev => {
+          if (!prev) return createEmptyActivity();
+          return {
+            ...prev,
+            cards: (prev.cards || []).map(card =>
+              card.id === message.card.id ? message.card : card
+            ),
+          };
+        });
+      } else if (message.type === 'card-delete') {
+        setActivity(prev => {
+          if (!prev) return createEmptyActivity();
+          return {
+            ...prev,
+            cards: (prev.cards || []).filter(card => card.id !== message.cardId),
           };
         });
       }
@@ -114,6 +143,33 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
+  const createCard = useCallback((card: Card) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'card-create',
+      card,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
+  const updateCard = useCallback((card: Card) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'card-update',
+      card,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
+  const deleteCard = useCallback((cardId: string) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'card-delete',
+      cardId,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
   return {
     activity,
     isConnected,
@@ -121,6 +177,9 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     submitVote,
     updateName,
     updateDates,
+    createCard,
+    updateCard,
+    deleteCard,
     loading,
   };
 }

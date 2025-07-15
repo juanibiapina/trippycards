@@ -58,4 +58,16 @@ export type Message =
       startDate: string;
       endDate?: string;
       startTime?: string;
+    }
+  | {
+      type: "card-create";
+      card: Card;
+    }
+  | {
+      type: "card-update";
+      card: Card;
+    }
+  | {
+      type: "card-delete";
+      cardId: string;
     };

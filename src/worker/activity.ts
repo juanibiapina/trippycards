@@ -4,7 +4,7 @@ import {
   type WSMessage,
 } from "partyserver";
 
-import type { Activity, Question, Message } from "../shared";
+import type { Activity, Question, Message, Card } from "../shared";
 import { createEmptyActivity } from "../shared";
 
 export class ActivityDO extends Server<Env> {
@@ -14,6 +14,34 @@ export class ActivityDO extends Server<Env> {
 
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
+  }
+
+  async addCard(card: Card) {
+    if (!this.activity.cards) {
+      this.activity.cards = [];
+    }
+    this.activity.cards.push(card);
+    await this.ctx.storage.put("activity", this.activity);
+  }
+
+  async updateCard(updatedCard: Card) {
+    if (!this.activity.cards) {
+      this.activity.cards = [];
+      return;
+    }
+    const index = this.activity.cards.findIndex(card => card.id === updatedCard.id);
+    if (index !== -1) {
+      this.activity.cards[index] = updatedCard;
+      await this.ctx.storage.put("activity", this.activity);
+    }
+  }
+
+  async deleteCard(cardId: string) {
+    if (!this.activity.cards) {
+      return;
+    }
+    this.activity.cards = this.activity.cards.filter(card => card.id !== cardId);
+    await this.ctx.storage.put("activity", this.activity);
   }
 
   async addQuestion(question: Question) {
@@ -82,6 +110,24 @@ export class ActivityDO extends Server<Env> {
         startDate: parsed.startDate,
         endDate: parsed.endDate,
         startTime: parsed.startTime,
+      });
+    } else if (parsed.type === "card-create") {
+      await this.addCard(parsed.card);
+      this.broadcastMessage({
+        type: "card-create",
+        card: parsed.card,
+      });
+    } else if (parsed.type === "card-update") {
+      await this.updateCard(parsed.card);
+      this.broadcastMessage({
+        type: "card-update",
+        card: parsed.card,
+      });
+    } else if (parsed.type === "card-delete") {
+      await this.deleteCard(parsed.cardId);
+      this.broadcastMessage({
+        type: "card-delete",
+        cardId: parsed.cardId,
       });
     }
   }
