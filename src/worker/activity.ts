@@ -5,6 +5,7 @@ import {
 } from "partyserver";
 
 import type { Activity, Question, Message } from "../shared";
+import { createEmptyActivity } from "../shared";
 
 export class ActivityDO extends Server<Env> {
   static options = { hibernate: true };
@@ -46,7 +47,7 @@ export class ActivityDO extends Server<Env> {
   }
 
   async onStart() {
-    this.activity = await this.ctx.storage.get<Activity>("activity") || { questions: {} };
+    this.activity = await this.ctx.storage.get<Activity>("activity") || createEmptyActivity();
   }
 
   onConnect(connection: Connection) {

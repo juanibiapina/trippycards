@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
 import type { Activity, Question, Message } from '../../shared';
+import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
   activity: Activity | null;
@@ -34,7 +35,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         setLoading(false);
       } else if (message.type === 'question') {
         setActivity(prev => {
-          if (!prev) return { questions: { [message.question.id]: message.question } };
+          if (!prev) return { ...createEmptyActivity(), questions: { [message.question.id]: message.question } };
           return {
             ...prev,
             questions: {
@@ -45,7 +46,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'name') {
         setActivity(prev => {
-          if (!prev) return { name: message.name, questions: {} };
+          if (!prev) return { ...createEmptyActivity(), name: message.name };
           return {
             ...prev,
             name: message.name,
@@ -53,7 +54,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'dates') {
         setActivity(prev => {
-          if (!prev) return { startDate: message.startDate, endDate: message.endDate, startTime: message.startTime, questions: {} };
+          if (!prev) return { ...createEmptyActivity(), startDate: message.startDate, endDate: message.endDate, startTime: message.startTime };
           return {
             ...prev,
             startDate: message.startDate,
