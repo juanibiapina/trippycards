@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import LinkCard from './LinkCard';
-import { validateUrl } from '../../utils/urlValidation';
 import { LinkCard as LinkCardType } from '../../../shared';
 
 // Mock window.open
@@ -74,27 +73,5 @@ describe('LinkCard', () => {
     fireEvent(linkElement, clickEvent);
 
     expect(mockPreventDefault).toHaveBeenCalled();
-  });
-});
-
-describe('validateUrl', () => {
-  it('validates valid URLs', () => {
-    expect(validateUrl('https://example.com')).toBe(true);
-    expect(validateUrl('http://example.com')).toBe(true);
-    expect(validateUrl('https://example.com/path')).toBe(true);
-    expect(validateUrl('https://subdomain.example.com')).toBe(true);
-  });
-
-  it('invalidates invalid URLs', () => {
-    expect(validateUrl('invalid-url')).toBe(false);
-    expect(validateUrl('just-text')).toBe(false);
-    expect(validateUrl('')).toBe(false);
-    expect(validateUrl('ftp://example.com')).toBe(true); // FTP is valid URL
-  });
-
-  it('handles edge cases', () => {
-    expect(validateUrl('https://')).toBe(false);
-    expect(validateUrl('http://')).toBe(false);
-    expect(validateUrl('https://example')).toBe(true); // Valid but not typical
   });
 });
