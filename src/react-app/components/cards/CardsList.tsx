@@ -2,12 +2,15 @@ import React from 'react';
 import { Card, LinkCard as LinkCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
+import CardContextMenu from './CardContextMenu';
 
 interface CardsListProps {
   cards: Card[];
+  onEditCard: (card: Card) => void;
+  onDeleteCard: (card: Card) => void;
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDeleteCard }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -26,14 +29,30 @@ export const CardsList: React.FC<CardsListProps> = ({ cards }) => {
           case 'link':
             return (
               <CardComponent key={card.id}>
-                <LinkCard card={card as LinkCardType} />
+                <div className="relative">
+                  <div className="absolute top-2 right-2 z-10">
+                    <CardContextMenu
+                      onEdit={() => onEditCard(card)}
+                      onDelete={() => onDeleteCard(card)}
+                    />
+                  </div>
+                  <LinkCard card={card as LinkCardType} />
+                </div>
               </CardComponent>
             );
           default:
             return (
               <CardComponent key={card.id}>
-                <div className="p-4 border rounded-lg bg-gray-50">
-                  <p className="text-gray-600">Unknown card type: {card.type}</p>
+                <div className="relative">
+                  <div className="absolute top-2 right-2 z-10">
+                    <CardContextMenu
+                      onEdit={() => onEditCard(card)}
+                      onDelete={() => onDeleteCard(card)}
+                    />
+                  </div>
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <p className="text-gray-600">Unknown card type: {card.type}</p>
+                  </div>
                 </div>
               </CardComponent>
             );

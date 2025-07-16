@@ -1,11 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import CardsList from './CardsList';
 import { Card, LinkCard } from '../../../shared';
 
 describe('CardsList', () => {
+  const mockOnEditCard = vi.fn();
+  const mockOnDeleteCard = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders empty state when no cards', () => {
-    render(<CardsList cards={[]} />);
+    render(<CardsList cards={[]} onEditCard={mockOnEditCard} onDeleteCard={mockOnDeleteCard} />);
 
     expect(screen.getByText('No cards yet')).toBeInTheDocument();
     expect(screen.getByText('Create your first card to get started')).toBeInTheDocument();
@@ -22,7 +29,7 @@ describe('CardsList', () => {
       updatedAt: '2023-01-01T00:00:00Z'
     };
 
-    render(<CardsList cards={[linkCard]} />);
+    render(<CardsList cards={[linkCard]} onEditCard={mockOnEditCard} onDeleteCard={mockOnDeleteCard} />);
 
     expect(screen.getByText('Example Title')).toBeInTheDocument();
     expect(screen.getByText('Example description')).toBeInTheDocument();
@@ -37,7 +44,7 @@ describe('CardsList', () => {
       updatedAt: '2023-01-01T00:00:00Z'
     };
 
-    render(<CardsList cards={[unknownCard]} />);
+    render(<CardsList cards={[unknownCard]} onEditCard={mockOnEditCard} onDeleteCard={mockOnDeleteCard} />);
 
     expect(screen.getByText('Unknown card type: unknown')).toBeInTheDocument();
   });
@@ -62,7 +69,7 @@ describe('CardsList', () => {
       } as LinkCard
     ];
 
-    render(<CardsList cards={cards} />);
+    render(<CardsList cards={cards} onEditCard={mockOnEditCard} onDeleteCard={mockOnDeleteCard} />);
 
     expect(screen.getByText('Title 1')).toBeInTheDocument();
     expect(screen.getByText('Title 2')).toBeInTheDocument();
