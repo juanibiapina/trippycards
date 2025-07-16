@@ -12,12 +12,6 @@ export const LinkCard: React.FC<LinkCardProps> = ({ card }) => {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          {new Date(card.createdAt).toLocaleDateString()}
-        </div>
-      </div>
-
       {card.imageUrl && (
         <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
           <img

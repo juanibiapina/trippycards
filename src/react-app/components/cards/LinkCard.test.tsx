@@ -31,7 +31,6 @@ describe('LinkCard', () => {
     expect(screen.getByText('Example description')).toBeInTheDocument();
     expect(screen.getByText('https://example.com')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /Example Title/i })).toBeInTheDocument();
-    expect(screen.getByText('1/1/2023')).toBeInTheDocument();
   });
 
   it('renders link card without optional elements', () => {
@@ -46,7 +45,6 @@ describe('LinkCard', () => {
     render(<LinkCard card={minimalCard} />);
 
     expect(screen.getByText('https://minimal.com')).toBeInTheDocument();
-    expect(screen.getByText('1/1/2023')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
