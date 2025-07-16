@@ -11,7 +11,11 @@ test.describe('Bottom Navigation Bar', () => {
     // Click New Activity button
     await page.click('text=New Activity');
 
-    // Wait for activity page to load (should redirect to questions)
+    // Wait for activity page to load (should redirect to overview)
+    await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
+
+    // Navigate to questions page to test question functionality
+    await page.getByRole('button', { name: 'Questions' }).click();
     await expect(page.locator('text=Create a new question')).toBeVisible();
 
     // Check that the bottom navigation bar is present
@@ -47,7 +51,11 @@ test.describe('Bottom Navigation Bar', () => {
     // Click New Activity button
     await page.click('text=New Activity');
 
-    // Wait for activity page to load
+    // Wait for activity page to load (should redirect to overview)
+    await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
+
+    // Navigate to questions page to test question functionality
+    await page.getByRole('button', { name: 'Questions' }).click();
     await expect(page.locator('text=Create a new question')).toBeVisible();
 
     // Create a question to ensure content is present

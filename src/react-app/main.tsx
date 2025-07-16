@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         path: "activities/:activityId",
         element: <ActivityPage />,
         children: [
-          { index: true, element: <Navigate to="questions" replace /> },
+          { index: true, element: <Navigate to="overview" replace /> },
           { path: "overview", element: <OverviewPage /> },
           { path: "questions", element: <QuestionsPage /> },
         ]
