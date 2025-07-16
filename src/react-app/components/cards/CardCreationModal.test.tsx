@@ -19,11 +19,13 @@ describe('CardCreationModal', () => {
       />
     );
 
-    expect(screen.getByText('Create Link Card')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Create Card' })).toBeInTheDocument();
     expect(screen.getByLabelText('URL *')).toBeInTheDocument();
     expect(screen.getByLabelText('Title (optional)')).toBeInTheDocument();
     expect(screen.getByLabelText('Description (optional)')).toBeInTheDocument();
     expect(screen.getByLabelText('Image URL (optional)')).toBeInTheDocument();
+    expect(screen.getByText('Link Card')).toBeInTheDocument();
+    expect(screen.getByText('Poll Card')).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
@@ -35,7 +37,7 @@ describe('CardCreationModal', () => {
       />
     );
 
-    expect(screen.queryByText('Create Link Card')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Create Card' })).not.toBeInTheDocument();
   });
 
   it('calls onClose when cancel button is clicked', () => {
@@ -98,7 +100,7 @@ describe('CardCreationModal', () => {
     fireEvent.change(titleInput, { target: { value: 'Test Title' } });
     fireEvent.change(descriptionInput, { target: { value: 'Test Description' } });
 
-    const createButton = screen.getByText('Create Card');
+    const createButton = screen.getByRole('button', { name: 'Create Card' });
     fireEvent.click(createButton);
 
     await waitFor(() => {
@@ -125,7 +127,7 @@ describe('CardCreationModal', () => {
     const urlInput = screen.getByLabelText('URL *');
     fireEvent.change(urlInput, { target: { value: 'invalid-url' } });
 
-    const createButton = screen.getByText('Create Card');
+    const createButton = screen.getByRole('button', { name: 'Create Card' });
     expect(createButton).toBeDisabled();
   });
 
@@ -138,7 +140,7 @@ describe('CardCreationModal', () => {
       />
     );
 
-    const createButton = screen.getByText('Create Card');
+    const createButton = screen.getByRole('button', { name: 'Create Card' });
     expect(createButton).toBeDisabled();
   });
 

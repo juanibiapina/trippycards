@@ -4,7 +4,7 @@ import {
   type WSMessage,
 } from "partyserver";
 
-import type { Activity, Question, Message, Card } from "../shared";
+import type { Activity, Question, Message, Card, PollCard } from "../shared";
 import { createEmptyActivity } from "../shared";
 
 export class ActivityDO extends Server<Env> {
@@ -41,6 +41,39 @@ export class ActivityDO extends Server<Env> {
       return;
     }
     this.activity.cards = this.activity.cards.filter(card => card.id !== cardId);
+    await this.ctx.storage.put("activity", this.activity);
+  }
+
+  async voteOnCard(cardId: string, optionIndex: number, userId: string, userName: string) {
+    if (!this.activity.cards) {
+      return;
+    }
+
+    const cardIndex = this.activity.cards.findIndex(card => card.id === cardId);
+    if (cardIndex === -1) return;
+
+    const card = this.activity.cards[cardIndex];
+    if (card.type !== 'poll') return;
+
+    const pollCard = card as PollCard;
+    if (!pollCard.votes) {
+      pollCard.votes = {};
+    }
+
+    // Remove user's previous vote
+    Object.keys(pollCard.votes).forEach(optionIdx => {
+      if (pollCard.votes[optionIdx] && pollCard.votes[optionIdx][userId]) {
+        delete pollCard.votes[optionIdx][userId];
+      }
+    });
+
+    // Add new vote
+    if (!pollCard.votes[optionIndex.toString()]) {
+      pollCard.votes[optionIndex.toString()] = {};
+    }
+    pollCard.votes[optionIndex.toString()][userId] = userName;
+
+    this.activity.cards[cardIndex] = pollCard;
     await this.ctx.storage.put("activity", this.activity);
   }
 
@@ -128,6 +161,15 @@ export class ActivityDO extends Server<Env> {
       this.broadcastMessage({
         type: "card-delete",
         cardId: parsed.cardId,
+      });
+    } else if (parsed.type === "card-vote") {
+      await this.voteOnCard(parsed.cardId, parsed.optionIndex, parsed.userId, parsed.userName);
+      this.broadcastMessage({
+        type: "card-vote",
+        cardId: parsed.cardId,
+        optionIndex: parsed.optionIndex,
+        userId: parsed.userId,
+        userName: parsed.userName,
       });
     }
   }

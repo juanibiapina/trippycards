@@ -13,6 +13,13 @@ export interface LinkCard extends Card {
   imageUrl?: string;
 }
 
+export interface PollCard extends Card {
+  type: 'poll';
+  question: string;
+  options: string[];
+  votes: Record<string, Record<string, string>>; // optionIndex -> userId -> userName
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;
@@ -70,4 +77,11 @@ export type Message =
   | {
       type: "card-delete";
       cardId: string;
+    }
+  | {
+      type: "card-vote";
+      cardId: string;
+      optionIndex: number;
+      userId: string;
+      userName: string;
     };

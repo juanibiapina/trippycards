@@ -10,7 +10,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, Card as CardType } from "../../shared";
+import { Card as CardType } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
@@ -20,12 +20,12 @@ const OverviewPage = () => {
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
   const [cardToDelete, setCardToDelete] = useState<CardType | null>(null);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, voteOnCard, isConnected } = useActivityRoom(params.activityId || '');
 
-  const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreateCard = (cardData: Omit<CardType, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isConnected) return;
 
-    const newCard: LinkCard = {
+    const newCard: CardType = {
       ...cardData,
       id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date().toISOString(),
@@ -35,9 +35,14 @@ const OverviewPage = () => {
     createCard(newCard);
   };
 
-  const handleUpdateCard = (card: LinkCard) => {
+  const handleUpdateCard = (card: CardType) => {
     if (!isConnected) return;
     updateCard(card);
+  };
+
+  const handleVote = (cardId: string, optionIndex: number, userId: string, userName: string) => {
+    if (!isConnected) return;
+    voteOnCard(cardId, optionIndex, userId, userName);
   };
 
   const handleEditCard = (card: CardType) => {
@@ -145,6 +150,9 @@ const OverviewPage = () => {
           cards={activity?.cards || []}
           onEditCard={handleEditCard}
           onDeleteCard={handleDeleteCard}
+          onVote={handleVote}
+          currentUserId={session?.user?.id}
+          currentUserName={session?.user?.name || undefined}
         />
 
         <CardCreationModal
@@ -152,7 +160,7 @@ const OverviewPage = () => {
           onClose={handleCloseModal}
           onCreateCard={handleCreateCard}
           onUpdateCard={handleUpdateCard}
-          editingCard={editingCard as LinkCard}
+          editingCard={editingCard as CardType}
         />
 
         <DeleteConfirmationDialog

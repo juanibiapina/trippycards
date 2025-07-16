@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
-import type { Activity, Question, Message, Card } from '../../shared';
+import type { Activity, Question, Message, Card, PollCard } from '../../shared';
 import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
@@ -13,6 +13,7 @@ interface UseActivityRoomResult {
   createCard: (card: Card) => void;
   updateCard: (card: Card) => void;
   deleteCard: (cardId: string) => void;
+  voteOnCard: (cardId: string, optionIndex: number, userId: string, userName: string) => void;
   loading: boolean;
 }
 
@@ -89,6 +90,35 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
           return {
             ...prev,
             cards: (prev.cards || []).filter(card => card.id !== message.cardId),
+          };
+        });
+      } else if (message.type === 'card-vote') {
+        setActivity(prev => {
+          if (!prev) return createEmptyActivity();
+          return {
+            ...prev,
+            cards: (prev.cards || []).map(card => {
+              if (card.id === message.cardId && card.type === 'poll') {
+                const pollCard = card as PollCard;
+                const newVotes = { ...pollCard.votes };
+
+                // Remove user's previous vote
+                Object.keys(newVotes).forEach(optionIndex => {
+                  if (newVotes[optionIndex] && newVotes[optionIndex][message.userId]) {
+                    delete newVotes[optionIndex][message.userId];
+                  }
+                });
+
+                // Add new vote
+                if (!newVotes[message.optionIndex.toString()]) {
+                  newVotes[message.optionIndex.toString()] = {};
+                }
+                newVotes[message.optionIndex.toString()][message.userId] = message.userName;
+
+                return { ...pollCard, votes: newVotes };
+              }
+              return card;
+            }),
           };
         });
       }
@@ -170,6 +200,18 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
+  const voteOnCard = useCallback((cardId: string, optionIndex: number, userId: string, userName: string) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'card-vote',
+      cardId,
+      optionIndex,
+      userId,
+      userName,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
   return {
     activity,
     isConnected,
@@ -180,6 +222,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     createCard,
     updateCard,
     deleteCard,
+    voteOnCard,
     loading,
   };
 }

@@ -21,7 +21,9 @@ test.describe('Card Creation Flow', () => {
   test('should open card creation modal', async ({ page }) => {
     await page.getByRole('button', { name: 'Create Card' }).first().click();
 
-    await expect(page.getByText('Create Link Card')).toBeVisible();
+    await expect(page.getByText('Create Card')).toBeVisible();
+    await expect(page.getByText('Link Card')).toBeVisible();
+    await expect(page.getByText('Poll Card')).toBeVisible();
     await expect(page.getByLabel('URL *')).toBeVisible();
     await expect(page.getByLabel('Title (optional)')).toBeVisible();
     await expect(page.getByLabel('Description (optional)')).toBeVisible();
@@ -32,10 +34,10 @@ test.describe('Card Creation Flow', () => {
 
   test('should close modal when cancel is clicked', async ({ page }) => {
     await page.getByRole('button', { name: 'Create Card' }).first().click();
-    await expect(page.getByText('Create Link Card')).toBeVisible();
+    await expect(page.getByText('Create Card')).toBeVisible();
 
     await page.getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByText('Create Link Card')).not.toBeVisible();
+    await expect(page.getByText('Create Card')).not.toBeVisible();
   });
 
   test('should create a link card with required fields only', async ({ page }) => {
