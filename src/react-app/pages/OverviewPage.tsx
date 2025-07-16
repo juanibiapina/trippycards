@@ -9,25 +9,19 @@ import BottomBar from "../components/BottomBar";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { Card as CardType, LinkCard } from "../../shared";
+import { LinkCard } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [cards, setCards] = useState<CardType[]>([]);
 
-  const { activity, loading, updateName, updateDates, isConnected } = useActivityRoom(params.activityId || '');
-
-  // Initialize cards from activity when it loads
-  useEffect(() => {
-    if (activity?.cards) {
-      setCards(activity.cards);
-    }
-  }, [activity]);
+  const { activity, loading, updateName, updateDates, createCard, isConnected } = useActivityRoom(params.activityId || '');
 
   const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!isConnected) return;
+
     const newCard: LinkCard = {
       ...cardData,
       id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -35,7 +29,7 @@ const OverviewPage = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    setCards(prev => [...prev, newCard]);
+    createCard(newCard);
   };
 
   const handleNameUpdate = (name: string) => {
@@ -114,7 +108,7 @@ const OverviewPage = () => {
         </div>
 
         {/* Cards List */}
-        <CardsList cards={cards} />
+        <CardsList cards={activity?.cards || []} />
 
         <CardCreationModal
           isOpen={isCreateModalOpen}
