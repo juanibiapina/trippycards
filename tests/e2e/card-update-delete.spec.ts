@@ -45,10 +45,10 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should edit card when Edit is clicked', async ({ page }) => {
     // Create a card first
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example.com');
-    await page.fill('#title', 'Original Title');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example.com');
+    await page.getByLabel('Title (optional)').fill('Original Title');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Verify card is created
     await expect(page.getByText('Original Title')).toBeVisible();
@@ -59,12 +59,12 @@ test.describe('Card Update and Delete Flow', () => {
 
     // Check that the edit modal is opened with existing values
     await expect(page.getByText('Edit Link Card')).toBeVisible();
-    await expect(page.getByDisplayValue('https://example.com')).toBeVisible();
-    await expect(page.getByDisplayValue('Original Title')).toBeVisible();
+    await expect(page.getByLabel('URL *')).toHaveValue('https://example.com');
+    await expect(page.getByLabel('Title (optional)')).toHaveValue('Original Title');
 
     // Update the title
-    await page.fill('#title', 'Updated Title');
-    await page.getByRole('button', { name: 'Update Card' }).click();
+    await page.getByLabel('Title (optional)').fill('Updated Title');
+    await page.locator('form').getByRole('button', { name: 'Update Card' }).click();
 
     // Verify the card is updated
     await expect(page.getByText('Updated Title')).toBeVisible();
@@ -73,10 +73,10 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should show delete confirmation dialog when Delete is clicked', async ({ page }) => {
     // Create a card first
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example.com');
-    await page.fill('#title', 'Test Card');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example.com');
+    await page.getByLabel('Title (optional)').fill('Test Card');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Click context menu and delete
     await page.getByRole('button', { name: 'Card options' }).click();
@@ -91,10 +91,10 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should cancel delete when Cancel is clicked', async ({ page }) => {
     // Create a card first
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example.com');
-    await page.fill('#title', 'Test Card');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example.com');
+    await page.getByLabel('Title (optional)').fill('Test Card');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Click context menu and delete
     await page.getByRole('button', { name: 'Card options' }).click();
@@ -110,10 +110,10 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should delete card when Delete is confirmed', async ({ page }) => {
     // Create a card first
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example.com');
-    await page.fill('#title', 'Test Card');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example.com');
+    await page.getByLabel('Title (optional)').fill('Test Card');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Verify card is created
     await expect(page.getByText('Test Card')).toBeVisible();
@@ -132,22 +132,22 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should update card with all fields', async ({ page }) => {
     // Create a card first
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example.com');
-    await page.fill('#title', 'Original Title');
-    await page.fill('#description', 'Original Description');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example.com');
+    await page.getByLabel('Title (optional)').fill('Original Title');
+    await page.getByLabel('Description (optional)').fill('Original Description');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Click context menu and edit
     await page.getByRole('button', { name: 'Card options' }).click();
     await page.getByText('Edit').click();
 
     // Update all fields
-    await page.fill('#url', 'https://updated.com');
-    await page.fill('#title', 'Updated Title');
-    await page.fill('#description', 'Updated Description');
-    await page.fill('#imageUrl', 'https://updated.com/image.jpg');
-    await page.getByRole('button', { name: 'Update Card' }).click();
+    await page.getByLabel('URL *').fill('https://updated.com');
+    await page.getByLabel('Title (optional)').fill('Updated Title');
+    await page.getByLabel('Description (optional)').fill('Updated Description');
+    await page.getByLabel('Image URL (optional)').fill('https://updated.com/image.jpg');
+    await page.locator('form').getByRole('button', { name: 'Update Card' }).click();
 
     // Verify all fields are updated
     await expect(page.getByText('Updated Title')).toBeVisible();
@@ -157,16 +157,16 @@ test.describe('Card Update and Delete Flow', () => {
 
   test('should handle multiple cards update and delete', async ({ page }) => {
     // Create first card
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example1.com');
-    await page.fill('#title', 'Card 1');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example1.com');
+    await page.getByLabel('Title (optional)').fill('Card 1');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Create second card
-    await page.getByRole('button', { name: 'Create Card' }).click();
-    await page.fill('#url', 'https://example2.com');
-    await page.fill('#title', 'Card 2');
-    await page.getByRole('button', { name: 'Create Card' }).click();
+    await page.getByRole('button', { name: 'Create Card' }).first().click();
+    await page.getByLabel('URL *').fill('https://example2.com');
+    await page.getByLabel('Title (optional)').fill('Card 2');
+    await page.locator('form').getByRole('button', { name: 'Create Card' }).click();
 
     // Verify both cards exist
     await expect(page.getByText('Card 1')).toBeVisible();
@@ -175,8 +175,8 @@ test.describe('Card Update and Delete Flow', () => {
     // Edit first card
     await page.getByRole('button', { name: 'Card options' }).first().click();
     await page.getByText('Edit').click();
-    await page.fill('#title', 'Updated Card 1');
-    await page.getByRole('button', { name: 'Update Card' }).click();
+    await page.getByLabel('Title (optional)').fill('Updated Card 1');
+    await page.locator('form').getByRole('button', { name: 'Update Card' }).click();
 
     // Delete second card
     await page.getByRole('button', { name: 'Card options' }).last().click();
