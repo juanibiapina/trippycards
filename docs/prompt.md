@@ -5,9 +5,9 @@ An `Activity` is an event.
 
 ## Current Implementation
 
-- Activity model exists in `src/shared/index.ts:1` with questions field
+- Activity model exists in `src/shared/index.ts:1`
 - Overview page exists at `src/react-app/pages/OverviewPage.tsx:11` with placeholder content at line 82-84
-- Real-time collaboration works for questions and voting
+- Real-time collaboration works for card management
 - WebSocket-based activity synchronization
 
 ## Planned Implementation
@@ -20,7 +20,7 @@ An `Activity` is an event.
 
 ## Cards
 
-Users will be able to create `Cards` in the overview page. Cards will have different types and will be saved in the `Activity` model, next to the existing `questions` field.
+Users will be able to create `Cards` in the overview page. Cards will have different types and will be saved in the `Activity` model.
 
 **Required Changes:**
 - Extend Activity type in `src/shared/index.ts:1` to include `cards` field
@@ -39,7 +39,7 @@ A link card will render an embedded version of the target website, similar to Sl
 
 ### Poll Card (Planned)
 
-This will be a single question poll card, similar to existing question functionality but as a card format.
+This will be a single question poll card that allows users to vote on options.
 
 ```json
 {
@@ -70,7 +70,7 @@ Add a context menu (maybe top right of Card) for extended actions, like updating
 **Implementation Notes:**
 
 - Can reuse existing Card component pattern from `src/react-app/components/Card.tsx`
-- Similar to QuestionCard update functionality
+- Should provide easy editing interface for card properties
 
 ### Delete Card
 
@@ -86,7 +86,7 @@ Add option to delete card from card context menu (with confirmation).
 
 The app already has robust real-time collaboration via WebSocket (`src/worker/activity.ts:9`):
 
-- **Message Types**: `activity`, `question`, `vote`, `name`, `dates` (defined in `src/shared/index.ts:17`)
+- **Message Types**: `activity`, `name`, `dates` (defined in `src/shared/index.ts:17`)
 - **Real-time Updates**: All connected users see changes instantly
 - **State Persistence**: Uses Cloudflare Durable Objects for state storage
 - **User Authentication**: Integrated with Google OAuth
@@ -107,4 +107,4 @@ All collaboration features will work with Cards. New message types must be creat
 **Implementation Notes:**
 - Extend existing WebSocket message handling in `src/worker/activity.ts:61`
 - Update client-side hook `src/react-app/hooks/useActivityRoom.ts:15`
-- Follow existing patterns for question collaboration
+- Follow existing patterns for activity collaboration

@@ -43,20 +43,20 @@ The application uses Tailwind's gray palette as the primary color scheme:
 
 ## Limited Color Usage
 
-### Green/Red (Voting Indicators Only)
-These colors are **only** allowed in the QuestionCard component for voting status:
+### Green/Red (Limited Usage)
+These colors are **only** allowed for specific interactive elements when needed:
 
-- **Green (Yes votes)**:
-  - `bg-green-600` - Yes button active state
-  - `hover:bg-green-700` - Yes button hover state
-  - `text-green-600` - Yes text/statistics
-  - `bg-green-500` - Yes progress bar
+- **Green (Success/Positive actions)**:
+  - `bg-green-600` - Success button active state
+  - `hover:bg-green-700` - Success button hover state
+  - `text-green-600` - Success text/indicators
+  - `bg-green-500` - Success progress indicators
 
-- **Red (No votes)**:
-  - `bg-red-600` - No button active state
-  - `hover:bg-red-700` - No button hover state
-  - `text-red-600` - No text/statistics
-  - `bg-red-500` - No progress bar
+- **Red (Error/Negative actions)**:
+  - `bg-red-600` - Error button active state
+  - `hover:bg-red-700` - Error button hover state
+  - `text-red-600` - Error text/indicators
+  - `bg-red-500` - Error progress indicators
 
 ## Prohibited Colors
 
@@ -74,7 +74,7 @@ The following color families are **not allowed** in the application:
 2. **Buttons**: Primary buttons should use `bg-gray-700` or `bg-gray-900` with `text-white`
 3. **Backgrounds**: Use `bg-gray-50` or `bg-gray-100` for page backgrounds
 4. **Headers**: Use `bg-gray-800` or `bg-gray-900` with `text-white`
-5. **Voting Elements**: Only use green/red colors for voting functionality in QuestionCard
+5. **Interactive Elements**: Only use green/red colors for success/error states when needed
 6. **Focus States**: Use `focus:ring-gray-500` or `focus:ring-gray-600` consistently
 
 ## Component-Specific Guidelines
@@ -88,11 +88,6 @@ The following color families are **not allowed** in the application:
 - Shadow: `shadow-lg`
 - Border: `border-gray-200` (if needed)
 
-### QuestionCard Component
-- Base: Follow Card guidelines
-- Yes button: `bg-green-600 hover:bg-green-700 text-white`
-- No button: `bg-red-600 hover:bg-red-700 text-white`
-- Inactive buttons: `bg-gray-200 hover:bg-gray-300 text-gray-700`
 
 ### Page Backgrounds
 - Main background: `bg-gray-50`
