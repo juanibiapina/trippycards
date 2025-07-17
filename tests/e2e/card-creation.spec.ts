@@ -4,11 +4,7 @@ test.describe('Card Creation Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.getByText('New Activity').click();
-    await page.waitForURL(/\/activities\/[^/]+/);
-
-    // Click on Overview in the bottom navigation
-    await page.getByRole('button', { name: 'Overview' }).click();
-    await page.waitForURL(/\/activities\/[^/]+\/overview/);
+    await page.waitForURL(/\/activities\/[^/]+$/);
   });
 
   test('should display card creation interface', async ({ page }) => {

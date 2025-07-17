@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Activity Page Navigation', () => {
-  test('navigation between overview and questions pages', async ({ page }) => {
+  test('activity page loads overview directly', async ({ page }) => {
     // Navigate to home page
     await page.goto('/');
 
@@ -11,19 +11,7 @@ test.describe('Activity Page Navigation', () => {
     // Click New Activity button
     await page.click('text=New Activity');
 
-    // Wait for activity page to load (should redirect to overview)
-    await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
-
-    // Verify bottom navigation is present
-    await expect(page.getByRole('button', { name: 'Overview' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Questions' })).toBeVisible();
-
-    // Navigate to questions page
-    await page.getByRole('button', { name: 'Questions' }).click();
-    await expect(page.locator('text=Create a new question')).toBeVisible();
-
-    // Navigate back to overview page
-    await page.getByRole('button', { name: 'Overview' }).click();
+    // Wait for activity page to load (should show overview)
     await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
   });
 });

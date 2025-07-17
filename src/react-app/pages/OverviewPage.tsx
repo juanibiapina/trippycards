@@ -5,7 +5,6 @@ import { FiAlertTriangle, FiPlus } from "react-icons/fi";
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
-import BottomBar from "../components/BottomBar";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
@@ -126,8 +125,8 @@ const OverviewPage = () => {
         disabled={!isConnected}
       />
 
-      {/* Content with bottom padding to account for fixed bottom bar */}
-      <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
+      {/* Content */}
+      <div className="max-w-2xl mx-auto p-4 space-y-6">
         {/* Cards Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
@@ -161,9 +160,6 @@ const OverviewPage = () => {
           onCancel={handleCancelDelete}
         />
       </div>
-
-      {/* Bottom Navigation Bar */}
-      <BottomBar />
     </div>
   );
 };

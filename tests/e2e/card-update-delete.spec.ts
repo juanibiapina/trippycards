@@ -4,11 +4,7 @@ test.describe('Card Update and Delete Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.getByText('New Activity').click();
-    await page.waitForURL(/\/activities\/[^/]+/);
-
-    // Click on Overview in the bottom navigation
-    await page.getByRole('button', { name: 'Overview' }).click();
-    await page.waitForURL(/\/activities\/[^/]+\/overview/);
+    await page.waitForURL(/\/activities\/[^/]+$/);
   });
 
   test('should display context menu for existing cards', async ({ page }) => {

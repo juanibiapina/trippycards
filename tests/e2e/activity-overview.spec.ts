@@ -8,13 +8,9 @@ test.describe('Activity Overview Page', () => {
     // Navigate to activity page directly
     await page.goto(`/activities/${activityId}`);
 
-    // Wait for activity page to load (should redirect to overview)
+    // Wait for activity page to load (should show overview)
     await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
     await expect(page.locator('text=Click to name this activity')).toBeVisible();
-
-    // Navigate to questions page to check it's available
-    await page.getByRole('button', { name: 'Questions' }).click();
-    await expect(page.locator('text=Create a new question')).toBeVisible();
   });
 
   test('activity name editing and persistence', async ({ page }) => {
