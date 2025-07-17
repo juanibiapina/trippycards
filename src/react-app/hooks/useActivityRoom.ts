@@ -1,13 +1,11 @@
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
-import type { Activity, Question, Message, Card } from '../../shared';
+import type { Activity, Message, Card } from '../../shared';
 import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
   activity: Activity | null;
   isConnected: boolean;
-  createQuestion: (text: string, userId: string) => void;
-  submitVote: (questionId: string, vote: 'yes' | 'no', userId: string) => void;
   updateName: (name: string) => void;
   updateDates: (startDate: string, endDate?: string, startTime?: string) => void;
   createCard: (card: Card) => void;
@@ -36,17 +34,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
       if (message.type === 'activity') {
         setActivity(message.activity);
         setLoading(false);
-      } else if (message.type === 'question') {
-        setActivity(prev => {
-          if (!prev) return { ...createEmptyActivity(), questions: { [message.question.id]: message.question } };
-          return {
-            ...prev,
-            questions: {
-              ...prev.questions,
-              [message.question.id]: message.question,
-            },
-          };
-        });
       } else if (message.type === 'name') {
         setActivity(prev => {
           if (!prev) return { ...createEmptyActivity(), name: message.name };
@@ -95,33 +82,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     },
   });
 
-  const createQuestion = useCallback((text: string, userId: string) => {
-    if (!socket || !isConnected) return;
 
-    const question: Question = {
-      id: crypto.randomUUID(),
-      text,
-      createdBy: userId,
-      createdAt: new Date().toISOString(),
-      responses: {},
-    };
-
-    socket.send(JSON.stringify({
-      type: 'question',
-      question,
-    } satisfies Message));
-  }, [socket, isConnected]);
-
-  const submitVote = useCallback((questionId: string, vote: 'yes' | 'no', userId: string) => {
-    if (!socket || !isConnected) return;
-
-    socket.send(JSON.stringify({
-      type: 'vote',
-      questionId,
-      vote,
-      userId,
-    } satisfies Message));
-  }, [socket, isConnected]);
 
   const updateName = useCallback((name: string) => {
     if (!socket || !isConnected) return;
@@ -173,8 +134,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
   return {
     activity,
     isConnected,
-    createQuestion,
-    submitVote,
     updateName,
     updateDates,
     createCard,
