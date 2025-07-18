@@ -175,40 +175,48 @@ const OverviewPage = () => {
         {/* Cards Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
-          <div className="relative">
+          <div className="flex items-center space-x-2">
             <button
-              onClick={() => setIsCardTypeDropdownOpen(!isCardTypeDropdownOpen)}
+              onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
             >
               <FiPlus size={16} />
               <span>Create Card</span>
-              <FiChevronDown size={16} />
             </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsCardTypeDropdownOpen(!isCardTypeDropdownOpen)}
+                className="flex items-center justify-center bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-2 rounded-md transition-colors shadow-md hover:shadow-lg"
+                aria-label="Card type options"
+              >
+                <FiChevronDown size={16} />
+              </button>
 
-            {isCardTypeDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
-                <div className="py-1">
-                  <button
-                    onClick={() => {
-                      setIsCreateModalOpen(true);
-                      setIsCardTypeDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Link Card
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsPollModalOpen(true);
-                      setIsCardTypeDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Poll Card
-                  </button>
+              {isCardTypeDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setIsCreateModalOpen(true);
+                        setIsCardTypeDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Link Card
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsPollModalOpen(true);
+                        setIsCardTypeDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Poll Card
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
