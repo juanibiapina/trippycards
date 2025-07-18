@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createEmptyActivity, LinkCard } from '../shared';
+import { createEmptyActivity, LinkCard, PollCard } from '../shared';
 
 // Mock partyserver imports to avoid CloudFlare worker issues in tests
 vi.mock('partyserver', () => ({
@@ -313,6 +313,160 @@ describe('ActivityDO Card CRUD Operations', () => {
 
       expect(activityDO.activity.cards).toHaveLength(2);
       expect(activityDO.activity.cards!.find(c => c.id === 'card-1')).toBeUndefined();
+    });
+  });
+});
+
+describe('ActivityDO Poll Voting Operations', () => {
+  let activityDO: TestActivityDO;
+  let mockPollCard: PollCard;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    activityDO = new TestActivityDO();
+    activityDO.activity = createEmptyActivity();
+
+    mockPollCard = {
+      id: 'poll-1',
+      type: 'poll',
+      title: 'What is your favorite color?',
+      options: ['Red', 'Blue', 'Green'],
+      votes: {},
+      createdAt: '2023-01-01T00:00:00Z',
+      updatedAt: '2023-01-01T00:00:00Z',
+    };
+  });
+
+  describe('vote', () => {
+    it('should add a vote to a poll card', async () => {
+      activityDO.activity.cards = [mockPollCard];
+
+      await activityDO.vote('poll-1', 'user1@example.com', 'Red');
+
+      expect((activityDO.activity.cards![0] as PollCard).votes).toEqual({
+        'user1@example.com': 'Red',
+      });
+      expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
+    });
+
+    it('should update an existing vote', async () => {
+      mockPollCard.votes = { 'user1@example.com': 'Blue' };
+      activityDO.activity.cards = [mockPollCard];
+
+      await activityDO.vote('poll-1', 'user1@example.com', 'Red');
+
+      expect((activityDO.activity.cards![0] as PollCard).votes).toEqual({
+        'user1@example.com': 'Red',
+      });
+      expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
+    });
+
+    it('should handle multiple users voting', async () => {
+      activityDO.activity.cards = [mockPollCard];
+
+      await activityDO.vote('poll-1', 'user1@example.com', 'Red');
+      await activityDO.vote('poll-1', 'user2@example.com', 'Blue');
+      await activityDO.vote('poll-1', 'user3@example.com', 'Red');
+
+      expect((activityDO.activity.cards![0] as PollCard).votes).toEqual({
+        'user1@example.com': 'Red',
+        'user2@example.com': 'Blue',
+        'user3@example.com': 'Red',
+      });
+      expect(mockContext.storage.put).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not vote if card does not exist', async () => {
+      activityDO.activity.cards = [];
+
+      await activityDO.vote('non-existent', 'user1@example.com', 'Red');
+
+      expect(mockContext.storage.put).not.toHaveBeenCalled();
+    });
+
+    it('should not vote if card is not a poll card', async () => {
+      const linkCard: LinkCard = {
+        id: 'link-1',
+        type: 'link',
+        url: 'https://example.com',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+      };
+      activityDO.activity.cards = [linkCard];
+
+      await activityDO.vote('link-1', 'user1@example.com', 'Red');
+
+      expect(mockContext.storage.put).not.toHaveBeenCalled();
+    });
+
+    it('should handle undefined cards array', async () => {
+      activityDO.activity.cards = undefined;
+
+      await activityDO.vote('poll-1', 'user1@example.com', 'Red');
+
+      expect(mockContext.storage.put).not.toHaveBeenCalled();
+    });
+
+    it('should initialize votes object if undefined', async () => {
+      const pollWithoutVotes: PollCard = { ...mockPollCard, votes: {} };
+      activityDO.activity.cards = [pollWithoutVotes];
+
+      await activityDO.vote('poll-1', 'user1@example.com', 'Red');
+
+      expect((activityDO.activity.cards![0] as PollCard).votes).toEqual({
+        'user1@example.com': 'Red',
+      });
+    });
+  });
+
+  describe('WebSocket vote message handling', () => {
+    it('should handle vote message', async () => {
+      activityDO.activity.cards = [mockPollCard];
+
+      const message = JSON.stringify({
+        type: 'vote',
+        cardId: 'poll-1',
+        userId: 'user1@example.com',
+        option: 'Red',
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activityDO.onMessage(mockConnection as any, message);
+
+      expect((activityDO.activity.cards![0] as PollCard).votes).toEqual({
+        'user1@example.com': 'Red',
+      });
+      expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
+      expect(activityDO.testBroadcast).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: 'vote',
+          cardId: 'poll-1',
+          userId: 'user1@example.com',
+          option: 'Red',
+        }),
+        undefined
+      );
+    });
+
+    it('should handle poll card creation', async () => {
+      const message = JSON.stringify({
+        type: 'card-create',
+        card: mockPollCard,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activityDO.onMessage(mockConnection as any, message);
+
+      expect(activityDO.activity.cards).toHaveLength(1);
+      expect(activityDO.activity.cards![0]).toEqual(mockPollCard);
+      expect(mockContext.storage.put).toHaveBeenCalledWith('activity', activityDO.activity);
+      expect(activityDO.testBroadcast).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: 'card-create',
+          card: mockPollCard,
+        }),
+        undefined
+      );
     });
   });
 });

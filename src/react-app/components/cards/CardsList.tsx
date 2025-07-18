@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, LinkCard as LinkCardType } from '../../../shared';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../../shared';
 import LinkCard from './LinkCard';
+import PollCard from './PollCard';
 import CardComponent from '../Card';
 import CardContextMenu from './CardContextMenu';
 
@@ -8,9 +9,11 @@ interface CardsListProps {
   cards: Card[];
   onEditCard: (card: Card) => void;
   onDeleteCard: (card: Card) => void;
+  onVote: (cardId: string, option: string) => void;
+  currentUserId?: string;
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDeleteCard }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDeleteCard, onVote, currentUserId }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -37,6 +40,24 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDelet
                     />
                   </div>
                   <LinkCard card={card as LinkCardType} />
+                </div>
+              </CardComponent>
+            );
+          case 'poll':
+            return (
+              <CardComponent key={card.id}>
+                <div className="relative">
+                  <div className="absolute top-2 right-2 z-10">
+                    <CardContextMenu
+                      onEdit={() => onEditCard(card)}
+                      onDelete={() => onDeleteCard(card)}
+                    />
+                  </div>
+                  <PollCard
+                    card={card as PollCardType}
+                    onVote={onVote}
+                    currentUserId={currentUserId}
+                  />
                 </div>
               </CardComponent>
             );

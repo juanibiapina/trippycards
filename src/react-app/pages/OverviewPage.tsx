@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
-import { FiAlertTriangle, FiPlus } from "react-icons/fi";
+import { FiAlertTriangle, FiPlus, FiChevronDown } from "react-icons/fi";
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
+import PollCreationModal from "../components/cards/PollCreationModal";
 import CardsList from "../components/cards/CardsList";
 import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, Card as CardType } from "../../shared";
+import { LinkCard, PollCard, Card as CardType } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPollModalOpen, setIsPollModalOpen] = useState(false);
+  const [isCardTypeDropdownOpen, setIsCardTypeDropdownOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
   const [cardToDelete, setCardToDelete] = useState<CardType | null>(null);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, vote, isConnected } = useActivityRoom(params.activityId || '');
 
   const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isConnected) return;
@@ -34,14 +37,36 @@ const OverviewPage = () => {
     createCard(newCard);
   };
 
+  const handleCreatePoll = (cardData: Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!isConnected) return;
+
+    const newCard: PollCard = {
+      ...cardData,
+      id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    createCard(newCard);
+  };
+
   const handleUpdateCard = (card: LinkCard) => {
+    if (!isConnected) return;
+    updateCard(card);
+  };
+
+  const handleUpdatePoll = (card: PollCard) => {
     if (!isConnected) return;
     updateCard(card);
   };
 
   const handleEditCard = (card: CardType) => {
     setEditingCard(card);
-    setIsCreateModalOpen(true);
+    if (card.type === 'poll') {
+      setIsPollModalOpen(true);
+    } else {
+      setIsCreateModalOpen(true);
+    }
   };
 
   const handleDeleteCard = (card: CardType) => {
@@ -61,7 +86,14 @@ const OverviewPage = () => {
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
+    setIsPollModalOpen(false);
     setEditingCard(null);
+    setIsCardTypeDropdownOpen(false);
+  };
+
+  const handleVote = (cardId: string, option: string) => {
+    if (!isConnected || !session?.user?.email) return;
+    vote(cardId, session.user.email, option);
   };
 
   const handleNameUpdate = (name: string) => {
@@ -74,6 +106,19 @@ const OverviewPage = () => {
     if (!isConnected) return;
     updateDates(startDate, endDate, startTime);
   };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (isCardTypeDropdownOpen) {
+        setIsCardTypeDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCardTypeDropdownOpen]);
 
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
@@ -130,13 +175,41 @@ const OverviewPage = () => {
         {/* Cards Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">Cards</h2>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
-          >
-            <FiPlus size={16} />
-            <span>Create Card</span>
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setIsCardTypeDropdownOpen(!isCardTypeDropdownOpen)}
+              className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
+            >
+              <FiPlus size={16} />
+              <span>Create Card</span>
+              <FiChevronDown size={16} />
+            </button>
+
+            {isCardTypeDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      setIsCreateModalOpen(true);
+                      setIsCardTypeDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Link Card
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsPollModalOpen(true);
+                      setIsCardTypeDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Poll Card
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Cards List */}
@@ -144,6 +217,8 @@ const OverviewPage = () => {
           cards={activity?.cards || []}
           onEditCard={handleEditCard}
           onDeleteCard={handleDeleteCard}
+          onVote={handleVote}
+          currentUserId={session?.user?.email || undefined}
         />
 
         <CardCreationModal
@@ -151,7 +226,15 @@ const OverviewPage = () => {
           onClose={handleCloseModal}
           onCreateCard={handleCreateCard}
           onUpdateCard={handleUpdateCard}
-          editingCard={editingCard as LinkCard}
+          editingCard={editingCard?.type === 'link' ? editingCard as LinkCard : undefined}
+        />
+
+        <PollCreationModal
+          isOpen={isPollModalOpen}
+          onClose={handleCloseModal}
+          onCreateCard={handleCreatePoll}
+          onUpdateCard={handleUpdatePoll}
+          editingCard={editingCard?.type === 'poll' ? editingCard as PollCard : undefined}
         />
 
         <DeleteConfirmationDialog

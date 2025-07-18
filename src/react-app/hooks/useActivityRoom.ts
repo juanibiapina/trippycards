@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
-import type { Activity, Message, Card } from '../../shared';
+import type { Activity, Message, Card, PollCard } from '../../shared';
 import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
@@ -11,6 +11,7 @@ interface UseActivityRoomResult {
   createCard: (card: Card) => void;
   updateCard: (card: Card) => void;
   deleteCard: (cardId: string) => void;
+  vote: (cardId: string, userId: string, option: string) => void;
   loading: boolean;
 }
 
@@ -78,6 +79,26 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
             cards: (prev.cards || []).filter(card => card.id !== message.cardId),
           };
         });
+      } else if (message.type === 'vote') {
+        setActivity(prev => {
+          if (!prev) return createEmptyActivity();
+          return {
+            ...prev,
+            cards: (prev.cards || []).map(card => {
+              if (card.id === message.cardId && card.type === 'poll') {
+                const pollCard = card as PollCard;
+                return {
+                  ...pollCard,
+                  votes: {
+                    ...pollCard.votes,
+                    [message.userId]: message.option,
+                  },
+                };
+              }
+              return card;
+            }),
+          };
+        });
       }
     },
   });
@@ -131,6 +152,17 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
+  const vote = useCallback((cardId: string, userId: string, option: string) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'vote',
+      cardId,
+      userId,
+      option,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
   return {
     activity,
     isConnected,
@@ -139,6 +171,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     createCard,
     updateCard,
     deleteCard,
+    vote,
     loading,
   };
 }

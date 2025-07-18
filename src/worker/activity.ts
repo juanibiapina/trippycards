@@ -4,7 +4,7 @@ import {
   type WSMessage,
 } from "partyserver";
 
-import type { Activity, Message, Card } from "../shared";
+import type { Activity, Message, Card, PollCard } from "../shared";
 import { createEmptyActivity } from "../shared";
 
 export class ActivityDO extends Server<Env> {
@@ -34,6 +34,22 @@ export class ActivityDO extends Server<Env> {
       this.activity.cards[index] = updatedCard;
       await this.ctx.storage.put("activity", this.activity);
     }
+  }
+
+  async vote(cardId: string, userId: string, option: string) {
+    if (!this.activity.cards) {
+      return;
+    }
+    const card = this.activity.cards.find(c => c.id === cardId);
+    if (!card || card.type !== 'poll') {
+      return;
+    }
+    const pollCard = card as PollCard;
+    if (!pollCard.votes) {
+      pollCard.votes = {};
+    }
+    pollCard.votes[userId] = option;
+    await this.ctx.storage.put("activity", this.activity);
   }
 
   async deleteCard(cardId: string) {
@@ -105,6 +121,14 @@ export class ActivityDO extends Server<Env> {
       this.broadcastMessage({
         type: "card-delete",
         cardId: parsed.cardId,
+      });
+    } else if (parsed.type === "vote") {
+      await this.vote(parsed.cardId, parsed.userId, parsed.option);
+      this.broadcastMessage({
+        type: "vote",
+        cardId: parsed.cardId,
+        userId: parsed.userId,
+        option: parsed.option,
       });
     }
   }
