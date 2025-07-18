@@ -4,7 +4,7 @@ This flow describes how users can create a new activity in the Trippy Cards appl
 
 ## Prerequisites
 
-- flow: Authentication
+- [Authentication](authentication.md)
 
 ## Steps
 
