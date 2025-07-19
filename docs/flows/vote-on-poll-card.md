@@ -58,6 +58,3 @@ This flow describes how users can vote on poll cards within an activity in the T
 ## Tests
 
 - Poll Card Voting E2E Test *(not yet implemented)*
-- PollCard Component Unit Tests *(not yet implemented)*
-- Vote Synchronization Tests *(not yet implemented)*
-- Real-time Update Tests *(not yet implemented)*
