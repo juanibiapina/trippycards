@@ -31,6 +31,19 @@ export function createEmptyActivity(): Activity {
   return { cards: [] };
 }
 
+export type LinkCardInput = {
+  type: 'link';
+  url: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+};
+
+export type PollCardInput = {
+  type: 'poll';
+  question: string;
+  options: string[];
+};
 
 export type Message =
   | {

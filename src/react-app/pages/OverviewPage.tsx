@@ -9,7 +9,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, Card as CardType, PollCard } from "../../shared";
+import { LinkCard, Card as CardType, PollCard, LinkCardInput, PollCardInput } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
@@ -21,7 +21,7 @@ const OverviewPage = () => {
 
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
-  const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'> | Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
     if (!isConnected) return;
 
     const base = {

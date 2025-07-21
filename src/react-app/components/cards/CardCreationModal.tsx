@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, PollCard } from '../../../shared';
+import { LinkCard, LinkCardInput, PollCardInput } from '../../../shared';
 import { validateUrl } from '../../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCard: (
-    card: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'> | Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>
+    card: LinkCardInput | PollCardInput
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
@@ -203,7 +203,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
                 type: 'poll',
                 question: pollQuestion.trim(),
                 options: trimmedOptions,
-              } as Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>);
+              });
               handleClose();
             }}>
               <div>
