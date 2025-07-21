@@ -4,7 +4,7 @@ import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
 import { handleMockSignIn } from './test-helpers'
 import { partyserverMiddleware } from "hono-party";
-import { persistUser } from "./user";
+import { persistUser, getUserById } from "./user";
 
 export { ActivityDO } from "./activity";
 
@@ -58,5 +58,21 @@ app.use('/api/auth/*', authHandler())
 
 // Verify authentication for all API routes
 app.use('/api/*', verifyAuth())
+
+app.get('/api/users/:id', async (c) => {
+  const id = Number(c.req.param('id'));
+  if (isNaN(id)) {
+    return c.json({ error: 'Invalid user ID' }, 400);
+  }
+  const user = await getUserById(id, c.env.DATABASE_URL);
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+  return c.json({
+    id: user.id.toString(),
+    name: user.name,
+    profileImage: user.picture || null,
+  });
+});
 
 export default app;

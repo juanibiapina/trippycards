@@ -33,3 +33,13 @@ export async function persistUser(user: User, profile: Profile | undefined, data
     // Don't throw error to avoid breaking the sign-in flow
   }
 }
+
+export async function getUserById(id: number, databaseUrl: string) {
+  const prisma = new PrismaClient({
+    datasourceUrl: databaseUrl,
+  }).$extends(withAccelerate());
+
+  return prisma.user.findUnique({
+    where: { id },
+  });
+}
