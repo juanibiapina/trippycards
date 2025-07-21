@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, LinkCard as LinkCardType } from '../../../shared';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import CardContextMenu from './CardContextMenu';
+import PollCard from './PollCard';
 
 interface CardsListProps {
   cards: Card[];
@@ -37,6 +38,20 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDelet
                     />
                   </div>
                   <LinkCard card={card as LinkCardType} />
+                </div>
+              </CardComponent>
+            );
+          case 'poll':
+            return (
+              <CardComponent key={card.id}>
+                <div className="relative">
+                  <div className="absolute top-2 right-2 z-10">
+                    <CardContextMenu
+                      onEdit={() => onEditCard(card)}
+                      onDelete={() => onDeleteCard(card)}
+                    />
+                  </div>
+                  <PollCard card={card as PollCardType} />
                 </div>
               </CardComponent>
             );

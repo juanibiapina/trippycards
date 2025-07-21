@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard } from '../../../shared';
+import { LinkCard, PollCard } from '../../../shared';
 import { validateUrl } from '../../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateCard: (card: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onCreateCard: (
+    card: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'> | Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>
+  ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
 }
@@ -23,18 +25,28 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
+  const [cardType, setCardType] = useState<'link' | 'poll'>('link');
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState(['', '']);
+  const [pollError, setPollError] = useState('');
 
   const isEditing = !!editingCard;
 
   // Initialize form with editing card data
   useEffect(() => {
     if (editingCard) {
+      setCardType('link'); // Only link cards can be edited for now
       setUrl(editingCard.url);
       setTitle(editingCard.title || '');
       setDescription(editingCard.description || '');
       setImageUrl(editingCard.imageUrl || '');
+    } else {
+      setCardType('link'); // Reset to default when opening for new card
     }
-  }, [editingCard]);
+    setPollQuestion('');
+    setPollOptions(['', '']);
+    setPollError('');
+  }, [editingCard, isOpen]);
 
   const validateAndSetUrl = (value: string) => {
     setUrl(value);
@@ -92,102 +104,150 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? 'Edit Link Card' : 'Create Link Card'}
+            {isEditing ? 'Edit Link Card' : 'Create Card'}
           </h2>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 p-1"
-          >
-            <FiX size={20} />
+          <button onClick={handleClose} aria-label="Close" className="text-gray-400 hover:text-gray-600">
+            <FiX size={24} />
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-                URL *
-              </label>
-              <input
-                type="url"
-                id="url"
-                value={url}
-                onChange={(e) => validateAndSetUrl(e.target.value)}
-                placeholder="https://example.com"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  urlError ? 'border-red-500' : 'border-gray-300'
-                }`}
-                required
-              />
-              {urlError && (
-                <p className="mt-1 text-sm text-red-600">{urlError}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Title (optional)
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Card title"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description (optional)
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief description of the link"
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                Image URL (optional)
-              </label>
-              <input
-                type="url"
-                id="imageUrl"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-3 mt-6">
+        <div className="p-6">
+          {/* Card Type Selection */}
+          <div className="mb-4 flex space-x-2">
             <button
               type="button"
-              onClick={handleClose}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className={`px-3 py-1 rounded ${cardType === 'link' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setCardType('link')}
+              aria-pressed={cardType === 'link'}
             >
-              Cancel
+              Link
             </button>
             <button
-              type="submit"
-              disabled={!url.trim() || !!urlError}
-              className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              type="button"
+              className={`px-3 py-1 rounded ${cardType === 'poll' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setCardType('poll')}
+              aria-pressed={cardType === 'poll'}
             >
-              {isEditing ? 'Update Card' : 'Create Card'}
+              Poll
             </button>
           </div>
-        </form>
+
+          {/* Only show link card form for now */}
+          {cardType === 'link' && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="url" className="block text-sm font-medium text-gray-700">URL<span className="text-red-500">*</span></label>
+                <input
+                  id="url"
+                  type="text"
+                  value={url}
+                  onChange={e => validateAndSetUrl(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                  required
+                />
+                {urlError && <p className="text-red-500 text-xs mt-1">{urlError}</p>}
+              </div>
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  id="title"
+                  type="text"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                />
+              </div>
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                />
+              </div>
+              <div>
+                <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">Image URL</label>
+                <input
+                  id="imageUrl"
+                  type="text"
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                />
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{isEditing ? 'Update' : 'Create'}</button>
+              </div>
+            </form>
+          )}
+          {cardType === 'poll' && (
+            <form className="space-y-4" onSubmit={e => {
+              e.preventDefault();
+              // Validate poll question and options
+              if (!pollQuestion.trim()) {
+                setPollError('Poll question is required');
+                return;
+              }
+              const trimmedOptions = pollOptions.map(opt => opt.trim()).filter(Boolean);
+              if (trimmedOptions.length < 2) {
+                setPollError('At least two options are required');
+                return;
+              }
+              setPollError('');
+              onCreateCard({
+                type: 'poll',
+                question: pollQuestion.trim(),
+                options: trimmedOptions,
+              } as Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>);
+              handleClose();
+            }}>
+              <div>
+                <label htmlFor="poll-question" className="block text-sm font-medium text-gray-700">Poll Question<span className="text-red-500">*</span></label>
+                <input
+                  id="poll-question"
+                  type="text"
+                  value={pollQuestion}
+                  onChange={e => setPollQuestion(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                  required
+                />
+              </div>
+              {pollOptions.map((option, idx) => (
+                <div key={idx} className="flex items-center space-x-2">
+                  <label htmlFor={`option-${idx+1}`} className="block text-sm font-medium text-gray-700">Option {idx+1}<span className="text-red-500">*</span></label>
+                  <input
+                    id={`option-${idx+1}`}
+                    type="text"
+                    value={option}
+                    onChange={e => {
+                      const newOptions = [...pollOptions];
+                      newOptions[idx] = e.target.value;
+                      setPollOptions(newOptions);
+                    }}
+                    className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                    required
+                  />
+                  {pollOptions.length > 2 && (
+                    <button type="button" aria-label="Remove option" onClick={() => {
+                      setPollOptions(pollOptions.filter((_, i) => i !== idx));
+                    }} className="text-red-500 hover:text-red-700">&times;</button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={() => setPollOptions([...pollOptions, ''])} className="text-blue-600 hover:underline text-sm">Add option</button>
+              {pollError && <p className="text-red-500 text-xs mt-1">{pollError}</p>}
+              <div className="flex justify-end space-x-2 mt-6">
+                <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

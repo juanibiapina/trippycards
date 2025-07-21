@@ -7,6 +7,14 @@ This flow describes how users can create a new Poll card within an activity in t
 - [Authentication](authentication.md)
 - [Create Activity](create-activity.md) - User must be on an activity page
 
+## Development Strategy
+
+When requested to implement a step, follow the following process:
+
+1. Continue the flow test implementation for the requested step in the same test, not as a separate test
+2. The assistant should run `npm run test:e2e -- --project=chrome-mobile <flow test>` themselves and check if it passes or fails for the correct reason: It must fail exactly because the implementation for the current step is missing. If it fails for any other reason, the test must be changed.
+3. Write minimal code that makes the flow test pass
+
 ## Steps
 
 1. **Navigate to Activity Page**
@@ -29,7 +37,6 @@ This flow describes how users can create a new Poll card within an activity in t
 
 5. **Submit or Cancel**
    - User clicks "Create Card" to submit the form
-   - Alternatively, user can click "Cancel" or "X" to close without saving
    - Form validates that the question is not empty and at least two options are provided
 
 6. **Card Created and Displayed**
@@ -38,7 +45,7 @@ This flow describes how users can create a new Poll card within an activity in t
    - Card displays:
      - Poll question
      - List of options (ready for voting)
-     - Context menu for edit/delete actions (if supported)
+     - Context menu for edit/delete actions
 
 ## Limitations
 
@@ -48,4 +55,4 @@ This flow describes how users can create a new Poll card within an activity in t
 
 ## Tests
 
-- Poll Card Creation E2E Test *(not yet implemented)*
+- [Poll Card Creation Flow Test](../../tests/flows/card-poll-creation.spec.ts)

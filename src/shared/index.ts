@@ -13,6 +13,12 @@ export interface LinkCard extends Card {
   imageUrl?: string;
 }
 
+export interface PollCard extends Card {
+  type: 'poll';
+  question: string;
+  options: string[];
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;

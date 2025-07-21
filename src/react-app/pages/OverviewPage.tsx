@@ -9,7 +9,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, Card as CardType } from "../../shared";
+import { LinkCard, Card as CardType, PollCard } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
@@ -21,17 +21,28 @@ const OverviewPage = () => {
 
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
-  const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreateCard = (cardData: Omit<LinkCard, 'id' | 'createdAt' | 'updatedAt'> | Omit<PollCard, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isConnected) return;
 
-    const newCard: LinkCard = {
-      ...cardData,
+    const base = {
       id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    createCard(newCard);
+    if (cardData.type === 'link') {
+      const newCard: LinkCard = {
+        ...cardData,
+        ...base,
+      };
+      createCard(newCard);
+    } else if (cardData.type === 'poll') {
+      const newCard: PollCard = {
+        ...cardData,
+        ...base,
+      };
+      createCard(newCard);
+    }
   };
 
   const handleUpdateCard = (card: LinkCard) => {
