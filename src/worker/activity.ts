@@ -115,13 +115,13 @@ export class ActivityDO extends Server<Env> {
   async onRequest(request: Request) {
     if (request.method === "POST") {
       try {
-        const parsed: any = await request.json();
+        const parsed = await request.json() as Message;
         if (!parsed || typeof parsed.type !== "string") {
           return new Response("Bad Request", { status: 400 });
         }
-        await this.handleMessage(parsed as Message);
+        await this.handleMessage(parsed);
         return new Response("OK");
-      } catch (e) {
+      } catch {
         return new Response("Bad Request", { status: 400 });
       }
     }
