@@ -38,23 +38,27 @@ test.describe('Poll Card Voting', () => {
 
     // Step 3: Select Poll Option
     // Click the first poll option
-    const firstOption = page.getByText(pollOptions[0]);
+    const firstOption = await page.locator('[data-testid="poll-option-0"]');
     await firstOption.click();
-    // Expect the selected option to be highlighted (e.g., have a selected class)
-    await expect(firstOption).toHaveClass(/selected/);
+    // Expect the selected option to have the correct classes for selection
+    await expect(firstOption).toHaveClass(/bg-gray-700/);
+    await expect(firstOption).toHaveClass(/text-white/);
+    await expect(firstOption).toHaveClass(/border-gray-700/);
 
     // Step 4: Vote Submission and Immediate Update
-    // Expect the vote count to appear and update immediately (e.g., 'Red (1)')
-    await expect(page.getByText(/Red \(1\)/)).toBeVisible();
+    // Expect the vote count to appear and update immediately (e.g., '1 vote')
+    await expect(firstOption.locator('span').nth(1)).toHaveText(/1 vote/);
 
     // Step 5: Change Vote (Optional)
     // Click the second poll option
-    const secondOption = page.getByText(pollOptions[1]);
+    const secondOption = await page.locator('[data-testid="poll-option-1"]');
     await secondOption.click();
     // Expect the second option to be highlighted
-    await expect(secondOption).toHaveClass(/selected/);
-    // Expect the vote count to update: 'Red (0)', 'Blue (1)'
-    await expect(page.getByText(/Red \(0\)/)).toBeVisible();
-    await expect(page.getByText(/Blue \(1\)/)).toBeVisible();
+    await expect(secondOption).toHaveClass(/bg-gray-700/);
+    await expect(secondOption).toHaveClass(/text-white/);
+    await expect(secondOption).toHaveClass(/border-gray-700/);
+    // Expect the vote count to update: '0 votes' for Red, '1 vote' for Blue
+    await expect(firstOption.locator('span').nth(1)).toHaveText(/0 votes/);
+    await expect(secondOption.locator('span').nth(1)).toHaveText(/1 vote/);
   });
 });
