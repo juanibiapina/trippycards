@@ -8,5 +8,9 @@ Add minimal event planning functionality to the Travel Cards application, allowi
 
 - [Create activity](../flows/create-activity.md)
 - [Create Card - Link](../flows/create-card-link.md)
-- create poll card
-- vote on poll card
+- [Create Card - Poll](../flows/create-card-poll.md)
+- [Vote on poll card](../flows/vote-on-poll-card.md)
+
+## Bugs
+
+- Redirect after login: After login, user should be redirected to the original URL they clicked, not the home page
