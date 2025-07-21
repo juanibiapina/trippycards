@@ -9,9 +9,11 @@ interface CardsListProps {
   cards: Card[];
   onEditCard: (card: Card) => void;
   onDeleteCard: (card: Card) => void;
+  userId: string;
+  onUpdateCard: (card: PollCardType) => void;
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDeleteCard }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDeleteCard, userId, onUpdateCard }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -51,7 +53,21 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, onEditCard, onDelet
                       onDelete={() => onDeleteCard(card)}
                     />
                   </div>
-                  <PollCard card={card as PollCardType} />
+                  <PollCard
+                    card={card as PollCardType}
+                    userId={userId}
+                    onVote={(optionIdx: number) => {
+                      const pollCard = card as PollCardType;
+                      const votes = pollCard.votes ? [...pollCard.votes] : [];
+                      const existing = votes.findIndex(v => v.userId === userId);
+                      if (existing !== -1) {
+                        votes[existing] = { userId, option: optionIdx };
+                      } else {
+                        votes.push({ userId, option: optionIdx });
+                      }
+                      onUpdateCard({ ...(card as PollCardType), votes });
+                    }}
+                  />
                 </div>
               </CardComponent>
             );

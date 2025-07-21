@@ -71,9 +71,7 @@ export class ActivityDO extends Server<Env> {
     );
   }
 
-  async onMessage(_connection: Connection, message: WSMessage) {
-    const parsed = JSON.parse(message as string) as Message;
-
+  async handleMessage(parsed: Message) {
     if (parsed.type === "name") {
       await this.updateName(parsed.name);
       this.broadcastMessage({
@@ -107,5 +105,31 @@ export class ActivityDO extends Server<Env> {
         cardId: parsed.cardId,
       });
     }
+  }
+
+  async onMessage(_connection: Connection, message: WSMessage) {
+    const parsed = JSON.parse(message as string) as Message;
+    await this.handleMessage(parsed);
+  }
+
+  async onRequest(request: Request) {
+    if (request.method === "POST") {
+      try {
+        const parsed: any = await request.json();
+        if (!parsed || typeof parsed.type !== "string") {
+          return new Response("Bad Request", { status: 400 });
+        }
+        await this.handleMessage(parsed as Message);
+        return new Response("OK");
+      } catch (e) {
+        return new Response("Bad Request", { status: 400 });
+      }
+    }
+    if (request.method === "GET") {
+      return new Response(JSON.stringify(this.activity), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response("Method not allowed", { status: 405 });
   }
 }

@@ -6,9 +6,19 @@ This flow describes how users can vote on poll cards within an activity in the T
 
 - [Authentication](authentication.md)
 - [Create Activity](create-activity.md) - User must be on an activity page
-- Create Poll Card - User must have poll cards available in the activity
+- [Create Card - Poll](create-poll-card.md) - User must have poll cards available in the activity
+
+## Development Strategy
+
+When requested to implement a step, follow the following process:
+
+1. Continue the flow test implementation for the requested step in the same test, not as a separate test
+2. The assistant should run `npm run test:e2e -- --project=chrome-mobile <flow test>` themselves and check if it passes or fails for the correct reason: It must fail exactly because the implementation for the current step is missing. If it fails for any other reason, the test must be changed.
+3. Write minimal code that makes the flow test pass
 
 ## Steps
+
+Given: An activity exists with a poll card
 
 1. **Navigate to Activity Page**
    - User visits an existing activity page (`/activities/[activity-id]`)
@@ -20,7 +30,6 @@ This flow describes how users can vote on poll cards within an activity in the T
 
 3. **Select Poll Option**
    - User clicks on their preferred option within a poll card
-   - Only one option can be selected per poll
    - Selected option is highlighted to indicate the user's choice
 
 4. **Vote Submission**
@@ -39,4 +48,4 @@ This flow describes how users can vote on poll cards within an activity in the T
 
 ## Tests
 
-- Poll Card Voting E2E Test *(not yet implemented)*
+[Poll Card voting flow test](../../tests/flows/vote-on-poll-card.spec.ts)

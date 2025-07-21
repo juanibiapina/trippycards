@@ -155,6 +155,8 @@ const OverviewPage = () => {
           cards={activity?.cards || []}
           onEditCard={handleEditCard}
           onDeleteCard={handleDeleteCard}
+          userId={session?.user?.id || 'anonymous'}
+          onUpdateCard={updateCard}
         />
 
         <CardCreationModal
