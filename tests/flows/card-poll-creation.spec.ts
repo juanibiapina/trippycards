@@ -7,8 +7,8 @@ test.describe('Poll Card Creation', () => {
   test('create poll card', async ({ page }) => {
     // Step 1: Go to activity page
     await page.goto(`/activities/${randomUUID()}`);
-    // Step 2: Check Cards heading is visible
-    await expect(page.getByRole('heading', { name: 'Cards', level: 2 })).toBeVisible();
+    // Step 2: Check Create Card button is visible
+    await expect(page.getByRole('button', { name: /create card/i })).toBeVisible();
     // Step 3: Open card creation modal
     await page.getByRole('button', { name: /create card/i }).click();
     const dialog = page.getByRole('dialog');

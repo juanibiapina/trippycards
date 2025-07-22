@@ -12,6 +12,6 @@ test.describe('Activity Page Navigation', () => {
     await page.click('text=New Activity');
 
     // Wait for activity page to load (should show overview)
-    await expect(page.getByRole('heading', { name: 'Cards' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /create card/i })).toBeVisible();
   });
 });

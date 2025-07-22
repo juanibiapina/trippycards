@@ -28,7 +28,7 @@ test.describe('Poll Card Voting', () => {
 
     // Step 1: Navigate to Activity Page
     await page.goto(`/activities/${activityId}`);
-    await expect(page.getByRole('heading', { name: 'Cards', level: 2 })).toBeVisible();
+    await expect(page.getByRole('button', { name: /create card/i })).toBeVisible();
 
     // Step 2: Locate Poll Card
     await expect(page.getByText(pollQuestion)).toBeVisible();
