@@ -7,6 +7,7 @@ This flow describes how users can vote on poll cards within an activity in the T
 - [Authentication](authentication.md)
 - [Create Activity](create-activity.md) - User must be on an activity page
 - [Create Card - Poll](create-poll-card.md) - User must have poll cards available in the activity
+- [User API](../api/users.md)
 
 ## Development Strategy
 
@@ -45,6 +46,7 @@ Given: An activity exists with a poll card
    - Vote totals are displayed for each option in real-time
    - Individual participant selections are visible to all users
    - Results update automatically when any participant votes or changes their vote
+   - User profile images are displayed on the option they voted
 
 ## Tests
 

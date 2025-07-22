@@ -11,6 +11,10 @@ Add minimal event planning functionality to the Travel Cards application, allowi
 - [Create Card - Poll](../flows/create-card-poll.md)
 - [Vote on poll card](../flows/vote-on-poll-card.md)
 
+## UI
+
+- Hide Cards label and Create Cards button
+
 ## Bugs
 
 - Redirect after login: After login, user should be redirected to the original URL they clicked, not the home page

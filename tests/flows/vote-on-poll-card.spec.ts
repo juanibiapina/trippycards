@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 
 test.describe('Poll Card Voting', () => {
   test('vote on poll card', async ({ page, request }) => {
-    // --- Setup: Create an activity and a poll card via HTTP API ---
+    // --- Setup: Create a poll card via HTTP API ---
     const activityId = randomUUID();
     const pollQuestion = 'What is your favorite color?';
     const pollOptions = ['Red', 'Blue', 'Green'];
@@ -30,13 +30,13 @@ test.describe('Poll Card Voting', () => {
     await page.goto(`/activities/${activityId}`);
     await expect(page.getByRole('heading', { name: 'Cards', level: 2 })).toBeVisible();
 
-    // Step 2: Locate Poll Cards
+    // Step 2: Locate Poll Card
     await expect(page.getByText(pollQuestion)).toBeVisible();
     for (const option of pollOptions) {
       await expect(page.getByText(option)).toBeVisible();
     }
 
-    // Step 3: Select Poll Option
+    // Step 3: Vote
     // Click the first poll option
     const firstOption = await page.locator('[data-testid="poll-option-0"]');
     await firstOption.click();
@@ -45,11 +45,11 @@ test.describe('Poll Card Voting', () => {
     await expect(firstOption).toHaveClass(/text-white/);
     await expect(firstOption).toHaveClass(/border-gray-700/);
 
-    // Step 4: Vote Submission and Immediate Update
+    // Step 4: Vote Submission
     // Expect the vote count to appear and update immediately (e.g., '1 vote')
     await expect(firstOption.locator('span').nth(1)).toHaveText(/1 vote/);
 
-    // Step 5: Change Vote (Optional)
+    // Step 5: Change Vote
     // Click the second poll option
     const secondOption = await page.locator('[data-testid="poll-option-1"]');
     await secondOption.click();
@@ -60,5 +60,14 @@ test.describe('Poll Card Voting', () => {
     // Expect the vote count to update: '0 votes' for Red, '1 vote' for Blue
     await expect(firstOption.locator('span').nth(1)).toHaveText(/0 votes/);
     await expect(secondOption.locator('span').nth(1)).toHaveText(/1 vote/);
+
+    // Step 6: View Results
+    // Check that the user's avatar appears on the second option (Blue) since that's where they voted
+    const secondOptionAvatars = secondOption.locator('[title]').filter({ hasText: '' });
+    await expect(secondOptionAvatars).toHaveCount(1);
+
+    // Check that no avatar appears on the first option (Red) since the user moved their vote
+    const firstOptionAvatars = firstOption.locator('[title]').filter({ hasText: '' });
+    await expect(firstOptionAvatars).toHaveCount(0);
   });
 });

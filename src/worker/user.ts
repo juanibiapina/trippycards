@@ -43,3 +43,11 @@ export async function getUserById(id: number, databaseUrl: string) {
     where: { id },
   });
 }
+
+export async function getUserByEmail(email: string, databaseUrl: string) {
+  const prisma = new PrismaClient({
+    datasourceUrl: databaseUrl,
+  }).$extends(withAccelerate());
+
+  return prisma.user.findUnique({ where: { email: email } });
+}

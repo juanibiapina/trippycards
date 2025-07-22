@@ -4,7 +4,7 @@ import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js'
 import Google from '@auth/core/providers/google'
 import { handleMockSignIn } from './test-helpers'
 import { partyserverMiddleware } from "hono-party";
-import { persistUser, getUserById } from "./user";
+import { persistUser, getUserById, getUserByEmail } from "./user";
 
 export { ActivityDO } from "./activity";
 
@@ -46,6 +46,16 @@ app.use(
           await persistUser(user, profile, c.env.DATABASE_URL);
         }
         return true;
+      },
+      async session({ session }) {
+        // Enrich session.user with the database user id
+        if (session.user && session.user.email) {
+          const user = await getUserByEmail(session.user.email, c.env.DATABASE_URL);
+          if (user) {
+            session.user.id = user.id.toString();
+          }
+        }
+        return session;
       },
     },
   }))

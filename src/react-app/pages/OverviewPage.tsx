@@ -155,7 +155,7 @@ const OverviewPage = () => {
           cards={activity?.cards || []}
           onEditCard={handleEditCard}
           onDeleteCard={handleDeleteCard}
-          userId={session?.user?.id || 'anonymous'}
+          userId={session?.user?.id || ''}
           onUpdateCard={updateCard}
         />
 

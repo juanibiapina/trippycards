@@ -1,6 +1,7 @@
 import type { User } from '@auth/core/types'
 import { encode } from '@auth/core/jwt'
 import type { Context } from 'hono'
+import { persistUser } from './user'
 
 export function createMockUser(): User {
   return {
@@ -38,6 +39,10 @@ export async function handleMockSignIn(c: Context): Promise<Response> {
   }
 
   const mockUser = createMockUser();
+
+  // Persist the user to the database (same as real auth flow)
+  await persistUser(mockUser, undefined, c.env.DATABASE_URL);
+
   const sessionToken = await generateMockSessionToken(c.env.AUTH_SECRET);
 
   c.header('Set-Cookie', createMockAuthCookie(sessionToken));
