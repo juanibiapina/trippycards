@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSession } from '@hono/auth-js/react';
-import { FiAlertTriangle, FiPlus } from "react-icons/fi";
+import { FiAlertTriangle } from "react-icons/fi";
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
@@ -133,22 +133,12 @@ const OverviewPage = () => {
         startTime={activity?.startTime}
         onNameUpdate={handleNameUpdate}
         onDateChange={handleDateChange}
+        onCreateCard={() => setIsCreateModalOpen(true)}
         disabled={!isConnected}
       />
 
       {/* Content */}
       <div className="max-w-2xl mx-auto p-4 space-y-6">
-        {/* Create Card Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-md hover:shadow-lg"
-          >
-            <FiPlus size={16} />
-            <span>Create Card</span>
-          </button>
-        </div>
-
         {/* Cards List */}
         <CardsList
           cards={activity?.cards || []}

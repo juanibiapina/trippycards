@@ -11,6 +11,8 @@ test.describe('Poll Card Creation', () => {
     await expect(page.getByRole('button', { name: /create card/i })).toBeVisible();
     // Step 3: Open card creation modal
     await page.getByRole('button', { name: /create card/i }).click();
+    // Click the Create Card menu item that appears
+    await page.getByText('Create Card').click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('button', { name: 'Create', exact: true })).toBeVisible();

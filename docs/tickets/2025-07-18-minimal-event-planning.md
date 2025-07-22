@@ -11,9 +11,11 @@ Add minimal event planning functionality to the Travel Cards application, allowi
 - [Create Card - Poll](../flows/create-card-poll.md)
 - [Vote on poll card](../flows/vote-on-poll-card.md)
 
-## UI
+## UI changes
 
-- Hide Cards label and Create Cards button
+- [x] Hide Cards label
+- [x] Move Create Card button to a context menu
+- [ ] Remove context menu from cards (since there's no update or delete)
 
 ## Bugs
 
