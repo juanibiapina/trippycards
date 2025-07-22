@@ -1,21 +1,39 @@
 import { useSession, signIn } from '@hono/auth-js/react';
 import { signOut } from '@hono/auth-js/react';
+import { useEffect } from 'react';
 
 import Button from '../components/Button.tsx';
 import Card from '../components/Card.tsx';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 function Home() {
   const { data: session } = useSession();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check if there's a redirect URL after successful authentication
+  useEffect(() => {
+    if (session) {
+      const redirectUrl = searchParams.get('redirect');
+      if (redirectUrl) {
+        // Clear the redirect parameter and navigate to the intended URL
+        navigate(decodeURIComponent(redirectUrl), { replace: true });
+      }
+    }
+  }, [session, searchParams, navigate]);
 
   if (!session) {
+    const redirectUrl = searchParams.get('redirect');
+    const callbackUrl = redirectUrl
+      ? `${window.location.origin}/?redirect=${redirectUrl}`
+      : window.location.origin;
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card centered>
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Trippy</h1>
-            <Button onClick={() => signIn('google')}>
+            <Button onClick={() => signIn('google', { callbackUrl })}>
               Sign In with Google
             </Button>
           </div>
@@ -23,7 +41,6 @@ function Home() {
       </div>
     );
   }
-
 
   const createActivity = () => {
     const activityId = crypto.randomUUID();

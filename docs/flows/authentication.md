@@ -11,7 +11,7 @@ This flow describes how users authenticate in the Trippy Cards application.
 
 1. **Navigate to Application**
    - User visits any page of the application
-   - If not authenticated, user is redirected to the home page (`/`)
+   - If not authenticated, user is redirected to the home page (`/`) with the original URL stored as a redirect parameter
 
 2. **Sign In Prompt**
    - Application displays sign-in page with "Sign In with Google" button
@@ -19,20 +19,18 @@ This flow describes how users authenticate in the Trippy Cards application.
 
 3. **Google OAuth Flow**
    - User clicks "Sign In with Google" button
-   - Application redirects to Google OAuth consent screen
+   - Application redirects to Google OAuth consent screen with callback URL containing the original redirect URL
    - User authenticates with Google and grants permissions
 
 4. **User Data Persistence**
    - Upon successful authentication, user data (email, name, picture) is persisted to database
    - System creates or updates user record using email as unique identifier
 
-5. **Authenticated Session**
-   - User is redirected back to home page with personalized greeting
+5. **Authenticated Session and Redirect**
+   - User is redirected back to home page
+   - If a redirect parameter exists, user is automatically redirected to the original URL they were trying to access
    - Session is maintained using JWT tokens stored in HTTP-only cookies
    - User can now access protected routes and create activities
-
-> [!WARNING]
-> Users are NOT redirected to the original URL.
 
 6. **Sign Out**
    - User can sign out using the "Sign Out" button on the home page

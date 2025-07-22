@@ -19,4 +19,4 @@ Add minimal event planning functionality to the Travel Cards application, allowi
 
 ## Bugs
 
-- Redirect after login: After login, user should be redirected to the original URL they clicked, not the home page
+- [x] Redirect after login: After login, user should be redirected to the original URL they clicked, not the home page

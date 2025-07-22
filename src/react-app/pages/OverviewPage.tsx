@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import { useSession } from '@hono/auth-js/react';
 import { FiAlertTriangle } from "react-icons/fi";
 import LoadingCard from "../components/LoadingCard";
@@ -14,6 +14,7 @@ const OverviewPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
+  const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const { activity, loading, updateName, updateDates, createCard, updateCard, isConnected } = useActivityRoom(params.activityId || '');
@@ -65,10 +66,12 @@ const OverviewPage = () => {
   useEffect(() => {
     // Only redirect if authentication is complete and user is not authenticated
     if (status !== "loading" && !session) {
-      navigate('/');
+      // Store the current URL as a redirect parameter
+      const redirectUrl = encodeURIComponent(location.pathname + location.search);
+      navigate(`/?redirect=${redirectUrl}`);
       return;
     }
-  }, [session, status, navigate]);
+  }, [session, status, navigate, location]);
 
   // Show loading while authentication status is being determined
   if (status === "loading") {
