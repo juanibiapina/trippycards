@@ -38,7 +38,7 @@ const PollCard: React.FC<PollCardProps> = ({ card, userId, onVote }) => {
   const { users: userMap, loading: usersLoading } = useUsers(allVoterIds);
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 space-y-4 border border-gray-200 w-full max-w-md mx-auto">
+    <>
       <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
         {card.question}
       </h3>
@@ -91,7 +91,7 @@ const PollCard: React.FC<PollCardProps> = ({ card, userId, onVote }) => {
           );
         })}
       </ul>
-    </div>
+    </>
   );
 };
 
