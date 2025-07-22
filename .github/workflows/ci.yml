@@ -91,10 +91,10 @@ jobs:
           echo "ENVIRONMENT=ci" >> .dev.vars
 
       - name: Generate Prisma client
-        run: dotenv -e .dev.vars -- npx prisma generate --no-engine
+        run: npm run generate
 
       - name: Run database migrations
-        run: dotenv -e .dev.vars -- npx prisma migrate deploy
+        run: npm run db:migrate:deploy
 
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.browser }}

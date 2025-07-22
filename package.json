@@ -65,6 +65,7 @@
     "lint": "eslint .",
     "preview": "npm run build && vite preview",
     "db:migrate": "dotenv -e .dev.vars -- npx prisma migrate dev",
+    "db:migrate:deploy": "dotenv -e .dev.vars -- npx prisma migrate deploy",
     "db:reset": "dotenv -e .dev.vars -- npx prisma migrate reset",
     "generate": "dotenv -e .dev.vars -- npx prisma generate --no-engine",
     "studio": "dotenv -e .dev.vars -- npx prisma studio",
