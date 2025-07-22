@@ -1,11 +1,9 @@
-import { PrismaClient } from "../generated/prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
-import type { User, Profile } from '@auth/core/types'
+import { getPrisma as getPrismaClient } from "./db";
+import type { User, Profile } from '@auth/core/types';
+import type { Env } from "./index";
 
-export async function persistUser(user: User, profile: Profile | undefined, databaseUrl: string) {
-  const prisma = new PrismaClient({
-    datasourceUrl: databaseUrl,
-  }).$extends(withAccelerate());
+export async function persistUser(env: Env, user: User, profile: Profile | undefined) {
+  const prismaClient = getPrismaClient(env);
 
   console.log(JSON.stringify({
     action: 'persistUser',
@@ -16,7 +14,7 @@ export async function persistUser(user: User, profile: Profile | undefined, data
 
   try {
     // Use upsert to either create new user or update existing one
-    await prisma.user.upsert({
+    await prismaClient.user.upsert({
       where: { email: user.email! },
       update: {
         name: user.name || '',
@@ -34,20 +32,16 @@ export async function persistUser(user: User, profile: Profile | undefined, data
   }
 }
 
-export async function getUserById(id: number, databaseUrl: string) {
-  const prisma = new PrismaClient({
-    datasourceUrl: databaseUrl,
-  }).$extends(withAccelerate());
+export async function getUserById(env: Env, id: number) {
+  const prismaClient = getPrismaClient(env);
 
-  return prisma.user.findUnique({
+  return prismaClient.user.findUnique({
     where: { id },
   });
 }
 
-export async function getUserByEmail(email: string, databaseUrl: string) {
-  const prisma = new PrismaClient({
-    datasourceUrl: databaseUrl,
-  }).$extends(withAccelerate());
+export async function getUserByEmail(env: Env, email: string) {
+  const prismaClient = getPrismaClient(env);
 
-  return prisma.user.findUnique({ where: { email: email } });
+  return prismaClient.user.findUnique({ where: { email: email } });
 }
