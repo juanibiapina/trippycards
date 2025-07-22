@@ -1,5 +1,8 @@
 # Minimal Event Planning
 
+- start: 18.07.2025
+- end: 22.07.2025
+
 ## Goal
 
 Add minimal event planning functionality to the Travel Cards application, allowing users to organize and plan simple events or activities.
