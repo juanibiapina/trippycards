@@ -7,19 +7,16 @@ import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
-import DeleteConfirmationDialog from "../components/cards/DeleteConfirmationDialog";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, Card as CardType, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
   const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingCard, setEditingCard] = useState<CardType | null>(null);
-  const [cardToDelete, setCardToDelete] = useState<CardType | null>(null);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, isConnected } = useActivityRoom(params.activityId || '');
 
   const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
     if (!isConnected) return;
@@ -50,29 +47,8 @@ const OverviewPage = () => {
     updateCard(card);
   };
 
-  const handleEditCard = (card: CardType) => {
-    setEditingCard(card);
-    setIsCreateModalOpen(true);
-  };
-
-  const handleDeleteCard = (card: CardType) => {
-    setCardToDelete(card);
-  };
-
-  const handleConfirmDelete = () => {
-    if (cardToDelete && isConnected) {
-      deleteCard(cardToDelete.id);
-      setCardToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setCardToDelete(null);
-  };
-
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
-    setEditingCard(null);
   };
 
   const handleNameUpdate = (name: string) => {
@@ -142,8 +118,6 @@ const OverviewPage = () => {
         {/* Cards List */}
         <CardsList
           cards={activity?.cards || []}
-          onEditCard={handleEditCard}
-          onDeleteCard={handleDeleteCard}
           userId={session?.user?.id || ''}
           onUpdateCard={updateCard}
         />
@@ -153,13 +127,7 @@ const OverviewPage = () => {
           onClose={handleCloseModal}
           onCreateCard={handleCreateCard}
           onUpdateCard={handleUpdateCard}
-          editingCard={editingCard as LinkCard}
-        />
-
-        <DeleteConfirmationDialog
-          isOpen={!!cardToDelete}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
+          editingCard={undefined}
         />
       </div>
     </div>

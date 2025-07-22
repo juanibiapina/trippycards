@@ -15,7 +15,7 @@ Add minimal event planning functionality to the Travel Cards application, allowi
 
 - [x] Hide Cards label
 - [x] Move Create Card button to a context menu
-- [ ] Remove context menu from cards (since there's no update or delete)
+- [x] Remove context menu from cards (since there's no update or delete)
 
 ## Bugs
 
