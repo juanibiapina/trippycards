@@ -52,6 +52,20 @@ jobs:
     strategy:
       matrix:
         browser: [chromium, firefox, webkit]
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: cf_travelcards_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
 
@@ -73,8 +87,14 @@ jobs:
           echo "AUTH_SECRET=test-secret-for-ci" >> .dev.vars
           echo "GOOGLE_CLIENT_ID=test-client-id" >> .dev.vars
           echo "GOOGLE_CLIENT_SECRET=test-client-secret" >> .dev.vars
-          echo "DATABASE_URL=test-database-url" >> .dev.vars
+          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/cf_travelcards_test" >> .dev.vars
           echo "ENVIRONMENT=ci" >> .dev.vars
+
+      - name: Generate Prisma client
+        run: dotenv -e .dev.vars -- npx prisma generate --no-engine
+
+      - name: Run database migrations
+        run: dotenv -e .dev.vars -- npx prisma migrate deploy
 
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.browser }}
