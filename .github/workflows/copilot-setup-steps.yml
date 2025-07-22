@@ -38,3 +38,4 @@ jobs:
           echo "GOOGLE_CLIENT_ID=test-client-id" >> .dev.vars
           echo "GOOGLE_CLIENT_SECRET=test-client-secret" >> .dev.vars
           echo "DATABASE_URL=test-database-url" >> .dev.vars
+          echo "ENVIRONMENT=copilot" >> .dev.vars

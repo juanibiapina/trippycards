@@ -5,6 +5,8 @@ import Google from '@auth/core/providers/google'
 import { handleMockSignIn } from './test-helpers'
 import { partyserverMiddleware } from "hono-party";
 import { persistUser, getUserById, getUserByEmail } from "./user";
+import * as Sentry from "@sentry/cloudflare";
+import { HTTPException } from "hono/http-exception";
 
 export { ActivityDO } from "./activity";
 
@@ -14,9 +16,23 @@ export interface Env {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   MOCK_AUTH?: string;
+  SENTRY_DSN?: string;
+  ENVIRONMENT?: string;
+  CF_VERSION_METADATA?: {
+    id: string;
+  };
 }
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: Env }>()
+  .onError((err, c) => {
+    Sentry.captureException(err);
+
+    if (err instanceof HTTPException) {
+      return err.getResponse();
+    }
+
+    return c.json({ error: "Internal server error" }, 500);
+  });
 
 app.use(logger());
 
@@ -85,4 +101,19 @@ app.get('/api/users/:id', async (c) => {
   });
 });
 
-export default app;
+export default Sentry.withSentry(
+  (env: Env) => {
+    const environment = env.ENVIRONMENT || 'development';
+    const { id: versionId } = env.CF_VERSION_METADATA || { id: 'unknown' };
+
+    return {
+      // Disable Sentry in development by not setting DSN
+      dsn: environment === 'development' ? undefined : env.SENTRY_DSN,
+      environment,
+      release: versionId,
+      sendDefaultPii: true,
+      tracesSampleRate: 1.0,
+    };
+  },
+  app,
+);

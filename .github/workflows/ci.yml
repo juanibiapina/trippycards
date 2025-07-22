@@ -74,6 +74,7 @@ jobs:
           echo "GOOGLE_CLIENT_ID=test-client-id" >> .dev.vars
           echo "GOOGLE_CLIENT_SECRET=test-client-secret" >> .dev.vars
           echo "DATABASE_URL=test-database-url" >> .dev.vars
+          echo "ENVIRONMENT=ci" >> .dev.vars
 
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.browser }}
