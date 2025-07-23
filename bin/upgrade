@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Summary: Upgrade all dependencies in the project to their latest versions
+
+set -e
+
+npx npm-check-updates -u
+npm install
+npm upgrade
