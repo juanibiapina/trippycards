@@ -59,14 +59,14 @@ app.use(
       async signIn({ user, profile }) {
         // Persist user when they sign in
         if (user.email) {
-          await persistUser(user, profile, c.env.DATABASE_URL);
+          await persistUser(c.env, user, profile);
         }
         return true;
       },
       async session({ session }) {
         // Enrich session.user with the database user id
         if (session.user && session.user.email) {
-          const user = await getUserByEmail(session.user.email, c.env.DATABASE_URL);
+          const user = await getUserByEmail(c.env, session.user.email);
           if (user) {
             session.user.id = user.id.toString();
           }
@@ -90,7 +90,7 @@ app.get('/api/users/:id', async (c) => {
   if (isNaN(id)) {
     return c.json({ error: 'Invalid user ID' }, 400);
   }
-  const user = await getUserById(id, c.env.DATABASE_URL);
+  const user = await getUserById(c.env, id);
   if (!user) {
     return c.json({ error: 'User not found' }, 404);
   }

@@ -41,7 +41,7 @@ export async function handleMockSignIn(c: Context): Promise<Response> {
   const mockUser = createMockUser();
 
   // Persist the user to the database (same as real auth flow)
-  await persistUser(mockUser, undefined, c.env.DATABASE_URL);
+  await persistUser(c.env, mockUser, undefined);
 
   const sessionToken = await generateMockSessionToken(c.env.AUTH_SECRET);
 
