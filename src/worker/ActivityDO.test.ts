@@ -11,7 +11,7 @@ vi.mock('partyserver', () => ({
 }));
 
 // Import ActivityDO after mocking
-const { ActivityDO } = await import('./activity');
+const { ActivityDO } = await import('./ActivityDO');
 
 // Mock the partyserver types
 interface MockConnection {

@@ -8,7 +8,7 @@ import { persistUser, getUserById, getUserByEmail } from "./user";
 import * as Sentry from "@sentry/cloudflare";
 import { HTTPException } from "hono/http-exception";
 
-export { ActivityDO } from "./activity";
+export { ActivityDO } from "./ActivityDO";
 
 export interface Env {
   DATABASE_URL: string;
