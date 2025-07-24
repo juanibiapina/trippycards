@@ -4,7 +4,7 @@ A full-stack web application built with React and Cloudflare Workers for managin
 
 ## Prerequisites
 
-- Node.js (latest LTS version)
+- Node.js v22+
 - npm package manager
 
 ## Getting Started
