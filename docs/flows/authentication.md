@@ -59,7 +59,7 @@ For E2E testing, the application provides a mock authentication system:
 
 - **Authentication Provider**: Google OAuth via @hono/auth-js
 - **Session Management**: JWT tokens in HTTP-only cookies
-- **Database**: User data stored in PostgreSQL via Prisma
+- **Database**: User data stored in UsersDO (Durable Object)
 - **Frontend**: React with @hono/auth-js/react hooks for session management
 - **Backend**: Hono.js worker with authentication middleware for API protection
 

@@ -4,7 +4,7 @@ This document describes the plan for implementing a `UsersDO` Singleton Durable 
 
 ## Current State
 
-- **PostgreSQL + Prisma**: Users stored in database with schema `{id, email, name, picture}`
+- **UsersDO (Durable Object)**: Users stored in Durable Object with schema `{id, email, name, picture}`
 
 ## UsersDO Implementation Plan
 
@@ -28,20 +28,6 @@ const stub = env.USERSDO.get(id);
 - Use `idFromName("singleton")` to ensure only one instance
 - All user operations go through this single instance
 - The Durable Object handles concurrency natively without any extra code from our side
-
-### 3. Data Migration Plan
-
-**Phase 1: Dual Write**
-1. Keep existing PostgreSQL + Prisma system
-2. Add UsersDO with dual-write pattern
-3. Write to both PostgreSQL and UsersDO during transition
-
-**Phase 2: Data Sync**
-1. Create migration script to sync existing users from PostgreSQL to UsersDO
-
-**Phase 3: Full Migration**
-1. Switch all reads to UsersDO
-2. Remove PostgreSQL user operations
 
 ### 4. UsersDO Interface Design
 

@@ -55,7 +55,6 @@ main() {
     local total_start_time=$(date +%s)
 
     run_step "npm run cf-typegen"             "Generate worker types"  || exit 1
-    run_step "npm run generate"               "Generate Prisma Client" || exit 1
     run_step "npx tsc --noEmit"               "TypeScript Check"       || exit 1
     run_step "npm run lint -- --fix"          "ESLint"                 || exit 1
     run_step "npm run test"                   "Unit Tests"             || exit 1

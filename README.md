@@ -41,19 +41,6 @@ A full-stack web application built with React and Cloudflare Workers for managin
 - `npm run check` - Build and dry-run deploy
 - `npm run deploy` - Deploy to Cloudflare Workers
 
-## Prisma
-
-Start by changing the schema in `prisma/schema.prisma` then run:
-
-```bash
-npm run db:migrate
-```
-
-and:
-```bash
-npm run generate
-```
-
 ## Wrangler
 
 `wrangler.json` is used to configure Workers in Cloudflare.
