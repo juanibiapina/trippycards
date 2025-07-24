@@ -2,10 +2,16 @@ import { getPrisma as getPrismaClient } from "./db";
 import type { User as AuthUser, Profile } from '@auth/core/types';
 import type { Env } from "./index";
 
+function getUsersDO(env: Env) {
+  const id = env.USERSDO.idFromName("singleton");
+  return env.USERSDO.get(id);
+}
+
 export async function persistUser(env: Env, authUser: AuthUser, profile: Profile | undefined) {
   const prismaClient = getPrismaClient(env);
 
-  await prismaClient.user.upsert({
+  // Write to Prisma (primary source)
+  const prismaResult = await prismaClient.user.upsert({
     where: { email: authUser.email! },
     update: {
       name: authUser.name || '',
@@ -17,18 +23,44 @@ export async function persistUser(env: Env, authUser: AuthUser, profile: Profile
       picture: authUser.image || profile?.picture || null,
     },
   });
+
+  // Write to UsersDO (dual write)
+  const usersDO = getUsersDO(env);
+  // Type assertion needed for DurableObject stub method calls
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (usersDO as any).upsertUser(
+    authUser.email!,
+    authUser.name || '',
+    authUser.image || profile?.picture || null
+  );
+
+  return prismaResult;
 }
 
 export async function getUserById(env: Env, id: number) {
   const prismaClient = getPrismaClient(env);
 
-  return prismaClient.user.findUnique({
+  // For now, still read from Prisma (primary source)
+  const prismaResult = await prismaClient.user.findUnique({
     where: { id },
   });
+
+  // TODO: In future phases, we can switch to reading from UsersDO
+  // and fallback to Prisma if not found
+
+  return prismaResult;
 }
 
 export async function getUserByEmail(env: Env, email: string) {
   const prismaClient = getPrismaClient(env);
 
-  return prismaClient.user.findUnique({ where: { email: email } });
+  // For now, still read from Prisma (primary source)
+  const prismaResult = await prismaClient.user.findUnique({
+    where: { email: email }
+  });
+
+  // TODO: In future phases, we can switch to reading from UsersDO
+  // and fallback to Prisma if not found
+
+  return prismaResult;
 }

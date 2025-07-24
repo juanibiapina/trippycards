@@ -9,7 +9,16 @@ export default defineConfig({
     react(),
     // Only load cloudflare plugin when not in test mode to avoid file handle leaks
     ...(process.env.NODE_ENV !== 'test' ? [cloudflare()] : []),
-    tailwindcss()
+    tailwindcss(),
+    {
+      name: 'sql-loader',
+      transform(code, id) {
+        if (id.endsWith('.sql')) {
+          const escapedCode = code.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '\\${')
+          return `export default \`${escapedCode}\`;`
+        }
+      },
+    },
   ],
   test: {
     environment: "jsdom",
