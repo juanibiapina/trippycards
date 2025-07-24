@@ -23,6 +23,10 @@
       {
         "name": "ACTIVITYDO",
         "class_name": "ActivityDO"
+      },
+      {
+        "name": "USERSDO",
+        "class_name": "UsersDO"
       }
     ]
   },
@@ -31,6 +35,12 @@
       "tag": "v1",
       "new_sqlite_classes": [
         "ActivityDO"
+      ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": [
+        "UsersDO"
       ]
     }
   ]

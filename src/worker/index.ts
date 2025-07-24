@@ -19,6 +19,8 @@ export interface Env {
   CF_VERSION_METADATA?: {
     id: string;
   };
+  ACTIVITYDO: DurableObjectNamespace;
+  USERSDO: DurableObjectNamespace;
 }
 
 const app = new Hono<{ Bindings: Env }>()
@@ -116,3 +118,4 @@ export default Sentry.withSentry(
   app,
 );
 export { ActivityDO } from "./ActivityDO";
+export { UsersDO } from "./UsersDO";
