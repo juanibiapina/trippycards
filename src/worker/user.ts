@@ -38,29 +38,15 @@ export async function persistUser(env: Env, authUser: AuthUser, profile: Profile
 }
 
 export async function getUserById(env: Env, id: number) {
-  const prismaClient = getPrismaClient(env);
-
-  // For now, still read from Prisma (primary source)
-  const prismaResult = await prismaClient.user.findUnique({
-    where: { id },
-  });
-
-  // TODO: In future phases, we can switch to reading from UsersDO
-  // and fallback to Prisma if not found
-
-  return prismaResult;
+  const usersDO = getUsersDO(env);
+  // Type assertion needed for DurableObject stub method calls
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return await (usersDO as any).getUserById(id);
 }
 
 export async function getUserByEmail(env: Env, email: string) {
-  const prismaClient = getPrismaClient(env);
-
-  // For now, still read from Prisma (primary source)
-  const prismaResult = await prismaClient.user.findUnique({
-    where: { email: email }
-  });
-
-  // TODO: In future phases, we can switch to reading from UsersDO
-  // and fallback to Prisma if not found
-
-  return prismaResult;
+  const usersDO = getUsersDO(env);
+  // Type assertion needed for DurableObject stub method calls
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return await (usersDO as any).getUserByEmail(email);
 }
