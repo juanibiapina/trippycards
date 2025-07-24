@@ -8,8 +8,6 @@ import { persistUser, getUserById, getUserByEmail } from "./user";
 import * as Sentry from "@sentry/cloudflare";
 import { HTTPException } from "hono/http-exception";
 
-export { ActivityDO } from "./ActivityDO";
-
 export interface Env {
   DATABASE_URL: string;
   AUTH_SECRET: string;
@@ -117,3 +115,4 @@ export default Sentry.withSentry(
   },
   app,
 );
+export { ActivityDO } from "./ActivityDO";
