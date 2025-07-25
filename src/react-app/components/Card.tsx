@@ -11,11 +11,11 @@ const Card = ({ children, className = "", onDelete }: CardProps) => {
 
   return (
     <div className={`${baseClasses} ${className} relative`} data-testid="card">
-      <div className="absolute top-4 right-4">
-        <CardContextMenu
-          onDelete={onDelete || (() => {/* TODO: implement delete */})}
-        />
-      </div>
+      {onDelete && (
+        <div className="absolute top-4 right-4">
+          <CardContextMenu onDelete={onDelete} />
+        </div>
+      )}
       {children}
     </div>
   );
