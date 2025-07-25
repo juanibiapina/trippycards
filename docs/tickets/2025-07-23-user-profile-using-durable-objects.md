@@ -1,7 +1,7 @@
 # User profile using Durable Objects
 
 - start: 2025-07-23
-- end: ongoing
+- end: 2025-07-25
 
 ## Goal
 
