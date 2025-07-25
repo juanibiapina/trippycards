@@ -1,6 +1,6 @@
 # Polish event planning features
 
-- start: 2025-07-xx
+- start: 2025-07-25
 - end: ongoing
 
 ## Goal
