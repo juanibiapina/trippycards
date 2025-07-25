@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiMoreVertical, FiTrash2 } from 'react-icons/fi';
+import { FiMoreHorizontal, FiTrash2 } from 'react-icons/fi';
 import { DeleteConfirmationDialog } from './DeleteConfirmationDialog';
 
 interface CardContextMenuProps {
@@ -49,11 +49,11 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({ onDelete }) =>
         aria-label="Card options"
         data-testid="card-context-menu"
       >
-        <FiMoreVertical size={16} className="text-gray-600" />
+        <FiMoreHorizontal size={16} className="text-gray-600" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[120px]">
+        <div className="absolute right-0 bottom-8 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[120px]">
           <button
             onClick={handleDelete}
             className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"

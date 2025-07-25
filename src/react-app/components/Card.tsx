@@ -12,7 +12,7 @@ const Card = ({ children, className = "", onDelete }: CardProps) => {
   return (
     <div className={`${baseClasses} ${className} relative`} data-testid="card">
       {onDelete && (
-        <div className="absolute top-4 right-4">
+        <div className="absolute bottom-1 right-1">
           <CardContextMenu onDelete={onDelete} />
         </div>
       )}

@@ -48,7 +48,8 @@ Given: An activity exists with one or more cards
 - [x] ~~Check usage of Card `centered` attribute~~ - Completed: Removed redundant `centered` prop from Card component
 - [x] ~~Remove Edit item from context menu, since it doesn't do anything currently~~ - Completed: Removed Edit functionality from CardContextMenu component
 - [x] ~~Check if TODO can be fixed in Card~~ - Completed: Fixed by only showing CardContextMenu when onDelete prop is provided
-- [ ] Position of context menu overlaps the link image
+- [x] ~~Move context menu to the bottom right corner~~ - Completed: Moved CardContextMenu from top-right to bottom-right corner of cards
+- [x] ~~Improve Card context menu icon~~ - Completed: Changed from vertical three dots (FiMoreVertical) to horizontal three dots (FiMoreHorizontal)
 
 ## Tests
 
