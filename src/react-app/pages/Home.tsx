@@ -22,6 +22,11 @@ function Home() {
     }
   }, [session, searchParams, navigate]);
 
+  const createActivity = () => {
+    const activityId = crypto.randomUUID();
+    navigate(`/activities/${activityId}`);
+  };
+
   if (!session) {
     const redirectUrl = searchParams.get('redirect');
     const callbackUrl = redirectUrl
@@ -41,11 +46,6 @@ function Home() {
       </div>
     );
   }
-
-  const createActivity = () => {
-    const activityId = crypto.randomUUID();
-    navigate(`/activities/${activityId}`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
