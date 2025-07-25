@@ -1,6 +1,6 @@
 # Polish event planning features
 
-- start: 2025-07-23
+- start: 2025-07-xx
 - end: ongoing
 
 ## Goal
@@ -9,7 +9,6 @@ Polish the event planning experience started in 2025-07-18-minimal-event-plannin
 
 ## Tasks
 
-- [ ] fix e2e tests in CI
 - [ ] card context menu
 - [ ] delete card
 - [ ] edit card
