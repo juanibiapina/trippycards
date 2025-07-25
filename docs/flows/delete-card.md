@@ -45,7 +45,7 @@ Given: An activity exists with one or more cards
 
 ## Refactoring
 
-- [ ] Check usage of Card `centered` attribute
+- [x] ~~Check usage of Card `centered` attribute~~ - Completed: Removed redundant `centered` prop from Card component
 
 ## Tests
 

@@ -90,7 +90,7 @@ const OverviewPage = () => {
   if (!activity) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card centered>
+        <Card>
           <div className="text-center">
             <div className="text-red-500 mb-4">
               <FiAlertTriangle className="w-16 h-16 mx-auto" />
