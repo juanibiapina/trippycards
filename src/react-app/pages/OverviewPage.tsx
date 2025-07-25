@@ -17,7 +17,7 @@ const OverviewPage = () => {
   const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
   const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
     if (!isConnected) return;
@@ -123,6 +123,7 @@ const OverviewPage = () => {
           cards={activity?.cards || []}
           userId={session?.user?.id || ''}
           onUpdateCard={updateCard}
+          onDeleteCard={deleteCard}
         />
 
         <CardCreationModal

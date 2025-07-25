@@ -8,9 +8,10 @@ interface CardsListProps {
   cards: Card[];
   userId: string;
   onUpdateCard: (card: PollCardType) => void;
+  onDeleteCard: (cardId: string) => void;
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -28,13 +29,13 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
         switch (card.type) {
           case 'link':
             return (
-              <CardComponent key={card.id}>
+              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <LinkCard card={card as LinkCardType} />
               </CardComponent>
             );
           case 'poll':
             return (
-              <CardComponent key={card.id}>
+              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <PollCard
                   card={card as PollCardType}
                   userId={userId}
@@ -54,7 +55,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
             );
           default:
             return (
-              <CardComponent key={card.id}>
+              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <div className="p-4 border rounded-lg bg-gray-50">
                   <p className="text-gray-600">Unknown card type: {card.type}</p>
                 </div>

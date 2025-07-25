@@ -32,7 +32,7 @@ describe('DeleteConfirmationDialog', () => {
     );
 
     expect(screen.getByText('Delete Card')).toBeInTheDocument();
-    expect(screen.getByText('Are you sure you want to delete this card? This action cannot be undone.')).toBeInTheDocument();
+    expect(screen.getByText('Are you sure you want to delete this card? This permanent removal cannot be undone.')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('Delete')).toBeInTheDocument();
   });

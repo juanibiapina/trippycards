@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiMoreVertical, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { DeleteConfirmationDialog } from './DeleteConfirmationDialog';
 
 interface CardContextMenuProps {
   onEdit: () => void;
@@ -8,6 +9,7 @@ interface CardContextMenuProps {
 
 export const CardContextMenu: React.FC<CardContextMenuProps> = ({ onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,8 +34,17 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({ onEdit, onDele
   };
 
   const handleDelete = () => {
-    onDelete();
+    setShowDeleteDialog(true);
     setIsOpen(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete();
+    setShowDeleteDialog(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -42,6 +53,7 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({ onEdit, onDele
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 rounded-full hover:bg-gray-100 transition-colors"
         aria-label="Card options"
+        data-testid="card-context-menu"
       >
         <FiMoreVertical size={16} className="text-gray-600" />
       </button>
@@ -58,12 +70,19 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({ onEdit, onDele
           <button
             onClick={handleDelete}
             className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            role="menuitem"
           >
             <FiTrash2 size={14} />
             <span>Delete</span>
           </button>
         </div>
       )}
+
+      <DeleteConfirmationDialog
+        isOpen={showDeleteDialog}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 };
