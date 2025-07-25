@@ -7,6 +7,7 @@ import { partyserverMiddleware } from "hono-party";
 import { persistUser, getUserById, getUserByEmail } from "./user";
 import * as Sentry from "@sentry/cloudflare";
 import { HTTPException } from "hono/http-exception";
+import { UsersDO } from "./UsersDO";
 
 export interface Env {
   DATABASE_URL: string;
@@ -20,7 +21,7 @@ export interface Env {
     id: string;
   };
   ACTIVITYDO: DurableObjectNamespace;
-  USERSDO: DurableObjectNamespace;
+  USERSDO: DurableObjectNamespace<UsersDO>;
 }
 
 const app = new Hono<{ Bindings: Env }>()

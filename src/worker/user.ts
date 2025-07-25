@@ -26,9 +26,7 @@ export async function persistUser(env: Env, authUser: AuthUser, profile: Profile
 
   // Write to UsersDO (dual write)
   const usersDO = getUsersDO(env);
-  // Type assertion needed for DurableObject stub method calls
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (usersDO as any).upsertUser(
+  await usersDO.upsertUser(
     authUser.email!,
     authUser.name || '',
     authUser.image || profile?.picture || null
