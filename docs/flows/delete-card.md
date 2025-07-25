@@ -46,6 +46,8 @@ Given: An activity exists with one or more cards
 ## Refactoring
 
 - [x] ~~Check usage of Card `centered` attribute~~ - Completed: Removed redundant `centered` prop from Card component
+- [x] ~~Remove Edit item from context menu, since it doesn't do anything currently~~ - Completed: Removed Edit functionality from CardContextMenu component
+- [ ] Check if TODO can be fixed in Card
 
 ## Tests
 
