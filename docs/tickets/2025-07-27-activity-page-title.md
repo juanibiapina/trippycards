@@ -2,6 +2,8 @@
 
 - start: 2025-07-27
 - end: 2025-07-27
+- status: ✅ **COMPLETED**
+- commit: [cd7f5c8](https://github.com/juanibiapina/cf-travelcards/commit/cd7f5c8)
 
 ## Goal
 
@@ -47,24 +49,24 @@ Handle different states gracefully:
 
 ## Implementation Tasks
 
-- [ ] Add useEffect hook in OverviewPage to update document.title when activity data changes
-- [ ] Handle loading states and fallback titles when activity name is not available
-- [ ] Test title functionality across different scenarios (loading, no name, with name) using unit tests
-- [ ] Ensure title resets when navigating away from activity pages
+- [x] Add useEffect hook in OverviewPage to update document.title when activity data changes
+- [x] Handle loading states and fallback titles when activity name is not available
+- [x] Test title functionality across different scenarios (loading, no name, with name) using unit tests
+- [x] Ensure title resets when navigating away from activity pages
 
 ## Unit Testing Scenarios
 
-- [ ] Test title updates when activity name changes
-- [ ] Verify loading state handling  
-- [ ] Ensure title resets when navigating away
-- [ ] Test scenarios with and without activity names
+- [x] Test title updates when activity name changes
+- [x] Verify loading state handling  
+- [x] Ensure title resets when navigating away
+- [x] Test scenarios with and without activity names
 
 ## Integration test changes
 
-Changes to [`create-activity.md`](../flows/create-activity.md) flow:
-- Add an assertion for the initial name and title
-- Rename activity
-- Assert new name and title
+Changes to [`create-activity.spec.ts`](../../tests/flows/create-activity.spec.ts) flow:
+- [x] Add an assertion for the initial name and title ("Untitled Activity")
+- [x] Rename activity to "My Summer Vacation" 
+- [x] Assert new name and title matches activity name
 
 ## Implementation Location
 
