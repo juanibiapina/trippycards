@@ -77,6 +77,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: false
       });
 
@@ -100,6 +101,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 
@@ -123,6 +125,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 
@@ -140,6 +143,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: false
       });
 
@@ -170,6 +174,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 
@@ -185,6 +190,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 
@@ -212,6 +218,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 
@@ -235,6 +242,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: false
       });
 
@@ -252,6 +260,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: false
       });
 
@@ -275,6 +284,7 @@ describe('OverviewPage', () => {
         createCard: vi.fn(),
         updateCard: vi.fn(),
         deleteCard: vi.fn(),
+        addUser: vi.fn(),
         isConnected: true
       });
 

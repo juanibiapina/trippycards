@@ -10,9 +10,10 @@ interface CardsListProps {
   userId: string;
   onUpdateCard: (card: PollCardType) => void;
   onDeleteCard: (cardId: string) => void;
+  activityUsers?: { userId: string; name?: string }[];
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard, activityUsers = [] }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -57,7 +58,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
           case 'cost':
             return (
               <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <CostCard card={card as CostCardType} />
+                <CostCard card={card as CostCardType} activityUsers={activityUsers} />
               </CardComponent>
             );
           default:

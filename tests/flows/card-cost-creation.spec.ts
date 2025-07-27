@@ -26,8 +26,24 @@ test.describe('Cost Card Creation', () => {
     await dialog.getByLabel('Description').fill('Dinner at restaurant');
     await dialog.getByLabel('Total Amount').fill('120.50');
 
-    // Select payers (for now, assume user is added as a payer)
-    // This will be updated when we implement user management
+    // Wait a moment for the user to be automatically added to the activity
+    await page.waitForTimeout(1000);
+
+    // Check if there are users available for selection and select them
+    const payersSection = dialog.locator('label:has-text("Payers")').locator('..').locator('div').last();
+    const noUsersText = payersSection.locator('text=No users in activity yet');
+
+    // If there are users, select them; otherwise just try to submit (which should fail)
+    const hasUsers = await noUsersText.count() === 0;
+    if (hasUsers) {
+      // Select the first user as payer and participant
+      const firstPayerCheckbox = payersSection.locator('input[type="checkbox"]').first();
+      await firstPayerCheckbox.check();
+
+      const participantsSection = dialog.locator('label:has-text("Participants")').locator('..').locator('div').last();
+      const firstParticipantCheckbox = participantsSection.locator('input[type="checkbox"]').first();
+      await firstParticipantCheckbox.check();
+    }
 
     // Step 6: Submit
     await expect(dialog.getByRole('button', { name: 'Create', exact: true })).toBeVisible();

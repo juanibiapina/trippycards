@@ -11,6 +11,7 @@ interface CardCreationModalProps {
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
+  activityUsers?: { userId: string; name?: string }[];
 }
 
 export const CardCreationModal: React.FC<CardCreationModalProps> = ({
@@ -19,6 +20,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   onCreateCard,
   onUpdateCard,
   editingCard,
+  activityUsers = [],
 }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
@@ -32,6 +34,8 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const [costDescription, setCostDescription] = useState('');
   const [costTotalAmount, setCostTotalAmount] = useState('');
   const [costError, setCostError] = useState('');
+  const [selectedPayers, setSelectedPayers] = useState<string[]>([]);
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
 
   const isEditing = !!editingCard;
 
@@ -52,6 +56,8 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setCostDescription('');
     setCostTotalAmount('');
     setCostError('');
+    setSelectedPayers([]);
+    setSelectedParticipants([]);
   }, [editingCard, isOpen]);
 
   const validateAndSetUrl = (value: string) => {
@@ -107,6 +113,8 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setCostDescription('');
     setCostTotalAmount('');
     setCostError('');
+    setSelectedPayers([]);
+    setSelectedParticipants([]);
     onClose();
   };
 
@@ -277,16 +285,34 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
                 setCostError('Total amount must be a positive number');
                 return;
               }
+              if (selectedPayers.length === 0) {
+                setCostError('At least one payer is required');
+                return;
+              }
+              if (selectedParticipants.length === 0) {
+                setCostError('At least one participant is required');
+                return;
+              }
               setCostError('');
 
-              // For now, create a basic cost card with dummy data
-              // TODO: Implement proper user selection and split calculation
+              // Calculate equal split among participants
+              const amountPerParticipant = amount / selectedParticipants.length;
+
+              // For now, assume the first payer pays the full amount
+              // In the future, this could be enhanced to allow multiple payers with different amounts
+              const payments = [{ userId: selectedPayers[0], amount }];
+
+              const participants = selectedParticipants.map(userId => ({
+                userId,
+                amountOwed: amountPerParticipant
+              }));
+
               onCreateCard({
                 type: 'cost',
                 description: costDescription.trim(),
                 totalAmount: amount,
-                payments: [{ userId: 'user-1', amount }], // Temporary
-                participants: [{ userId: 'user-1', amountOwed: amount }], // Temporary
+                payments,
+                participants,
               });
               handleClose();
             }}>
@@ -314,6 +340,73 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
                   required
                 />
               </div>
+
+              {/* Payers Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Payers<span className="text-red-500">*</span></label>
+                {activityUsers.length === 0 ? (
+                  <p className="text-sm text-gray-500">No users in activity yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2">
+                    {activityUsers.map(user => (
+                      <label key={user.userId} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedPayers.includes(user.userId)}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedPayers([...selectedPayers, user.userId]);
+                            } else {
+                              setSelectedPayers(selectedPayers.filter(id => id !== user.userId));
+                            }
+                          }}
+                          className="mr-2"
+                        />
+                        <span className="text-sm">{user.name || user.userId}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Participants Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Participants<span className="text-red-500">*</span></label>
+                {activityUsers.length === 0 ? (
+                  <p className="text-sm text-gray-500">No users in activity yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2">
+                    {activityUsers.map(user => (
+                      <label key={user.userId} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedParticipants.includes(user.userId)}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedParticipants([...selectedParticipants, user.userId]);
+                            } else {
+                              setSelectedParticipants(selectedParticipants.filter(id => id !== user.userId));
+                            }
+                          }}
+                          className="mr-2"
+                        />
+                        <span className="text-sm">{user.name || user.userId}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Split Preview */}
+              {selectedParticipants.length > 0 && costTotalAmount && !isNaN(parseFloat(costTotalAmount)) && parseFloat(costTotalAmount) > 0 && (
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <h5 className="text-sm font-medium text-gray-700 mb-2">Split Preview:</h5>
+                  <p className="text-sm text-gray-600">
+                    Each participant owes: ${(parseFloat(costTotalAmount) / selectedParticipants.length).toFixed(2)}
+                  </p>
+                </div>
+              )}
+
               {costError && <p className="text-red-500 text-xs mt-1">{costError}</p>}
               <div className="flex justify-end space-x-2 mt-6">
                 <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>

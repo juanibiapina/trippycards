@@ -17,7 +17,7 @@ const OverviewPage = () => {
   const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, addUser, isConnected } = useActivityRoom(params.activityId || '');
 
   // Update document title based on activity state
   useEffect(() => {
@@ -36,6 +36,22 @@ const OverviewPage = () => {
       document.title = 'Trippy';
     };
   }, [activity?.name, loading, activity]);
+
+  // Automatically add current user to activity
+  useEffect(() => {
+    if (session?.user?.id && isConnected && activity && !loading) {
+      const currentUser = {
+        userId: session.user.id,
+        name: session.user.name || session.user.email || undefined
+      };
+
+      // Check if user is already in the activity
+      const userExists = activity.users?.some(u => u.userId === currentUser.userId);
+      if (!userExists) {
+        addUser(currentUser);
+      }
+    }
+  }, [session?.user, isConnected, activity, loading, addUser]);
 
   const handleCreateCard = (cardData: LinkCardInput | PollCardInput | CostCardInput) => {
     if (!isConnected) return;
@@ -148,6 +164,7 @@ const OverviewPage = () => {
           userId={session?.user?.id || ''}
           onUpdateCard={updateCard}
           onDeleteCard={deleteCard}
+          activityUsers={activity?.users || []}
         />
 
         <CardCreationModal
@@ -156,6 +173,7 @@ const OverviewPage = () => {
           onCreateCard={handleCreateCard}
           onUpdateCard={handleUpdateCard}
           editingCard={undefined}
+          activityUsers={activity?.users || []}
         />
       </div>
     </div>

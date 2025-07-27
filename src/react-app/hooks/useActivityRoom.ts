@@ -11,6 +11,7 @@ interface UseActivityRoomResult {
   createCard: (card: Card) => void;
   updateCard: (card: Card) => void;
   deleteCard: (cardId: string) => void;
+  addUser: (user: { userId: string; name?: string }) => void;
   loading: boolean;
 }
 
@@ -78,6 +79,19 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
             cards: (prev.cards || []).filter(card => card.id !== message.cardId),
           };
         });
+      } else if (message.type === 'user-add') {
+        setActivity(prev => {
+          if (!prev) return { ...createEmptyActivity(), users: [message.user] };
+          const users = prev.users || [];
+          const existingIndex = users.findIndex(u => u.userId === message.user.userId);
+          const newUsers = existingIndex !== -1
+            ? users.map((u, i) => i === existingIndex ? message.user : u)
+            : [...users, message.user];
+          return {
+            ...prev,
+            users: newUsers,
+          };
+        });
       }
     },
   });
@@ -131,6 +145,15 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     } satisfies Message));
   }, [socket, isConnected]);
 
+  const addUser = useCallback((user: { userId: string; name?: string }) => {
+    if (!socket || !isConnected) return;
+
+    socket.send(JSON.stringify({
+      type: 'user-add',
+      user,
+    } satisfies Message));
+  }, [socket, isConnected]);
+
   return {
     activity,
     isConnected,
@@ -139,6 +162,7 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     createCard,
     updateCard,
     deleteCard,
+    addUser,
     loading,
   };
 }

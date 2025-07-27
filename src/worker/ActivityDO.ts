@@ -58,6 +58,21 @@ export class ActivityDO extends Server<Env> {
     await this.ctx.storage.put("activity", this.activity);
   }
 
+  async addUser(user: { userId: string; name?: string }) {
+    if (!this.activity.users) {
+      this.activity.users = [];
+    }
+    const existingIndex = this.activity.users.findIndex(u => u.userId === user.userId);
+    if (existingIndex !== -1) {
+      // Update existing user
+      this.activity.users[existingIndex] = user;
+    } else {
+      // Add new user
+      this.activity.users.push(user);
+    }
+    await this.ctx.storage.put("activity", this.activity);
+  }
+
   async onStart() {
     this.activity = await this.ctx.storage.get<Activity>("activity") || createEmptyActivity();
   }
@@ -103,6 +118,12 @@ export class ActivityDO extends Server<Env> {
       this.broadcastMessage({
         type: "card-delete",
         cardId: parsed.cardId,
+      });
+    } else if (parsed.type === "user-add") {
+      await this.addUser(parsed.user);
+      this.broadcastMessage({
+        type: "user-add",
+        user: parsed.user,
       });
     }
   }

@@ -3,14 +3,20 @@ import { CostCard as CostCardType } from '../../../shared';
 
 interface CostCardProps {
   card: CostCardType;
+  activityUsers?: { userId: string; name?: string }[];
 }
 
-export const CostCard: React.FC<CostCardProps> = ({ card }) => {
+export const CostCard: React.FC<CostCardProps> = ({ card, activityUsers = [] }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount);
+  };
+
+  const getUserName = (userId: string) => {
+    const user = activityUsers.find(u => u.userId === userId);
+    return user?.name || userId;
   };
 
   return (
@@ -29,7 +35,7 @@ export const CostCard: React.FC<CostCardProps> = ({ card }) => {
           <h4 className="text-sm font-medium text-gray-700">Paid by:</h4>
           {card.payments.map((payment, idx) => (
             <div key={idx} className="text-sm text-gray-600">
-              User {payment.userId}: {formatCurrency(payment.amount)}
+              {getUserName(payment.userId)}: {formatCurrency(payment.amount)}
             </div>
           ))}
         </div>
@@ -39,7 +45,7 @@ export const CostCard: React.FC<CostCardProps> = ({ card }) => {
           <h4 className="text-sm font-medium text-gray-700">Split among:</h4>
           {card.participants.map((participant, idx) => (
             <div key={idx} className="text-sm text-gray-600">
-              User {participant.userId} owes: {formatCurrency(participant.amountOwed)}
+              {getUserName(participant.userId)} owes: {formatCurrency(participant.amountOwed)}
             </div>
           ))}
         </div>
