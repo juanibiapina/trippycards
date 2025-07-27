@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../../shared';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType, CostCard as CostCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import PollCard from './PollCard';
+import CostCard from './CostCard';
 
 interface CardsListProps {
   cards: Card[];
@@ -51,6 +52,12 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
                     onUpdateCard({ ...(card as PollCardType), votes });
                   }}
                 />
+              </CardComponent>
+            );
+          case 'cost':
+            return (
+              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
+                <CostCard card={card as CostCardType} />
               </CardComponent>
             );
           default:

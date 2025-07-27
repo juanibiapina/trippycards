@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, LinkCardInput, PollCardInput } from '../../../shared';
+import { LinkCard, LinkCardInput, PollCardInput, CostCardInput } from '../../../shared';
 import { validateUrl } from '../../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCard: (
-    card: LinkCardInput | PollCardInput
+    card: LinkCardInput | PollCardInput | CostCardInput
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
@@ -25,10 +25,13 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
-  const [cardType, setCardType] = useState<'link' | 'poll'>('link');
+  const [cardType, setCardType] = useState<'link' | 'poll' | 'cost'>('link');
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollError, setPollError] = useState('');
+  const [costDescription, setCostDescription] = useState('');
+  const [costTotalAmount, setCostTotalAmount] = useState('');
+  const [costError, setCostError] = useState('');
 
   const isEditing = !!editingCard;
 
@@ -46,6 +49,9 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setPollQuestion('');
     setPollOptions(['', '']);
     setPollError('');
+    setCostDescription('');
+    setCostTotalAmount('');
+    setCostError('');
   }, [editingCard, isOpen]);
 
   const validateAndSetUrl = (value: string) => {
@@ -98,6 +104,9 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setDescription('');
     setImageUrl('');
     setUrlError('');
+    setCostDescription('');
+    setCostTotalAmount('');
+    setCostError('');
     onClose();
   };
 
@@ -132,6 +141,14 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
               aria-pressed={cardType === 'poll'}
             >
               Poll
+            </button>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded ${cardType === 'cost' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setCardType('cost')}
+              aria-pressed={cardType === 'cost'}
+            >
+              Cost
             </button>
           </div>
 
@@ -241,6 +258,63 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
               ))}
               <button type="button" onClick={() => setPollOptions([...pollOptions, ''])} className="text-blue-600 hover:underline text-sm">Add option</button>
               {pollError && <p className="text-red-500 text-xs mt-1">{pollError}</p>}
+              <div className="flex justify-end space-x-2 mt-6">
+                <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              </div>
+            </form>
+          )}
+          {cardType === 'cost' && (
+            <form className="space-y-4" onSubmit={e => {
+              e.preventDefault();
+              // Validate cost card
+              if (!costDescription.trim()) {
+                setCostError('Description is required');
+                return;
+              }
+              const amount = parseFloat(costTotalAmount);
+              if (!costTotalAmount.trim() || isNaN(amount) || amount <= 0) {
+                setCostError('Total amount must be a positive number');
+                return;
+              }
+              setCostError('');
+
+              // For now, create a basic cost card with dummy data
+              // TODO: Implement proper user selection and split calculation
+              onCreateCard({
+                type: 'cost',
+                description: costDescription.trim(),
+                totalAmount: amount,
+                payments: [{ userId: 'user-1', amount }], // Temporary
+                participants: [{ userId: 'user-1', amountOwed: amount }], // Temporary
+              });
+              handleClose();
+            }}>
+              <div>
+                <label htmlFor="cost-description" className="block text-sm font-medium text-gray-700">Description<span className="text-red-500">*</span></label>
+                <input
+                  id="cost-description"
+                  type="text"
+                  value={costDescription}
+                  onChange={e => setCostDescription(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="cost-total-amount" className="block text-sm font-medium text-gray-700">Total Amount<span className="text-red-500">*</span></label>
+                <input
+                  id="cost-total-amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={costTotalAmount}
+                  onChange={e => setCostTotalAmount(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                  required
+                />
+              </div>
+              {costError && <p className="text-red-500 text-xs mt-1">{costError}</p>}
               <div className="flex justify-end space-x-2 mt-6">
                 <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>

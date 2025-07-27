@@ -8,7 +8,7 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import { LinkCard, PollCard, CostCard, LinkCardInput, PollCardInput, CostCardInput } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
@@ -37,7 +37,7 @@ const OverviewPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | CostCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -54,6 +54,12 @@ const OverviewPage = () => {
       createCard(newCard);
     } else if (cardData.type === 'poll') {
       const newCard: PollCard = {
+        ...cardData,
+        ...base,
+      };
+      createCard(newCard);
+    } else if (cardData.type === 'cost') {
+      const newCard: CostCard = {
         ...cardData,
         ...base,
       };

@@ -20,16 +20,25 @@ export interface PollCard extends Card {
   votes?: { userId: string; option: number }[];
 }
 
+export interface CostCard extends Card {
+  type: 'cost';
+  description: string;
+  totalAmount: number;
+  payments: { userId: string; amount: number }[];
+  participants: { userId: string; amountOwed: number }[];
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;
   endDate?: string;
   startTime?: string;
   cards?: Card[];
+  users?: { userId: string; name?: string }[];
 }
 
 export function createEmptyActivity(): Activity {
-  return { cards: [] };
+  return { cards: [], users: [] };
 }
 
 export type LinkCardInput = {
@@ -44,6 +53,14 @@ export type PollCardInput = {
   type: 'poll';
   question: string;
   options: string[];
+};
+
+export type CostCardInput = {
+  type: 'cost';
+  description: string;
+  totalAmount: number;
+  payments: { userId: string; amount: number }[];
+  participants: { userId: string; amountOwed: number }[];
 };
 
 export type Message =
@@ -72,4 +89,8 @@ export type Message =
   | {
       type: "card-delete";
       cardId: string;
+    }
+  | {
+      type: "user-add";
+      user: { userId: string; name?: string };
     };
