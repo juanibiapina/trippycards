@@ -3,6 +3,7 @@ export const formatDateToLocale = (dateString: string): string => {
   try {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat(navigator.language, {
+      weekday: 'short',
       year: 'numeric',
       month: 'short',
       day: 'numeric'
