@@ -1,7 +1,7 @@
 # Activity Page Title
 
 - start: 2025-07-27
-- end: ongoing
+- end: 2025-07-27
 
 ## Goal
 
