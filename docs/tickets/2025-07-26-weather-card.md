@@ -1,10 +1,17 @@
 # Weather Card
 
+- start: 2025-07-26
+- end: ongoing
+
 ## Goal
 
 Implement a Weather Cards for displaying current weather for a location
 
-## OpenWeather API example
+## OpenWeather API
+
+Reference: https://openweathermap.org/api/one-call-3
+
+Example:
 
 ```sh
 curl "https://api.openweathermap.org/data/3.0/onecall?lat=52.4960965&lon=13.3693549&units=metric&exclude=minutely,hourly,daily&appid=<apikey>"
@@ -35,4 +42,4 @@ curl "https://api.openweathermap.org/data/3.0/onecall?lat=52.4960965&lon=13.3693
 - [x] hardcode test data in the weather card
 - [x] check what it looks like
 
-React open weather is a mess. I'd rather do my own UI or find an alternative.
+react-open-weather is a mess. I'd rather do my own UI or find an alternative.
