@@ -19,6 +19,24 @@ const OverviewPage = () => {
 
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
+  // Update document title based on activity state
+  useEffect(() => {
+    if (loading) {
+      document.title = 'Loading activity';
+    } else if (activity?.name) {
+      document.title = `${activity.name}`;
+    } else if (activity) {
+      document.title = 'Untitled Activity';
+    } else {
+      document.title = 'Activity';
+    }
+
+    // Cleanup: reset title when component unmounts
+    return () => {
+      document.title = 'Trippy';
+    };
+  }, [activity?.name, loading, activity]);
+
   const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
     if (!isConnected) return;
 
