@@ -15,6 +15,10 @@ When requested to implement a step, follow the following process:
 2. The assistant should run `npm run test:e2e -- --project=chrome-mobile <flow test>` themselves and check if it passes or fails for the correct reason: It must fail exactly because the implementation for the **next step** is missing.
 3. Write minimal code that makes the flow test pass
 
+## Technical Notes
+
+**User Management**: Users should be added as part of the activity when they interact with any card. Keep a record of user IDs at the activity level. This record serves as the base from where to select users to do the split or to be payers.
+
 ## Steps
 
 1. **Navigate to Activity Page**
