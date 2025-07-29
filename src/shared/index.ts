@@ -20,6 +20,12 @@ export interface PollCard extends Card {
   votes?: { userId: string; option: number }[];
 }
 
+export interface AILinkCard extends Card {
+  type: 'ailink';
+  url: string;
+  status?: 'processing' | 'completed' | 'error';
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;
@@ -44,6 +50,11 @@ export type PollCardInput = {
   type: 'poll';
   question: string;
   options: string[];
+};
+
+export type AILinkCardInput = {
+  type: 'ailink';
+  url: string;
 };
 
 export type Message =

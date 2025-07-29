@@ -7,6 +7,11 @@ This flow describes how users can create a new AILink card within an activity in
 - [Authentication](authentication.md)
 - [Create Activity](create-activity.md) - User must be on an activity page
 
+## Development Commands
+
+- run `npm run test:e2e -- --project=chrome-mobile <flow test>` to run tests
+- run `bin/ci` for checking build, linter and tests
+
 ## Steps
 
 1. **Navigate to Activity Page**

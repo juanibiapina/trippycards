@@ -8,7 +8,7 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import { LinkCard, PollCard, AILinkCard, LinkCardInput, PollCardInput, AILinkCardInput } from "../../shared";
 
 const OverviewPage = () => {
   const { data: session, status } = useSession();
@@ -17,10 +17,19 @@ const OverviewPage = () => {
   const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const {
+    activity,
+    loading,
+    isConnected,
+    createCard,
+    updateCard,
+    deleteCard,
+    updateName,
+    updateDates,
+  } = useActivityRoom(params.activityId || '');
 
-  // Update document title based on activity state
   useEffect(() => {
+    // Update document title based on activity state
     if (loading) {
       document.title = 'Loading activity';
     } else if (activity?.name) {
@@ -37,7 +46,7 @@ const OverviewPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | AILinkCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -56,6 +65,13 @@ const OverviewPage = () => {
       const newCard: PollCard = {
         ...cardData,
         ...base,
+      };
+      createCard(newCard);
+    } else if (cardData.type === 'ailink') {
+      const newCard: AILinkCard = {
+        ...cardData,
+        ...base,
+        status: 'processing',
       };
       createCard(newCard);
     }
