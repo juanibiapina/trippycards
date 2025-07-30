@@ -31,7 +31,6 @@ dist-ssr
 # test results
 playwright-report
 test-results
-coverage
 
 # playwright auth state
 playwright/.auth/
