@@ -17,6 +17,7 @@
   "dependencies": {
     "@auth/core": "^0.40.0",
     "@hono/auth-js": "^1.1.0",
+    "@mendable/firecrawl-js": "^1.29.3",
     "@sentry/cloudflare": "^9.41.0",
     "@tailwindcss/vite": "^4.1.11",
     "drizzle-orm": "^0.44.3",

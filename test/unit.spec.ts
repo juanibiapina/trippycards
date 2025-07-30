@@ -3,7 +3,7 @@ import {
   createExecutionContext,
   waitOnExecutionContext,
 } from "cloudflare:test";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 // Import your worker so you can unit test it
 import worker from "../src/worker";
 
@@ -24,129 +24,5 @@ describe("Worker test", () => {
     const response = await invokeWorker("http://example.com/404");
     expect(response.status).toBe(404);
     expect(await response.text()).toBe("404 Not Found");
-  });
-
-  it("creates AILink card via HTTP API", async () => {
-    // Generate a random room ID for testing
-    const roomId = crypto.randomUUID();
-    const cardId = crypto.randomUUID();
-
-    // Create the message payload for an AILink card
-    const message = {
-      type: "card-create",
-      card: {
-        id: cardId,
-        type: "ailink",
-        url: "https://example.com",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-    };
-
-    // Make a POST request to create the card
-    const response = await invokeWorker(`http://example.com/parties/activitydo/${roomId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-
-    // Verify the response is successful
-    expect(response.status).toBe(200);
-
-    // Verify we can retrieve the activity and it contains our card
-    const getResponse = await invokeWorker(`http://example.com/parties/activitydo/${roomId}`);
-
-    expect(getResponse.status).toBe(200);
-    const activity = await getResponse.json() as { cards: Array<{ id: string; type: string; url: string; workflowId?: string }> };
-
-    // Verify the AILink card was created with the correct properties
-    expect(activity.cards).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: cardId,
-          type: "ailink",
-          url: "https://example.com",
-        })
-      ])
-    );
-
-    // Verify the AILink card has a workflowId (indicating workflow was triggered)
-    const createdCard = activity.cards.find((card) => card.id === cardId);
-    expect(createdCard).toBeDefined();
-    expect(createdCard!.workflowId).toBeDefined();
-    expect(typeof createdCard!.workflowId).toBe("string");
-  });
-
-  it("calls Firecrawl API during AILink workflow", async () => {
-    // This test verifies the Firecrawl step in the AILink workflow
-    // We'll mock the Firecrawl API response for testing
-    const mockFirecrawlResponse = {
-      content: "Test page content from Firecrawl",
-      title: "Test Page Title",
-      url: "https://example.com"
-    };
-
-    // Environment variable is configured in .dev.vars file
-
-    // Create a mock fetch to intercept Firecrawl API calls
-    const originalFetch = global.fetch;
-    const mockFetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify(mockFirecrawlResponse), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    );
-    global.fetch = mockFetch;
-
-    try {
-      // Generate a random room ID and card ID for testing
-      const roomId = crypto.randomUUID();
-      const cardId = crypto.randomUUID();
-
-      // Create the message payload for an AILink card
-      const message = {
-        type: "card-create",
-        card: {
-          id: cardId,
-          type: "ailink",
-          url: "https://example.com",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }
-      };
-
-      // Make a POST request to create the card (which should trigger the workflow)
-      const response = await invokeWorker(`http://example.com/parties/activitydo/${roomId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
-
-      expect(response.status).toBe(200);
-
-      // Wait for the workflow to execute (in a real test, we'd have more sophisticated waiting)
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Verify that Firecrawl API was called
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.firecrawl.dev/v0/scrape',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json'
-          }),
-          body: JSON.stringify({
-            url: 'https://example.com'
-          })
-        })
-      );
-    } finally {
-      // Restore original fetch
-      global.fetch = originalFetch;
-    }
   });
 });

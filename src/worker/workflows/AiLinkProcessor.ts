@@ -1,5 +1,6 @@
 import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers';
 import * as Sentry from "@sentry/cloudflare";
+import FirecrawlApp from '@mendable/firecrawl-js';
 import type { Env } from '../index';
 import type { AILinkCard } from '../../shared';
 
@@ -9,41 +10,26 @@ type Params = {
     durableObjectId: string; // for the ActivityDO instance
 }
 
-interface FirecrawlResponse {
-    data?: {
-        content?: string;
-        markdown?: string;
-        metadata?: Record<string, string | number | boolean>;
-    };
-    success?: boolean;
-    message?: string;
-}
-
 export default class AiLinkProcessor extends WorkflowEntrypoint<Env, Params> {
   async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
     console.log('AILink workflow started for card:', event.payload.cardId);
 
     try {
-      // Step 1: Fetch page content using Firecrawl
+      // Step 1: Fetch page content using Firecrawl SDK
       const pageContent = await step.do('fetch-page-content', async () => {
         console.log('Fetching page content from:', event.payload.url);
 
-        const firecrawlResponse = await fetch('https://api.firecrawl.dev/v0/scrape', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.env.FIRECRAWL_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            url: event.payload.url,
-          }),
+        const app = new FirecrawlApp({ apiKey: this.env.FIRECRAWL_API_KEY });
+
+        const scrapeResult = await app.scrapeUrl(event.payload.url, {
+          formats: ['markdown', 'html']
         });
 
-        if (!firecrawlResponse.ok) {
-          throw new Error(`Firecrawl API error: ${firecrawlResponse.status}`);
+        if (!scrapeResult.success) {
+          throw new Error(`Failed to scrape: ${scrapeResult.error}`);
         }
 
-        return await firecrawlResponse.json() as FirecrawlResponse;
+        return scrapeResult;
       });
 
       console.log('AILink workflow completed with page content:', pageContent);
