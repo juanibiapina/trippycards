@@ -55,6 +55,7 @@ export default defineConfig({
           poolOptions: {
             workers: {
               wrangler: { configPath: "./wrangler.json" },
+              isolatedStorage: false,
             },
           },
         },

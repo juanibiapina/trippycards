@@ -22,6 +22,7 @@ export interface Env {
   };
   ACTIVITYDO: DurableObjectNamespace;
   USERSDO: DurableObjectNamespace<UsersDO>;
+  AILINK_WORKFLOW: Workflow;
 }
 
 const app = new Hono<{ Bindings: Env }>()
@@ -120,3 +121,4 @@ export default Sentry.withSentry(
 );
 export { ActivityDO } from "./ActivityDO";
 export { UsersDO } from "./UsersDO";
+export { default as AiLinkProcessor } from "./workflows/AiLinkProcessor";

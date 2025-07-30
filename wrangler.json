@@ -18,6 +18,11 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*", "/parties/*"]
   },
+  "workflows": [{
+    "name": "ailink-processor",
+    "binding": "AILINK_WORKFLOW", 
+    "class_name": "AiLinkProcessor"
+  }],
   "durable_objects": {
     "bindings": [
       {

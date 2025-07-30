@@ -26,13 +26,7 @@ The job:
 
 ## Backend
 
-- [ ] Trigger cloudflare workflow for processing of `AILink` cards
-
-## Cloudflare Workflow
-
-- [ ] Fetch page content using Firecrawl
-- [ ] Prompt AI Worker to generate cards for the content
-- [ ] Add created cards as children of the `AILink` card
+- [ ] Trigger cloudflare workflow for processing of `AILink` cards [../guides/async-job-for-ailink-card.md](../guides/async-job-for-ailink-card.md)
 
 ## Prerequisites
 

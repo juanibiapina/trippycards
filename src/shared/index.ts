@@ -24,6 +24,7 @@ export interface AILinkCard extends Card {
   type: 'ailink';
   url: string;
   status?: 'processing' | 'completed' | 'error';
+  workflowId?: string;
 }
 
 export type Activity = {

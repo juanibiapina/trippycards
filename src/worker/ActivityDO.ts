@@ -4,8 +4,9 @@ import {
   type WSMessage,
 } from "partyserver";
 
-import type { Activity, Message, Card } from "../shared";
+import type { Activity, Message, Card, AILinkCard } from "../shared";
 import { createEmptyActivity } from "../shared";
+import type { Env } from "./index";
 
 export class ActivityDO extends Server<Env> {
   static options = { hibernate: true };
@@ -20,8 +21,25 @@ export class ActivityDO extends Server<Env> {
     if (!this.activity.cards) {
       this.activity.cards = [];
     }
+
+    // Trigger workflow for AILink cards
+    if (card.type === 'ailink') {
+      const id = crypto.randomUUID();
+      await this.env.AILINK_WORKFLOW.create({
+        id,
+        params: {
+          cardId: card.id,
+          url: (card as AILinkCard).url,
+          durableObjectId: this.ctx.id.toString()
+        }
+      });
+      // add the workflow id to the card
+      (card as AILinkCard).workflowId = id;
+    }
+
     this.activity.cards.push(card);
     await this.ctx.storage.put("activity", this.activity);
+
   }
 
   async updateCard(updatedCard: Card) {
