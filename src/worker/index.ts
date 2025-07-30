@@ -17,6 +17,7 @@ export interface Env {
   MOCK_AUTH?: string;
   SENTRY_DSN?: string;
   ENVIRONMENT?: string;
+  FIRECRAWL_API_KEY: string;
   CF_VERSION_METADATA?: {
     id: string;
   };
