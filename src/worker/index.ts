@@ -21,6 +21,7 @@ export interface Env {
   CF_VERSION_METADATA?: {
     id: string;
   };
+  KV: KVNamespace;
   ACTIVITYDO: DurableObjectNamespace;
   USERSDO: DurableObjectNamespace<UsersDO>;
   AILINK_WORKFLOW: Workflow;

@@ -14,82 +14,34 @@ export default class AiLinkProcessor extends WorkflowEntrypoint<Env, Params> {
   async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
     console.log('AILink workflow started for card:', event.payload.cardId);
 
-    try {
-      // Step 1: Fetch page content using Firecrawl SDK
-      const pageContent = await step.do('fetch-page-content', async () => {
-        console.log('Fetching page content from:', event.payload.url);
+    const siteData = await step.do('craw URL', async () => {
+      // Check if url is cached in KV
+      const cachedSiteData = await this.env.KV.get(`v1/${event.payload.url}`);
+      if (cachedSiteData) {
+        console.log('Cache hit for URL:', event.payload.url);
+        return JSON.parse(cachedSiteData);
+      } else {
+        console.log('Cache miss. Crawling URL:', event.payload.url);
+      }
 
-        const app = new FirecrawlApp({ apiKey: this.env.FIRECRAWL_API_KEY });
+      // If not cached, fetch the page content using Firecrawl SDK
+      const app = new FirecrawlApp({ apiKey: this.env.FIRECRAWL_API_KEY });
+      const scrapeResult = await app.scrapeUrl(event.payload.url, {
+        formats: ['markdown', 'links']
+      });
+      if (!scrapeResult.success) {
+        throw new Error(`Failed to scrape: ${scrapeResult.error}`);
+      }
 
-        const scrapeResult = await app.scrapeUrl(event.payload.url, {
-          formats: ['markdown', 'html']
-        });
-
-        if (!scrapeResult.success) {
-          throw new Error(`Failed to scrape: ${scrapeResult.error}`);
-        }
-
-        return scrapeResult;
+      // Cache the result in KV
+      await this.env.KV.put(`v1/${event.payload.url}`, JSON.stringify(scrapeResult), {
+        expirationTtl: 60 * 60 * 24 * 365, // 1 year in seconds
       });
 
-      console.log('AILink workflow completed with page content:', pageContent);
-    } catch (error) {
-      console.error('AILink workflow failed for card:', event.payload.cardId, error);
+      console.log('Crawled and cached URL:', event.payload.url);
+      return scrapeResult;
+    });
 
-      // Report error to Sentry
-      Sentry.captureException(error, {
-        extra: {
-          cardId: event.payload.cardId,
-          url: event.payload.url,
-          durableObjectId: event.payload.durableObjectId,
-          workflowInstance: 'AiLinkProcessor',
-        },
-      });
-
-      // Update the card status to error
-      await this.updateCardStatus(event.payload, 'error');
-
-      // Re-throw the error to ensure the workflow is marked as failed
-      throw error;
-    }
-  }
-
-  private async updateCardStatus(params: Params, status: 'processing' | 'completed' | 'error') {
-    try {
-      // Get the ActivityDO instance
-      const durableObjectId = this.env.ACTIVITYDO.idFromString(params.durableObjectId);
-      const activityDO = this.env.ACTIVITYDO.get(durableObjectId);
-
-      // Create the updated card
-      const updatedCard: AILinkCard = {
-        id: params.cardId,
-        type: 'ailink',
-        url: params.url,
-        status: status,
-        createdAt: new Date().toISOString(), // This will be overridden by the actual card data
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Send a POST request to update the card
-      await activityDO.fetch(new Request('https://dummy', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'card-update',
-          card: updatedCard,
-        }),
-      }));
-
-      console.log(`Updated card ${params.cardId} status to ${status}`);
-    } catch (updateError) {
-      console.error('Failed to update card status:', updateError);
-      // Report this secondary error to Sentry as well
-      Sentry.captureException(updateError, {
-        extra: {
-          originalAction: 'updateCardStatus',
-          cardId: params.cardId,
-          targetStatus: status,
-        },
-      });
-    }
+    console.log('Site data fetched:', siteData);
   }
 }

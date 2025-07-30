@@ -21,7 +21,7 @@
   },
   "workflows": [{
     "name": "ailink-processor",
-    "binding": "AILINK_WORKFLOW", 
+    "binding": "AILINK_WORKFLOW",
     "class_name": "AiLinkProcessor"
   }],
   "durable_objects": {
@@ -36,6 +36,12 @@
       }
     ]
   },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "a22d3dc894bb4a038cab5fb309869777"
+    }
+  ],
   "migrations": [
     {
       "tag": "v1",
