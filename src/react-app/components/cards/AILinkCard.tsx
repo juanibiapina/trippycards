@@ -40,12 +40,18 @@ export const AILinkCard: React.FC<AILinkCardProps> = ({ card }) => {
     <div className="space-y-3">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-gray-900">
-          AI Link Card
+          {card.title || 'AI Link Card'}
         </h3>
 
         <div className={`text-sm font-medium ${getStatusColor()}`}>
           {getStatusText()}
         </div>
+
+        {card.description && (
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {card.description}
+          </p>
+        )}
 
         <div className="flex items-center space-x-2">
           <a

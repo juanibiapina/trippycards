@@ -41,5 +41,47 @@ export default class AiLinkProcessor extends WorkflowEntrypoint<Env, Params> {
     });
 
     console.log('Site data fetched:', scrapeResponse);
+
+    // Update the AI Link Card with scraped metadata
+    await step.do('update AI link card with metadata', async () => {
+      // Extract title and description from scraped metadata
+      const metadata = scrapeResponse.metadata;
+
+      // Extract title - try different sources in order of preference
+      let title = metadata?.title ||
+                  metadata?.ogTitle ||
+                  metadata?.twitterTitle ||
+                  'Untitled';
+
+      // Extract description - try different sources in order of preference
+      let description = metadata?.description ||
+                       metadata?.ogDescription ||
+                       metadata?.twitterDescription ||
+                       'No description available';
+
+      // Truncate if too long
+      if (title.length > 100) {
+        title = title.substring(0, 97) + '...';
+      }
+
+      if (description.length > 300) {
+        description = description.substring(0, 297) + '...';
+      }
+
+      console.log('Extracted metadata:', { title, description });
+
+      // Get the ActivityDO instance
+      const activityDOId = this.env.ACTIVITYDO.idFromString(event.payload.durableObjectId);
+      const activityDO = this.env.ACTIVITYDO.get(activityDOId);
+
+      // Update only the specific fields on the card via RPC
+      await activityDO.updateCardFields(event.payload.cardId, {
+        title: title,
+        description: description,
+        status: 'completed'
+      });
+
+      console.log(`Successfully updated AI Link Card ${event.payload.cardId} with metadata`);
+    });
   }
 }

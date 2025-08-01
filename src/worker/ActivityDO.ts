@@ -54,6 +54,28 @@ export class ActivityDO extends Server<Env> {
     }
   }
 
+  async updateCardFields(cardId: string, updates: Partial<Record<string, unknown>>) {
+    if (!this.activity.cards) {
+      this.activity.cards = [];
+      return;
+    }
+    const index = this.activity.cards.findIndex(card => card.id === cardId);
+    if (index !== -1) {
+      this.activity.cards[index] = {
+        ...this.activity.cards[index],
+        ...updates,
+        updatedAt: new Date().toISOString()
+      };
+      await this.ctx.storage.put("activity", this.activity);
+
+      // Broadcast the card update to all connected clients
+      this.broadcastMessage({
+        type: "card-update",
+        card: this.activity.cards[index],
+      });
+    }
+  }
+
   async deleteCard(cardId: string) {
     if (!this.activity.cards) {
       return;

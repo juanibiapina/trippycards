@@ -47,7 +47,7 @@ test.describe('AILink Card Creation', () => {
     // Step 5: AILink Card Created and Processing Begins
     // Modal closes automatically on successful creation
     await expect(dialog).not.toBeVisible();
-    // New AILink card appears immediately in the cards list showing "Processing..." state
-    await expect(page.getByText('Processing...')).toBeVisible();
+    // New AILink card appears immediately in the cards list with the URL
+    await expect(page.getByText('https://example.com')).toBeVisible();
   });
 });

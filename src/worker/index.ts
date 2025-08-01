@@ -8,6 +8,7 @@ import { persistUser, getUserById, getUserByEmail } from "./user";
 import * as Sentry from "@sentry/cloudflare";
 import { HTTPException } from "hono/http-exception";
 import { UsersDO } from "./UsersDO";
+import { ActivityDO } from "./ActivityDO";
 
 export interface Env {
   DATABASE_URL: string;
@@ -22,7 +23,7 @@ export interface Env {
     id: string;
   };
   KV: KVNamespace;
-  ACTIVITYDO: DurableObjectNamespace;
+  ACTIVITYDO: DurableObjectNamespace<ActivityDO>;
   USERSDO: DurableObjectNamespace<UsersDO>;
   AILINK_WORKFLOW: Workflow;
 }

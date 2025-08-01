@@ -23,6 +23,8 @@ export interface PollCard extends Card {
 export interface AILinkCard extends Card {
   type: 'ailink';
   url: string;
+  title?: string;
+  description?: string;
   status?: 'processing' | 'completed' | 'error';
   workflowId?: string;
 }
