@@ -8,11 +8,8 @@ import { HTTPException } from "hono/http-exception";
 import { UsersDO } from "./UsersDO";
 
 export interface Env {
-  DATABASE_URL: string;
-  AUTH_SECRET: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
-  MOCK_AUTH?: string;
   SENTRY_DSN?: string;
   ENVIRONMENT?: string;
   CF_VERSION_METADATA?: {
