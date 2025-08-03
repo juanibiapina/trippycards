@@ -79,6 +79,12 @@ jobs:
           echo "DATABASE_URL=test-database-url" >> .dev.vars
           echo "ENVIRONMENT=ci" >> .dev.vars
 
+          echo "CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}}" > .env
+          echo "CLERK_PUBLISHABLE_KEY=${{secrets.CLERK_PUBLISHABLE_KEY}}" >> .env
+          echo "VITE_CLERK_PUBLISHABLE_KEY=${{secrets.CLERK_PUBLISHABLE_KEY}}" >> .env
+          echo "E2E_CLERK_USER_USERNAME=${{secrets.E2E_CLERK_USER_USERNAME}}" >> .env
+          echo "E2E_CLERK_USER_PASSWORD=${{secrets.E2E_CLERK_USER_PASSWORD}}" >> .env
+
       - name: Run E2E tests
         run: npx playwright test --project=${{ matrix.browser }}
 
