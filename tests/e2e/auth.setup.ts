@@ -1,32 +1,27 @@
-import { test as setup, expect } from '@playwright/test';
+import { clerk, clerkSetup } from '@clerk/testing/playwright'
+import { test as setup } from '@playwright/test'
 
-const authFile = 'playwright/.auth/user.json';
+const authFile = 'playwright/.clerk/user.json';
 
+// Configure Playwright with Clerk
 setup('authenticate', async ({ page }) => {
-  // Navigate to the home page first to ensure cookies work
-  await page.goto('/');
+  await clerkSetup()
 
-  // Use page.evaluate to make the POST request from within the page context
-  // This ensures cookies are set properly
-  const response = await page.evaluate(async () => {
-    const res = await fetch('/api/auth/test-signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return res.json();
-  });
+  // Perform authentication steps.
+  // This example uses a Clerk helper to authenticate
+  await page.goto('/')
+  await clerk.signIn({
+    page,
+    signInParams: {
+      strategy: 'password',
+      identifier: process.env.E2E_CLERK_USER_USERNAME!,
+      password: process.env.E2E_CLERK_USER_PASSWORD!,
+    },
+  })
+  // Ensure the user has successfully accessed the protected page
+  // by checking an element on the page that only the authenticated user can access
+  await page.waitForSelector("button:has-text('New Activity')");
 
-  expect(response.success).toBe(true);
-  expect(response.user.email).toBe('test@example.com');
-
-  // Reload the page to pick up the session
-  await page.reload();
-
-  // Wait for the authenticated page to load
-  await expect(page.getByText('New Activity')).toBeVisible();
-
-  // Save signed-in state to 'authFile'
+  // Save the authentication state to a file
   await page.context().storageState({ path: authFile });
 });

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router";
-import { useSession } from '@hono/auth-js/react';
+import { useParams } from "react-router";
 import { FiAlertTriangle } from "react-icons/fi";
+import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
+
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
@@ -11,13 +12,11 @@ import { useActivityRoom } from "../hooks/useActivityRoom";
 import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
 
 const OverviewPage = () => {
-  const { data: session, status } = useSession();
-  const navigate = useNavigate();
   const params = useParams<{ activityId: string }>();
-  const location = useLocation();
+  const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+
 
   // Update document title based on activity state
   useEffect(() => {
@@ -81,24 +80,14 @@ const OverviewPage = () => {
     updateDates(startDate, endDate, startTime);
   };
 
-  useEffect(() => {
-    // Only redirect if authentication is complete and user is not authenticated
-    if (status !== "loading" && !session) {
-      // Store the current URL as a redirect parameter
-      const redirectUrl = encodeURIComponent(location.pathname + location.search);
-      navigate(`/?redirect=${redirectUrl}`);
-      return;
-    }
-  }, [session, status, navigate, location]);
-
   // Show loading while authentication status is being determined
-  if (status === "loading") {
+  if (!isLoaded) {
     return <LoadingCard />;
   }
 
-  // Don't render anything if not authenticated (after loading is complete)
-  if (!session) {
-    return null;
+  // Redirect to sign-in if not authenticated
+  if (!userId) {
+    return <RedirectToSignIn />;
   }
 
   if (loading) {
@@ -139,7 +128,7 @@ const OverviewPage = () => {
         {/* Cards List */}
         <CardsList
           cards={activity?.cards || []}
-          userId={session?.user?.id || ''}
+          userId={userId}
           onUpdateCard={updateCard}
           onDeleteCard={deleteCard}
         />

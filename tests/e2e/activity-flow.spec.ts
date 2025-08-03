@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { setupClerkTestingToken } from '@clerk/testing/playwright';
 
 test.describe('Activity Page Navigation', () => {
   test('activity page loads overview directly', async ({ page }) => {
+    await setupClerkTestingToken({ page });
+
     // Navigate to home page
     await page.goto('/');
 
-    // Wait for authentication (should be handled by auth.setup.ts)
+    // Wait for authentication
     await expect(page.locator('text=New Activity')).toBeVisible();
 
     // Click New Activity button

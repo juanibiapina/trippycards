@@ -6,6 +6,6 @@ test.describe('Home - Not Authenticated', () => {
   test('home', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.locator('text=Sign in')).toBeVisible();
+    await expect(page.locator('text=Sign in to Trippy Cards')).toBeVisible();
   });
 });

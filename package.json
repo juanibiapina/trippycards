@@ -15,12 +15,12 @@
     "publish": true
   },
   "dependencies": {
-    "@auth/core": "^0.40.0",
-    "@hono/auth-js": "^1.1.0",
+    "@clerk/clerk-react": "^5.38.1",
+    "@hono/clerk-auth": "^3.0.3",
     "@sentry/cloudflare": "^9.41.0",
     "@tailwindcss/vite": "^4.1.11",
     "drizzle-orm": "^0.44.3",
-    "hono": "^4.8.7",
+    "hono": "^4.8.12",
     "hono-party": "^0.0.13",
     "partyserver": "^0.0.72",
     "partysocket": "1.1.4",
@@ -31,6 +31,7 @@
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
+    "@clerk/testing": "^1.10.9",
     "@cloudflare/vite-plugin": "1.10.1",
     "@eslint/js": "9.31.0",
     "@playwright/test": "^1.54.1",
