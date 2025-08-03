@@ -14,7 +14,8 @@ Structure:
 
 ### Development commands
 
-- Prefer running `bin/ci` to run full integration test suite including linter, unit tests and integration tests
+- Use `npm run test:e2e -- --project=chrome-mobile <filename>` to run a single integration test
+- Use `bin/ci` to run full integration test suite including building, linter, unit tests and integration tests
 
 ### Checking server logs
 
