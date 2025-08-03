@@ -43,5 +43,11 @@
         "UsersDO"
       ]
     }
+  ],
+  "routes": [
+    {
+      "pattern": "trippycards.com",
+      "custom_domain": true
+    }
   ]
 }
