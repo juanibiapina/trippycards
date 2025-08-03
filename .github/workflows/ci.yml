@@ -72,7 +72,7 @@ jobs:
 
       - name: Create .dev.vars for E2E tests
         run: |
-          echo "ENVIRONMENT=copilot" > .dev.vars
+          echo "ENVIRONMENT=ci" > .dev.vars
           echo "CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}}" >> .dev.vars
           echo "CLERK_PUBLISHABLE_KEY=${{secrets.CLERK_PUBLISHABLE_KEY}}" >> .dev.vars
 
