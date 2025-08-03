@@ -63,11 +63,11 @@ test.describe('Poll Card Voting', () => {
 
     // Step 6: View Results
     // Check that the user's avatar appears on the second option (Blue) since that's where they voted
-    const secondOptionAvatars = secondOption.locator('[title]').filter({ hasText: '' });
+    const secondOptionAvatars = secondOption.locator('[title]');
     await expect(secondOptionAvatars).toHaveCount(1);
 
     // Check that no avatar appears on the first option (Red) since the user moved their vote
-    const firstOptionAvatars = firstOption.locator('[title]').filter({ hasText: '' });
+    const firstOptionAvatars = firstOption.locator('[title]');
     await expect(firstOptionAvatars).toHaveCount(0);
   });
 });

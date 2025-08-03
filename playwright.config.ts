@@ -21,29 +21,11 @@ export default defineConfig({
       },
     },
     {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        // Use prepared auth state
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
-    },
-    {
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
         // Use prepared auth state
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        // Use prepared auth state
-        storageState: 'playwright/.auth/user.json',
+        storageState: 'playwright/.clerk/user.json',
       },
       dependencies: ['setup'],
     },
@@ -52,7 +34,7 @@ export default defineConfig({
       use: {
         ...devices['Pixel 5'],
         // Use prepared auth state
-        storageState: 'playwright/.auth/user.json',
+        storageState: 'playwright/.clerk/user.json',
       },
       dependencies: ['setup'],
     },

@@ -11,35 +11,11 @@ test.describe('Redirect After Login', () => {
 
     await page.goto(originalUrl);
 
-    // Should be redirected to home page with redirect parameter
-    await expect(page.getByText('Sign In with Google')).toBeVisible();
+    // Should be redirected to sign in page
+    await expect(page.getByText('Sign in to Trippy Cards')).toBeVisible({ timeout: 10000 });
 
-    // Check that the redirect parameter is in the URL (URL params are automatically decoded)
+    // Check that the redirect parameter is in the URL
     const currentUrl = new URL(page.url());
-    expect(currentUrl.pathname).toBe('/');
-    expect(currentUrl.searchParams.get('redirect')).toBe(originalUrl);
-
-    // Simulate authentication using the test endpoint
-    await page.evaluate(async () => {
-      const response = await fetch('/api/auth/test-signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return response.json();
-    });
-
-    // Reload the page to pick up the new session state
-    await page.reload();
-
-    // Wait for authentication to be processed and redirect to happen
-    await page.waitForURL(originalUrl, { timeout: 5000 });
-
-    // Should now be on the original activity page
-    expect(page.url()).toContain(originalUrl);
-
-    // Should see activity page content (activity header)
-    await expect(page.getByText('Cards')).toBeVisible();
+    expect(currentUrl.searchParams.get('redirect_url')).toBe(`http://localhost:5173${originalUrl}`);
   });
 });

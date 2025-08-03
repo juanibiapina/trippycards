@@ -1,3 +1,4 @@
+import { useAuth } from '@clerk/clerk-react';
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
 import type { Activity, Message, Card } from '../../shared';
@@ -15,6 +16,7 @@ interface UseActivityRoomResult {
 }
 
 export function useActivityRoom(activityId: string): UseActivityRoomResult {
+  const { getToken } = useAuth();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,9 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
   const socket = usePartySocket({
     room: activityId,
     party: 'activitydo',
+    query: async () => ({
+      token: await getToken(),
+    }),
     onOpen: () => {
       setIsConnected(true);
     },

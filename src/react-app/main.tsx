@@ -8,7 +8,6 @@ import {
 import "./main.css";
 import App from "./App.tsx";
 import Home from "./pages/Home.tsx";
-import ActivityPage from "./pages/ActivityPage.tsx";
 import OverviewPage from "./pages/OverviewPage.tsx";
 
 const router = createBrowserRouter([
@@ -17,13 +16,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      {
-        path: "activities/:activityId",
-        element: <ActivityPage />,
-        children: [
-          { index: true, element: <OverviewPage /> },
-        ]
-      },
+      { path: "activities/:activityId", element: <OverviewPage /> },
     ],
   },
 ]);

@@ -1,10 +1,14 @@
 // flow: docs/flows/create-card-poll.md
 
 import { test, expect } from '@playwright/test';
+import { setupClerkTestingToken } from '@clerk/testing/playwright';
 import { randomUUID } from 'crypto';
 
 test.describe('Poll Card Creation', () => {
+
   test('create poll card', async ({ page }) => {
+    await setupClerkTestingToken({ page });
+
     // Step 1: Go to activity page
     await page.goto(`/activities/${randomUUID()}`);
     // Step 2: Check Create Card button is visible
