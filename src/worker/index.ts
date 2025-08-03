@@ -5,7 +5,6 @@ import { clerkMiddleware, getAuth } from '@hono/clerk-auth'
 import { partyserverMiddleware } from "hono-party";
 import * as Sentry from "@sentry/cloudflare";
 import { HTTPException } from "hono/http-exception";
-import { UsersDO } from "./UsersDO";
 
 export interface Env {
   GOOGLE_CLIENT_ID: string;
@@ -16,7 +15,6 @@ export interface Env {
     id: string;
   };
   ACTIVITYDO: DurableObjectNamespace;
-  USERSDO: DurableObjectNamespace<UsersDO>;
   JWKS_PK: string; // Public key for JWT verification
 }
 
@@ -109,4 +107,3 @@ export default Sentry.withSentry(
   }
 );
 export { ActivityDO } from "./ActivityDO";
-export { UsersDO } from "./UsersDO";
