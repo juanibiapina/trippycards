@@ -81,8 +81,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
     },
   });
 
-
-
   const updateName = useCallback((name: string) => {
     if (!socket || !isConnected) return;
 
