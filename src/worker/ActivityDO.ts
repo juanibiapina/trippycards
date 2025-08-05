@@ -9,11 +9,20 @@ import type { Activity, Message, Card } from "../shared";
 export class ActivityDO extends Server<Env> {
   static options = { hibernate: true };
 
-  activity = {} as Activity;
+  private activity: Activity = {};
 
-  broadcastMessage(message: Message, exclude?: string[]) {
-    this.broadcast(JSON.stringify(message), exclude);
-  }
+  /**
+   * Public API - Use this class by getting a stub and calling methods directly:
+   *
+   * Example usage:
+   *   const activityId = "some-activity-id";
+   *   const stub = env.ACTIVITYDO.idFromString(activityId).get(ActivityDO);
+   *   await stub.addCard(newCard);
+   *   await stub.updateName("New Activity Name");
+   *
+   * All method calls automatically propagate updates to connected WebSocket clients
+   * via the internal broadcast mechanism.
+   */
 
   async addCard(card: Card) {
     if (!this.activity.cards) {
@@ -55,6 +64,8 @@ export class ActivityDO extends Server<Env> {
     await this.ctx.storage.put("activity", this.activity);
   }
 
+  // Lifecycle methods
+
   async onStart() {
     this.activity = await this.ctx.storage.get<Activity>("activity") || { cards: [] };
   }
@@ -94,7 +105,9 @@ export class ActivityDO extends Server<Env> {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  async handleMessage(message: Message) {
+  // Private methods
+
+  private async handleMessage(message: Message) {
     if (message.type === "name") {
       await this.updateName(message.name);
       this.broadcastMessage({
@@ -128,5 +141,9 @@ export class ActivityDO extends Server<Env> {
         cardId: message.cardId,
       });
     }
+  }
+
+  private broadcastMessage(message: Message, exclude?: string[]) {
+    this.broadcast(JSON.stringify(message), exclude);
   }
 }
