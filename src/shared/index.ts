@@ -28,10 +28,6 @@ export type Activity = {
   cards?: Card[];
 }
 
-export function createEmptyActivity(): Activity {
-  return { cards: [] };
-}
-
 export type LinkCardInput = {
   type: 'link';
   url: string;

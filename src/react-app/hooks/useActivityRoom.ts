@@ -2,7 +2,6 @@ import { useAuth } from '@clerk/clerk-react';
 import { useState, useCallback } from 'react';
 import { usePartySocket } from 'partysocket/react';
 import type { Activity, Message, Card } from '../../shared';
-import { createEmptyActivity } from '../../shared';
 
 interface UseActivityRoomResult {
   activity: Activity | null;
@@ -17,7 +16,7 @@ interface UseActivityRoomResult {
 
 export function useActivityRoom(activityId: string): UseActivityRoomResult {
   const { getToken } = useAuth();
-  const [activity, setActivity] = useState<Activity | null>(null);
+  const [activity, setActivity] = useState<Activity>({ cards: [] });
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +40,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         setLoading(false);
       } else if (message.type === 'name') {
         setActivity(prev => {
-          if (!prev) return { ...createEmptyActivity(), name: message.name };
           return {
             ...prev,
             name: message.name,
@@ -49,7 +47,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'dates') {
         setActivity(prev => {
-          if (!prev) return { ...createEmptyActivity(), startDate: message.startDate, endDate: message.endDate, startTime: message.startTime };
           return {
             ...prev,
             startDate: message.startDate,
@@ -59,7 +56,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'card-create') {
         setActivity(prev => {
-          if (!prev) return { ...createEmptyActivity(), cards: [message.card] };
           return {
             ...prev,
             cards: [...(prev.cards || []), message.card],
@@ -67,7 +63,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'card-update') {
         setActivity(prev => {
-          if (!prev) return createEmptyActivity();
           return {
             ...prev,
             cards: (prev.cards || []).map(card =>
@@ -77,7 +72,6 @@ export function useActivityRoom(activityId: string): UseActivityRoomResult {
         });
       } else if (message.type === 'card-delete') {
         setActivity(prev => {
-          if (!prev) return createEmptyActivity();
           return {
             ...prev,
             cards: (prev.cards || []).filter(card => card.id !== message.cardId),

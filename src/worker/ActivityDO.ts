@@ -5,7 +5,6 @@ import {
 } from "partyserver";
 
 import type { Activity, Message, Card } from "../shared";
-import { createEmptyActivity } from "../shared";
 
 export class ActivityDO extends Server<Env> {
   static options = { hibernate: true };
@@ -59,10 +58,10 @@ export class ActivityDO extends Server<Env> {
   }
 
   async onStart() {
-    this.activity = await this.ctx.storage.get<Activity>("activity") || createEmptyActivity();
+    this.activity = await this.ctx.storage.get<Activity>("activity") || { cards: [] };
   }
 
-  onConnect(connection: Connection) {
+  async onConnect(connection: Connection) {
     connection.send(
       JSON.stringify({
         type: "activity",
@@ -71,55 +70,19 @@ export class ActivityDO extends Server<Env> {
     );
   }
 
-  async handleMessage(parsed: Message) {
-    if (parsed.type === "name") {
-      await this.updateName(parsed.name);
-      this.broadcastMessage({
-        type: "name",
-        name: parsed.name,
-      });
-    } else if (parsed.type === "dates") {
-      await this.updateDates(parsed.startDate, parsed.endDate, parsed.startTime);
-      this.broadcastMessage({
-        type: "dates",
-        startDate: parsed.startDate,
-        endDate: parsed.endDate,
-        startTime: parsed.startTime,
-      });
-    } else if (parsed.type === "card-create") {
-      await this.addCard(parsed.card);
-      this.broadcastMessage({
-        type: "card-create",
-        card: parsed.card,
-      });
-    } else if (parsed.type === "card-update") {
-      await this.updateCard(parsed.card);
-      this.broadcastMessage({
-        type: "card-update",
-        card: parsed.card,
-      });
-    } else if (parsed.type === "card-delete") {
-      await this.deleteCard(parsed.cardId);
-      this.broadcastMessage({
-        type: "card-delete",
-        cardId: parsed.cardId,
-      });
-    }
-  }
-
-  async onMessage(_connection: Connection, message: WSMessage) {
-    const parsed = JSON.parse(message as string) as Message;
-    await this.handleMessage(parsed);
+  async onMessage(_connection: Connection, rawMessage: WSMessage) {
+    const message = JSON.parse(rawMessage as string) as Message;
+    await this.handleMessage(message);
   }
 
   async onRequest(request: Request) {
     if (request.method === "POST") {
       try {
-        const parsed = await request.json() as Message;
-        if (!parsed || typeof parsed.type !== "string") {
+        const message = await request.json() as Message;
+        if (!message || typeof message.type !== "string") {
           return new Response("Bad Request", { status: 400 });
         }
-        await this.handleMessage(parsed);
+        await this.handleMessage(message);
         return new Response("OK");
       } catch {
         return new Response("Bad Request", { status: 400 });
@@ -131,5 +94,41 @@ export class ActivityDO extends Server<Env> {
       });
     }
     return new Response("Method not allowed", { status: 405 });
+  }
+
+  async handleMessage(message: Message) {
+    if (message.type === "name") {
+      await this.updateName(message.name);
+      this.broadcastMessage({
+        type: "name",
+        name: message.name,
+      });
+    } else if (message.type === "dates") {
+      await this.updateDates(message.startDate, message.endDate, message.startTime);
+      this.broadcastMessage({
+        type: "dates",
+        startDate: message.startDate,
+        endDate: message.endDate,
+        startTime: message.startTime,
+      });
+    } else if (message.type === "card-create") {
+      await this.addCard(message.card);
+      this.broadcastMessage({
+        type: "card-create",
+        card: message.card,
+      });
+    } else if (message.type === "card-update") {
+      await this.updateCard(message.card);
+      this.broadcastMessage({
+        type: "card-update",
+        card: message.card,
+      });
+    } else if (message.type === "card-delete") {
+      await this.deleteCard(message.cardId);
+      this.broadcastMessage({
+        type: "card-delete",
+        cardId: message.cardId,
+      });
+    }
   }
 }
