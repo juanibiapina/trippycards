@@ -43,8 +43,6 @@ export class ActivityDO extends Server<Env> {
     await this.ctx.storage.put("activity", this.activity);
   }
 
-
-
   async updateName(name: string) {
     this.activity.name = name;
     await this.ctx.storage.put("activity", this.activity);
