@@ -19,7 +19,6 @@
     "@hono/clerk-auth": "^3.0.3",
     "@sentry/cloudflare": "^9.41.0",
     "@tailwindcss/vite": "^4.1.11",
-    "drizzle-orm": "^0.44.3",
     "hono": "^4.8.12",
     "hono-party": "^0.0.13",
     "partyserver": "^0.0.72",
@@ -43,7 +42,6 @@
     "@types/react-dom": "19.1.6",
     "@vitejs/plugin-react": "^4.7.0",
     "dotenv-cli": "^9.0.0",
-    "drizzle-kit": "^0.31.4",
     "eslint": "9.31.0",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.20",
@@ -64,7 +62,6 @@
     "dev": "vite",
     "lint": "eslint .",
     "preview": "npm run build && vite preview",
-
     "test": "vitest --no-watch",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
