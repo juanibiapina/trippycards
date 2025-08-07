@@ -11,7 +11,7 @@ import CardsList from "../components/cards/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
 
-const OverviewPage = () => {
+const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -145,4 +145,4 @@ const OverviewPage = () => {
   );
 };
 
-export default OverviewPage;
+export default ActivityPage;
