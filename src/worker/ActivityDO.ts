@@ -114,7 +114,11 @@ export class ActivityDO extends Server<Env> {
         type: "name",
         name: message.name,
       });
-    } else if (message.type === "dates") {
+
+      return;
+    }
+
+    if (message.type === "dates") {
       await this.updateDates(message.startDate, message.endDate, message.startTime);
       this.broadcastMessage({
         type: "dates",
@@ -122,24 +126,38 @@ export class ActivityDO extends Server<Env> {
         endDate: message.endDate,
         startTime: message.startTime,
       });
-    } else if (message.type === "card-create") {
+
+      return;
+    }
+
+    if (message.type === "card-create") {
       await this.addCard(message.card);
       this.broadcastMessage({
         type: "card-create",
         card: message.card,
       });
-    } else if (message.type === "card-update") {
+
+      return;
+    }
+
+    if (message.type === "card-update") {
       await this.updateCard(message.card);
       this.broadcastMessage({
         type: "card-update",
         card: message.card,
       });
-    } else if (message.type === "card-delete") {
+
+      return;
+    }
+
+    if (message.type === "card-delete") {
       await this.deleteCard(message.cardId);
       this.broadcastMessage({
         type: "card-delete",
         cardId: message.cardId,
       });
+
+      return;
     }
   }
 
