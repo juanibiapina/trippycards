@@ -1,21 +1,18 @@
-import CardContextMenu from './cards/CardContextMenu';
-
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  onDelete?: () => void;
+  onClick?: () => void;
 }
 
-const Card = ({ children, className = "", onDelete }: CardProps) => {
+const Card = ({ children, className = "", onClick }: CardProps) => {
   const baseClasses = "bg-white rounded-lg shadow-lg p-8 max-w-md w-full";
 
   return (
-    <div className={`${baseClasses} ${className} relative`} data-testid="card">
-      {onDelete && (
-        <div className="absolute bottom-1 right-1">
-          <CardContextMenu onDelete={onDelete} />
-        </div>
-      )}
+    <div
+      className={`${baseClasses} ${className} ${onClick ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
+      data-testid="card"
+      onClick={onClick}
+    >
       {children}
     </div>
   );

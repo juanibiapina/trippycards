@@ -8,8 +8,9 @@ import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
+import FloatingCardInput from "../components/FloatingCardInput";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import { LinkCard, PollCard, PromptCard, LinkCardInput, PollCardInput, PromptCardInput } from "../../shared";
 
 const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
@@ -36,7 +37,7 @@ const ActivityPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | PromptCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -57,7 +58,24 @@ const ActivityPage = () => {
         ...base,
       };
       createCard(newCard);
+    } else if (cardData.type === 'prompt') {
+      const newCard: PromptCard = {
+        ...cardData,
+        ...base,
+      };
+      createCard(newCard);
     }
+  };
+
+  const handleCreatePromptCard = (text: string) => {
+    if (!isConnected) return;
+
+    const cardData: PromptCardInput = {
+      type: 'prompt',
+      text,
+    };
+
+    handleCreateCard(cardData);
   };
 
   const handleUpdateCard = (card: LinkCard) => {
@@ -119,7 +137,6 @@ const ActivityPage = () => {
         startTime={activity?.startTime}
         onNameUpdate={handleNameUpdate}
         onDateChange={handleDateChange}
-        onCreateCard={() => setIsCreateModalOpen(true)}
         disabled={!isConnected}
       />
 
@@ -141,6 +158,12 @@ const ActivityPage = () => {
           editingCard={undefined}
         />
       </div>
+
+      {/* Floating Card Input */}
+      <FloatingCardInput
+        onCreateCard={handleCreatePromptCard}
+        onOpenModal={() => setIsCreateModalOpen(true)}
+      />
     </div>
   );
 };
