@@ -6,8 +6,11 @@ import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 import LoadingCard from "../components/LoadingCard";
 import CardComponent from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
+import CardDateSelector from "../components/CardDateSelector";
+import FloatingCardInput from "../components/FloatingCardInput";
+import CardCreationModal from "../components/cards/CardCreationModal";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { Card as CardType, LinkCard, PollCard, PromptCard } from "../../shared";
+import { Card as CardType, LinkCard, PollCard, PromptCard, LinkCardInput, PollCardInput, PromptCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";
 import PollCardComponent from "../components/cards/PollCard";
 import PromptCardComponent from "../components/cards/PromptCard";
@@ -17,6 +20,7 @@ const CardDetailPage = () => {
   const navigate = useNavigate();
   const { isLoaded, userId } = useAuth();
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { activity, loading, updateName, updateDates, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
   const card = activity?.cards?.find(c => c.id === params.cardId);
@@ -53,6 +57,60 @@ const CardDetailPage = () => {
   const handleDateChange = (startDate: string, endDate?: string, startTime?: string) => {
     if (!isConnected) return;
     updateDates(startDate, endDate, startTime);
+  };
+
+  const handleCardDateChange = (date?: string) => {
+    if (!isConnected || !card) return;
+    const updatedCard: CardType = {
+      ...card,
+      date,
+      updatedAt: new Date().toISOString(),
+    };
+    updateCard(updatedCard);
+  };
+
+  const handleCreateSubcard = (cardData: LinkCardInput | PollCardInput | PromptCardInput) => {
+    if (!isConnected || !card) return;
+
+    const base = {
+      id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    let newSubcard: CardType;
+    if (cardData.type === 'link') {
+      newSubcard = { ...cardData, ...base };
+    } else if (cardData.type === 'poll') {
+      newSubcard = { ...cardData, ...base };
+    } else if (cardData.type === 'prompt') {
+      newSubcard = { ...cardData, ...base };
+    } else {
+      return;
+    }
+
+    // Add subcard to parent card's children
+    const updatedCard: CardType = {
+      ...card,
+      children: [...(card.children || []), newSubcard],
+      updatedAt: new Date().toISOString(),
+    };
+    updateCard(updatedCard);
+  };
+
+  const handleCreatePromptSubcard = (text: string) => {
+    if (!isConnected || !card) return;
+
+    const cardData: PromptCardInput = {
+      type: 'prompt',
+      text,
+    };
+
+    handleCreateSubcard(cardData);
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
   };
 
   const handleDeleteCard = () => {
@@ -201,6 +259,15 @@ const CardDetailPage = () => {
           {renderCard()}
         </div>
 
+        {/* Card Date Selector */}
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-auto mt-6">
+          <CardDateSelector
+            cardDate={card.date}
+            onDateChange={handleCardDateChange}
+            disabled={!isConnected}
+          />
+        </div>
+
         {/* Subcards */}
         {card.children && card.children.length > 0 && (
           <div className="mt-8">
@@ -222,7 +289,16 @@ const CardDetailPage = () => {
                         } else {
                           votes.push({ userId, option: optionIdx });
                         }
-                        updateCard({ ...pollSubcard, votes } as CardType);
+
+                        // Update subcard in parent's children array
+                        const updatedCard: CardType = {
+                          ...card,
+                          children: card.children?.map(c =>
+                            c.id === subcard.id ? { ...pollSubcard, votes } as CardType : c
+                          ),
+                          updatedAt: new Date().toISOString(),
+                        };
+                        updateCard(updatedCard);
                       }}
                     />
                   )}
@@ -232,7 +308,20 @@ const CardDetailPage = () => {
             </div>
           </div>
         )}
+
+        <CardCreationModal
+          isOpen={isCreateModalOpen}
+          onClose={handleCloseModal}
+          onCreateCard={handleCreateSubcard}
+          editingCard={undefined}
+        />
       </div>
+
+      {/* Floating Card Input for Subcards */}
+      <FloatingCardInput
+        onCreateCard={handleCreatePromptSubcard}
+        onOpenModal={() => setIsCreateModalOpen(true)}
+      />
     </div>
   );
 };
