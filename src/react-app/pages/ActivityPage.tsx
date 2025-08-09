@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
@@ -9,14 +8,13 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import FloatingCardInput from "../components/FloatingCardInput";
-import { useActivityRoom } from "../hooks/useActivityRoom";
+import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
 import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput, Card as CardType } from "../../shared";
 
 const ActivityPage = () => {
-  const params = useParams<{ activityId: string }>();
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoomContext();
 
 
   // Update document title based on activity state

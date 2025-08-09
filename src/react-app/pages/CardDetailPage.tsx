@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { FiArrowLeft, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
@@ -9,7 +9,7 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardDateSelector from "../components/CardDateSelector";
 import FloatingCardInput from "../components/FloatingCardInput";
 import CardCreationModal from "../components/cards/CardCreationModal";
-import { useActivityRoom } from "../hooks/useActivityRoom";
+import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
 import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";
 import PollCardComponent from "../components/cards/PollCard";
@@ -21,9 +21,27 @@ const CardDetailPage = () => {
   const { isLoaded, userId } = useAuth();
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { activity, loading, updateName, updateDates, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, updateCard, deleteCard, isConnected } = useActivityRoomContext();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const card = activity?.cards?.find(c => c.id === params.cardId);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowDeleteMenu(false);
+      }
+    };
+
+    if (showDeleteMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDeleteMenu]);
 
   // Update document title
   useEffect(() => {
@@ -226,7 +244,7 @@ const CardDetailPage = () => {
             <span>Back</span>
           </button>
 
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowDeleteMenu(!showDeleteMenu)}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
