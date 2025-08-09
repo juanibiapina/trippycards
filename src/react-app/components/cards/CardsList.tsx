@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Card, LinkCard as LinkCardType, PollCard as PollCardType, PromptCard as PromptCardType } from '../../../shared';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType, NoteCard as NoteCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import PollCard from './PollCard';
-import PromptCard from './PromptCard';
+import NoteCard from './NoteCard';
 import TimelineIndicator from '../TimelineIndicator';
 
 interface CardsListProps {
@@ -149,8 +149,8 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
                     }}
                   />
                 )}
-                {card.type === 'prompt' && <PromptCard card={card as PromptCardType} />}
-                {!['link', 'poll', 'prompt'].includes(card.type) && (
+                {card.type === 'note' && <NoteCard card={card as NoteCardType} />}
+                {!['link', 'poll', 'note'].includes(card.type) && (
                   <div className="p-4 border rounded-lg bg-gray-50">
                     <p className="text-gray-600">Unknown card type: {card.type}</p>
                   </div>

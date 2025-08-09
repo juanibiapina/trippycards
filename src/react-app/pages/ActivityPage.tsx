@@ -10,7 +10,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import FloatingCardInput from "../components/FloatingCardInput";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, PromptCard, LinkCardInput, PollCardInput, PromptCardInput, Card as CardType } from "../../shared";
+import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput, Card as CardType } from "../../shared";
 
 const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
@@ -37,7 +37,7 @@ const ActivityPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | PromptCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | NoteCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -58,8 +58,8 @@ const ActivityPage = () => {
         ...base,
       };
       createCard(newCard);
-    } else if (cardData.type === 'prompt') {
-      const newCard: PromptCard = {
+    } else if (cardData.type === 'note') {
+      const newCard: NoteCard = {
         ...cardData,
         ...base,
       };
@@ -67,11 +67,11 @@ const ActivityPage = () => {
     }
   };
 
-  const handleCreatePromptCard = (text: string) => {
+  const handleCreateNoteCard = (text: string) => {
     if (!isConnected) return;
 
-    const cardData: PromptCardInput = {
-      type: 'prompt',
+    const cardData: NoteCardInput = {
+      type: 'note',
       text,
     };
 
@@ -174,7 +174,7 @@ const ActivityPage = () => {
 
       {/* Floating Card Input */}
       <FloatingCardInput
-        onCreateCard={handleCreatePromptCard}
+        onCreateCard={handleCreateNoteCard}
         onOpenModal={() => setIsCreateModalOpen(true)}
       />
     </div>

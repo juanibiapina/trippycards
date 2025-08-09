@@ -22,8 +22,8 @@ export interface PollCard extends Card {
   votes?: { userId: string; option: number }[];
 }
 
-export interface PromptCard extends Card {
-  type: 'prompt';
+export interface NoteCard extends Card {
+  type: 'note';
   text: string;
 }
 
@@ -49,8 +49,8 @@ export type PollCardInput = {
   options: string[];
 };
 
-export type PromptCardInput = {
-  type: 'prompt';
+export type NoteCardInput = {
+  type: 'note';
   text: string;
 };
 

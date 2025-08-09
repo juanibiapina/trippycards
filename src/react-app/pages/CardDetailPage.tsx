@@ -10,10 +10,10 @@ import CardDateSelector from "../components/CardDateSelector";
 import FloatingCardInput from "../components/FloatingCardInput";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { Card as CardType, LinkCard, PollCard, PromptCard, LinkCardInput, PollCardInput, PromptCardInput } from "../../shared";
+import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";
 import PollCardComponent from "../components/cards/PollCard";
-import PromptCardComponent from "../components/cards/PromptCard";
+import NoteCardComponent from "../components/cards/NoteCard";
 
 const CardDetailPage = () => {
   const params = useParams<{ activityId: string; cardId: string }>();
@@ -35,8 +35,8 @@ const CardDetailPage = () => {
         cardTitle = (card as LinkCard).title || (card as LinkCard).url;
       } else if (card.type === 'poll') {
         cardTitle = (card as PollCard).question;
-      } else if (card.type === 'prompt') {
-        cardTitle = (card as PromptCard).text.substring(0, 50) + '...';
+      } else if (card.type === 'note') {
+        cardTitle = (card as NoteCard).text.substring(0, 50) + '...';
       }
       document.title = `${cardTitle} - ${activity?.name || 'Activity'}`;
     } else {
@@ -69,7 +69,7 @@ const CardDetailPage = () => {
     updateCard(updatedCard);
   };
 
-  const handleCreateSubcard = (cardData: LinkCardInput | PollCardInput | PromptCardInput) => {
+  const handleCreateSubcard = (cardData: LinkCardInput | PollCardInput | NoteCardInput) => {
     if (!isConnected || !card) return;
 
     const base = {
@@ -83,7 +83,7 @@ const CardDetailPage = () => {
       newSubcard = { ...cardData, ...base };
     } else if (cardData.type === 'poll') {
       newSubcard = { ...cardData, ...base };
-    } else if (cardData.type === 'prompt') {
+    } else if (cardData.type === 'note') {
       newSubcard = { ...cardData, ...base };
     } else {
       return;
@@ -98,11 +98,11 @@ const CardDetailPage = () => {
     updateCard(updatedCard);
   };
 
-  const handleCreatePromptSubcard = (text: string) => {
+  const handleCreateNoteSubcard = (text: string) => {
     if (!isConnected || !card) return;
 
-    const cardData: PromptCardInput = {
-      type: 'prompt',
+    const cardData: NoteCardInput = {
+      type: 'note',
       text,
     };
 
@@ -191,8 +191,8 @@ const CardDetailPage = () => {
             }}
           />
         );
-      case 'prompt':
-        return <PromptCardComponent card={card as PromptCard} />;
+      case 'note':
+        return <NoteCardComponent card={card as NoteCard} />;
       default:
         return (
           <div className="p-4 border rounded-lg bg-gray-50">
@@ -302,7 +302,7 @@ const CardDetailPage = () => {
                       }}
                     />
                   )}
-                  {subcard.type === 'prompt' && <PromptCardComponent card={subcard as PromptCard} />}
+                  {subcard.type === 'note' && <NoteCardComponent card={subcard as NoteCard} />}
                 </div>
               ))}
             </div>
@@ -319,7 +319,7 @@ const CardDetailPage = () => {
 
       {/* Floating Card Input for Subcards */}
       <FloatingCardInput
-        onCreateCard={handleCreatePromptSubcard}
+        onCreateCard={handleCreateNoteSubcard}
         onOpenModal={() => setIsCreateModalOpen(true)}
       />
     </div>

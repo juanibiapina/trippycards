@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, LinkCardInput, PollCardInput, PromptCardInput } from '../../../shared';
+import { LinkCard, LinkCardInput, PollCardInput, NoteCardInput } from '../../../shared';
 import { validateUrl } from '../../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCard: (
-    card: LinkCardInput | PollCardInput | PromptCardInput
+    card: LinkCardInput | PollCardInput | NoteCardInput
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
@@ -25,11 +25,11 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
-  const [cardType, setCardType] = useState<'link' | 'poll' | 'prompt'>('link');
+  const [cardType, setCardType] = useState<'link' | 'poll' | 'note'>('link');
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollError, setPollError] = useState('');
-  const [promptText, setPromptText] = useState('');
+  const [noteText, setNoteText] = useState('');
 
   const isEditing = !!editingCard;
 
@@ -47,7 +47,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setPollQuestion('');
     setPollOptions(['', '']);
     setPollError('');
-    setPromptText('');
+    setNoteText('');
   }, [editingCard, isOpen]);
 
   const validateAndSetUrl = (value: string) => {
@@ -100,7 +100,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
     setDescription('');
     setImageUrl('');
     setUrlError('');
-    setPromptText('');
+    setNoteText('');
     onClose();
   };
 
@@ -138,9 +138,9 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
             </button>
             <button
               type="button"
-              className={`px-3 py-1 rounded ${cardType === 'prompt' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setCardType('prompt')}
-              aria-pressed={cardType === 'prompt'}
+              className={`px-3 py-1 rounded ${cardType === 'note' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setCardType('note')}
+              aria-pressed={cardType === 'note'}
             >
               Note
             </button>
@@ -196,24 +196,24 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
               </div>
             </form>
           )}
-          {cardType === 'prompt' && (
+          {cardType === 'note' && (
             <form className="space-y-4" onSubmit={e => {
               e.preventDefault();
-              if (!promptText.trim()) {
+              if (!noteText.trim()) {
                 return;
               }
               onCreateCard({
-                type: 'prompt',
-                text: promptText.trim(),
+                type: 'note',
+                text: noteText.trim(),
               });
               handleClose();
             }}>
               <div>
-                <label htmlFor="prompt-text" className="block text-sm font-medium text-gray-700">Note Text<span className="text-red-500">*</span></label>
+                <label htmlFor="note-text" className="block text-sm font-medium text-gray-700">Note Text<span className="text-red-500">*</span></label>
                 <textarea
-                  id="prompt-text"
-                  value={promptText}
-                  onChange={e => setPromptText(e.target.value)}
+                  id="note-text"
+                  value={noteText}
+                  onChange={e => setNoteText(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200 h-32"
                   placeholder="Enter your note..."
                   required

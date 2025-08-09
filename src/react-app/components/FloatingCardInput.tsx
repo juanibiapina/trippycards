@@ -73,11 +73,11 @@ export const FloatingCardInput: React.FC<FloatingCardInputProps> = ({ onCreateCa
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 left-6 right-6 z-50">
       {isInputOpen ? (
         <div
           ref={inputRef}
-          className="bg-white rounded-full shadow-lg p-2 flex items-center min-w-[300px] transition-all duration-300 ease-out transform origin-right"
+          className="bg-white rounded-full shadow-lg p-2 flex items-center w-full max-w-2xl mx-auto transition-all duration-300 ease-out transform origin-center"
         >
           <form onSubmit={handleSubmit} className="flex-1 flex items-center">
             <input
@@ -98,17 +98,19 @@ export const FloatingCardInput: React.FC<FloatingCardInputProps> = ({ onCreateCa
           </form>
         </div>
       ) : (
-        <button
-          onMouseDown={handleButtonPress}
-          onMouseUp={handleButtonRelease}
-          onMouseLeave={handleButtonRelease}
-          onTouchStart={handleButtonPress}
-          onTouchEnd={handleButtonRelease}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-out hover:scale-110 active:scale-95"
-          aria-label="Add card"
-        >
-          <FiPlus size={24} />
-        </button>
+        <div className="flex justify-center">
+          <button
+            onMouseDown={handleButtonPress}
+            onMouseUp={handleButtonRelease}
+            onMouseLeave={handleButtonRelease}
+            onTouchStart={handleButtonPress}
+            onTouchEnd={handleButtonRelease}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-out hover:scale-110 active:scale-95"
+            aria-label="Add card"
+          >
+            <FiPlus size={24} />
+          </button>
+        </div>
       )}
     </div>
   );
