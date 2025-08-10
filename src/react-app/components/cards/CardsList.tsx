@@ -5,7 +5,6 @@ import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import PollCard from './PollCard';
 import NoteCard from './NoteCard';
-import TimelineIndicator from '../TimelineIndicator';
 
 interface CardsListProps {
   cards: Card[];
@@ -91,46 +90,38 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
     );
   }
 
-  const hasCardsWithDates = cards.some(card => card.date);
-
   return (
-    <div className={`relative ${hasCardsWithDates ? 'pl-12' : ''}`}>
-      {/* Timeline Indicator */}
-      {hasCardsWithDates && (
-        <TimelineIndicator cards={sortedCards} />
-      )}
+    <div className="space-y-4">
+      {sortedCards.map((card, index) => {
+        const canDrag = !card.date;
+        const isBeingDraggedOver = dragOverIndex === index;
 
-      {/* Cards */}
-      <div className="space-y-4">
-        {sortedCards.map((card, index) => {
-          const canDrag = !card.date;
-          const isBeingDraggedOver = dragOverIndex === index;
+        const cardElement = (
+          <div
+            key={card.id}
+            draggable={canDrag}
+            onDragStart={(e) => handleDragStart(e, card)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, index)}
+            className={`
+              ${canDrag ? 'cursor-move' : ''}
+              ${isBeingDraggedOver ? 'border-t-2 border-blue-500' : ''}
+              ${card.date ? 'relative' : ''}
+            `}
+          >
+            {/* Date indicator for cards with dates */}
+            {card.date && (
+              <div className="mb-2 text-xs text-gray-500">
+                {new Date(card.date).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </div>
+            )}
 
-          const cardElement = (
-            <div
-              key={card.id}
-              draggable={canDrag}
-              onDragStart={(e) => handleDragStart(e, card)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
-              className={`
-                ${canDrag ? 'cursor-move' : ''}
-                ${isBeingDraggedOver ? 'border-t-2 border-blue-500' : ''}
-                ${card.date ? 'relative' : ''}
-              `}
-            >
-              {/* Date indicator for cards with dates */}
-              {card.date && (
-                <div className="absolute -left-8 top-4 text-xs text-gray-500 transform -rotate-90 origin-left">
-                  {new Date(card.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </div>
-              )}
-
-              <CardComponent onClick={() => handleCardClick(card.id)}>
+            <CardComponent onClick={() => handleCardClick(card.id)}>
                 {card.type === 'link' && <LinkCard card={card as LinkCardType} />}
                 {card.type === 'poll' && (
                   <PollCard
@@ -156,12 +147,11 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
                   </div>
                 )}
               </CardComponent>
-            </div>
-          );
+          </div>
+        );
 
-          return cardElement;
-        })}
-      </div>
+        return cardElement;
+      })}
     </div>
   );
 };
