@@ -24,35 +24,16 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
     navigate(`/activities/${params.activityId}/cards/${cardId}`);
   };
 
-  // Sort cards: dated cards by date, undated cards maintain their order
-  const sortedCards = [...cards].sort((a, b) => {
-    // If both have dates, sort by date
-    if (a.date && b.date) {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    }
-    // If only one has a date, prioritize it
-    if (a.date && !b.date) return -1;
-    if (!a.date && b.date) return 1;
-    // If neither has dates, maintain original order
-    return 0;
-  });
+  // Keep cards in original order for manual sorting
+  const displayedCards = cards;
 
-  const handleDragStart = (e: React.DragEvent, card: Card) => {
-    // Only allow dragging cards without dates
-    if (card.date) {
-      e.preventDefault();
-      return;
-    }
+  const handleDragStart = (_e: React.DragEvent, card: Card) => {
     setDraggedCard(card);
   };
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
-    const card = sortedCards[index];
-    // Only allow dropping on cards without dates
-    if (!card.date) {
-      setDragOverIndex(index);
-    }
+    setDragOverIndex(index);
   };
 
   const handleDragLeave = () => {
@@ -63,16 +44,13 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
     e.preventDefault();
     if (!draggedCard || !onReorderCards) return;
 
-    const dragIndex = sortedCards.findIndex(card => card.id === draggedCard.id);
+    const dragIndex = cards.findIndex(card => card.id === draggedCard.id);
     if (dragIndex === dropIndex) return;
 
     const newCards = [...cards];
-    const draggedItemIndex = newCards.findIndex(card => card.id === draggedCard.id);
-    const droppedItemIndex = newCards.findIndex(card => card.id === sortedCards[dropIndex].id);
-
     // Remove dragged item and insert at new position
-    const [draggedItem] = newCards.splice(draggedItemIndex, 1);
-    newCards.splice(droppedItemIndex, 0, draggedItem);
+    const [draggedItem] = newCards.splice(dragIndex, 1);
+    newCards.splice(dropIndex, 0, draggedItem);
 
     onReorderCards(newCards);
     setDraggedCard(null);
@@ -92,8 +70,8 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
 
   return (
     <div className="space-y-4">
-      {sortedCards.map((card, index) => {
-        const canDrag = !card.date;
+      {displayedCards.map((card, index) => {
+        const canDrag = true;
         const isBeingDraggedOver = dragOverIndex === index;
 
         const cardElement = (
