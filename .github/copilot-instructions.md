@@ -76,6 +76,8 @@ src/
 - **Test files**: Co-locate with components (`.test.tsx` suffix)
 - **Mocking**: Use Clerk testing utilities for auth-related tests
 
+> **Note**: Playwright tests may currently fail on CI due to Clerk-related timeouts. This is a known issue with authentication flows in the CI environment.
+
 ## ESLint Configuration
 
 - **No trailing spaces**: Enforced via `no-trailing-spaces` rule
