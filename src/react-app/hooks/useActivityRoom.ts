@@ -57,7 +57,37 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
       const cardMap = cardsArray.get(i);
       const card: Record<string, unknown> = {};
       cardMap.forEach((value, key) => {
-        card[key] = value;
+        if (key === 'children' && value instanceof Y.Array) {
+          // Extract children from Y.Array
+          const childrenArray: Card[] = [];
+          const childrenYArray = value as Y.Array<Y.Map<unknown>>;
+          for (let j = 0; j < childrenYArray.length; j++) {
+            const childMap = childrenYArray.get(j);
+            const childCard: Record<string, unknown> = {};
+            childMap.forEach((childValue, childKey) => {
+              if (childKey === 'children' && childValue instanceof Y.Array) {
+                // Handle nested children recursively
+                const nestedChildrenArray: Card[] = [];
+                const nestedChildrenYArray = childValue as Y.Array<Y.Map<unknown>>;
+                for (let k = 0; k < nestedChildrenYArray.length; k++) {
+                  const nestedChildMap = nestedChildrenYArray.get(k);
+                  const nestedChildCard: Record<string, unknown> = {};
+                  nestedChildMap.forEach((nestedValue, nestedKey) => {
+                    nestedChildCard[nestedKey] = nestedValue;
+                  });
+                  nestedChildrenArray.push(nestedChildCard as unknown as Card);
+                }
+                childCard[childKey] = nestedChildrenArray;
+              } else {
+                childCard[childKey] = childValue;
+              }
+            });
+            childrenArray.push(childCard as unknown as Card);
+          }
+          card[key] = childrenArray;
+        } else {
+          card[key] = value;
+        }
       });
       cards.push(card as unknown as Card);
     }
@@ -98,10 +128,55 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
     const cardsArray = yDoc.getArray('cards');
 
     const activityObserver = () => updateActivity();
-    const cardsObserver = () => updateActivity();
+
+    // Set up observers for children arrays within cards
+    const setupCardChildrenObservers = () => {
+      for (let i = 0; i < cardsArray.length; i++) {
+        const cardMap = cardsArray.get(i);
+        if (cardMap instanceof Y.Map) {
+          // Observe the card map itself for changes to its properties
+          cardMap.observe(updateActivity);
+
+          const children = cardMap.get('children');
+          if (children instanceof Y.Array) {
+            children.observe(updateActivity);
+
+            // Also observe each child map for property changes
+            for (let j = 0; j < children.length; j++) {
+              const childMap = children.get(j);
+              if (childMap instanceof Y.Map) {
+                childMap.observe(updateActivity);
+
+                const nestedChildren = childMap.get('children');
+                if (nestedChildren instanceof Y.Array) {
+                  nestedChildren.observe(updateActivity);
+
+                  // Observe nested child maps too
+                  for (let k = 0; k < nestedChildren.length; k++) {
+                    const nestedChildMap = nestedChildren.get(k);
+                    if (nestedChildMap instanceof Y.Map) {
+                      nestedChildMap.observe(updateActivity);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    // Enhanced cards observer that also sets up children observers
+    const enhancedCardsObserver = () => {
+      updateActivity();
+      setupCardChildrenObservers();
+    };
 
     activityMap.observe(activityObserver);
-    cardsArray.observe(cardsObserver);
+    cardsArray.observe(enhancedCardsObserver);
+
+    // Initial setup of children observers
+    setupCardChildrenObservers();
 
     // Check initial connection state and set up periodic check
     const checkConnection = () => {
@@ -151,7 +226,43 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
     return () => {
       clearInterval(connectionCheckInterval);
       activityMap.unobserve(activityObserver);
-      cardsArray.unobserve(cardsObserver);
+      cardsArray.unobserve(enhancedCardsObserver);
+
+      // Clean up children observers
+      for (let i = 0; i < cardsArray.length; i++) {
+        const cardMap = cardsArray.get(i);
+        if (cardMap instanceof Y.Map) {
+          // Unobserve the card map itself
+          cardMap.unobserve(updateActivity);
+
+          const children = cardMap.get('children');
+          if (children instanceof Y.Array) {
+            children.unobserve(updateActivity);
+
+            // Clean up child map observers
+            for (let j = 0; j < children.length; j++) {
+              const childMap = children.get(j);
+              if (childMap instanceof Y.Map) {
+                childMap.unobserve(updateActivity);
+
+                const nestedChildren = childMap.get('children');
+                if (nestedChildren instanceof Y.Array) {
+                  nestedChildren.unobserve(updateActivity);
+
+                  // Clean up nested child map observers
+                  for (let k = 0; k < nestedChildren.length; k++) {
+                    const nestedChildMap = nestedChildren.get(k);
+                    if (nestedChildMap instanceof Y.Map) {
+                      nestedChildMap.unobserve(updateActivity);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       try {
         provider.off('connect', handleConnectEvent);
         provider.off('disconnect', handleDisconnectEvent);
@@ -188,9 +299,35 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
       const cardsArray = yDoc.getArray('cards');
       const cardMap = new Y.Map();
 
-      // Set all card properties on the Y.Map
+      // Set all card properties on the Y.Map, handling children specially
       Object.entries(card).forEach(([key, value]) => {
-        cardMap.set(key, value);
+        if (key === 'children' && Array.isArray(value)) {
+          // Create a Y.Array for children
+          const childrenArray = new Y.Array();
+          value.forEach(childCard => {
+            const childMap = new Y.Map();
+            Object.entries(childCard).forEach(([childKey, childValue]) => {
+              if (childKey === 'children' && Array.isArray(childValue)) {
+                // Handle nested children recursively if needed
+                const nestedChildrenArray = new Y.Array();
+                childValue.forEach(nestedCard => {
+                  const nestedMap = new Y.Map();
+                  Object.entries(nestedCard).forEach(([nestedKey, nestedValue]) => {
+                    nestedMap.set(nestedKey, nestedValue);
+                  });
+                  nestedChildrenArray.push([nestedMap]);
+                });
+                childMap.set(childKey, nestedChildrenArray);
+              } else {
+                childMap.set(childKey, childValue);
+              }
+            });
+            childrenArray.push([childMap]);
+          });
+          cardMap.set(key, childrenArray);
+        } else {
+          cardMap.set(key, value);
+        }
       });
 
       cardsArray.push([cardMap]);
@@ -205,9 +342,35 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
       for (let i = 0; i < cardsArray.length; i++) {
         const cardMap = cardsArray.get(i);
         if (cardMap.get('id') === updatedCard.id) {
-          // Update all properties
+          // Update all properties, handling children specially
           Object.entries(updatedCard).forEach(([key, value]) => {
-            cardMap.set(key, value);
+            if (key === 'children' && Array.isArray(value)) {
+              // Replace the existing children array with a new Y.Array
+              const childrenArray = new Y.Array();
+              value.forEach(childCard => {
+                const childMap = new Y.Map();
+                Object.entries(childCard).forEach(([childKey, childValue]) => {
+                  if (childKey === 'children' && Array.isArray(childValue)) {
+                    // Handle nested children recursively if needed
+                    const nestedChildrenArray = new Y.Array();
+                    childValue.forEach(nestedCard => {
+                      const nestedMap = new Y.Map();
+                      Object.entries(nestedCard).forEach(([nestedKey, nestedValue]) => {
+                        nestedMap.set(nestedKey, nestedValue);
+                      });
+                      nestedChildrenArray.push([nestedMap]);
+                    });
+                    childMap.set(childKey, nestedChildrenArray);
+                  } else {
+                    childMap.set(childKey, childValue);
+                  }
+                });
+                childrenArray.push([childMap]);
+              });
+              cardMap.set(key, childrenArray);
+            } else {
+              cardMap.set(key, value);
+            }
           });
           break;
         }

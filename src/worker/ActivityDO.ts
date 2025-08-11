@@ -22,9 +22,35 @@ export class ActivityDO extends YServer<Env> {
       const cards = this.document.getArray<Y.Map<unknown>>("cards");
       const cardMap = new Y.Map();
 
-      // Set all card properties on the Y.Map
+      // Set all card properties on the Y.Map, handling children specially
       Object.entries(card).forEach(([key, value]) => {
-        cardMap.set(key, value);
+        if (key === 'children' && Array.isArray(value)) {
+          // Create a Y.Array for children
+          const childrenArray = new Y.Array();
+          value.forEach(childCard => {
+            const childMap = new Y.Map();
+            Object.entries(childCard).forEach(([childKey, childValue]) => {
+              if (childKey === 'children' && Array.isArray(childValue)) {
+                // Handle nested children recursively if needed
+                const nestedChildrenArray = new Y.Array();
+                childValue.forEach(nestedCard => {
+                  const nestedMap = new Y.Map();
+                  Object.entries(nestedCard).forEach(([nestedKey, nestedValue]) => {
+                    nestedMap.set(nestedKey, nestedValue);
+                  });
+                  nestedChildrenArray.push([nestedMap]);
+                });
+                childMap.set(childKey, nestedChildrenArray);
+              } else {
+                childMap.set(childKey, childValue);
+              }
+            });
+            childrenArray.push([childMap]);
+          });
+          cardMap.set(key, childrenArray);
+        } else {
+          cardMap.set(key, value);
+        }
       });
 
       cards.push([cardMap]);
@@ -39,9 +65,35 @@ export class ActivityDO extends YServer<Env> {
       for (let i = 0; i < cards.length; i++) {
         const cardMap = cards.get(i);
         if (cardMap.get("id") === updatedCard.id) {
-          // Update all properties
+          // Update all properties, handling children specially
           Object.entries(updatedCard).forEach(([key, value]) => {
-            cardMap.set(key, value);
+            if (key === 'children' && Array.isArray(value)) {
+              // Replace the existing children array with a new Y.Array
+              const childrenArray = new Y.Array();
+              value.forEach(childCard => {
+                const childMap = new Y.Map();
+                Object.entries(childCard).forEach(([childKey, childValue]) => {
+                  if (childKey === 'children' && Array.isArray(childValue)) {
+                    // Handle nested children recursively if needed
+                    const nestedChildrenArray = new Y.Array();
+                    childValue.forEach(nestedCard => {
+                      const nestedMap = new Y.Map();
+                      Object.entries(nestedCard).forEach(([nestedKey, nestedValue]) => {
+                        nestedMap.set(nestedKey, nestedValue);
+                      });
+                      nestedChildrenArray.push([nestedMap]);
+                    });
+                    childMap.set(childKey, nestedChildrenArray);
+                  } else {
+                    childMap.set(childKey, childValue);
+                  }
+                });
+                childrenArray.push([childMap]);
+              });
+              cardMap.set(key, childrenArray);
+            } else {
+              cardMap.set(key, value);
+            }
           });
           break;
         }
@@ -125,7 +177,37 @@ export class ActivityDO extends YServer<Env> {
       const cardMap = cardsArray.get(i);
       const card: Record<string, unknown> = {};
       cardMap.forEach((value, key) => {
-        card[key] = value;
+        if (key === 'children' && value instanceof Y.Array) {
+          // Extract children from Y.Array
+          const childrenArray: Card[] = [];
+          const childrenYArray = value as Y.Array<Y.Map<unknown>>;
+          for (let j = 0; j < childrenYArray.length; j++) {
+            const childMap = childrenYArray.get(j);
+            const childCard: Record<string, unknown> = {};
+            childMap.forEach((childValue, childKey) => {
+              if (childKey === 'children' && childValue instanceof Y.Array) {
+                // Handle nested children recursively
+                const nestedChildrenArray: Card[] = [];
+                const nestedChildrenYArray = childValue as Y.Array<Y.Map<unknown>>;
+                for (let k = 0; k < nestedChildrenYArray.length; k++) {
+                  const nestedChildMap = nestedChildrenYArray.get(k);
+                  const nestedChildCard: Record<string, unknown> = {};
+                  nestedChildMap.forEach((nestedValue, nestedKey) => {
+                    nestedChildCard[nestedKey] = nestedValue;
+                  });
+                  nestedChildrenArray.push(nestedChildCard as unknown as Card);
+                }
+                childCard[childKey] = nestedChildrenArray;
+              } else {
+                childCard[childKey] = childValue;
+              }
+            });
+            childrenArray.push(childCard as unknown as Card);
+          }
+          card[key] = childrenArray;
+        } else {
+          card[key] = value;
+        }
       });
       cards.push(card as unknown as Card);
     }
