@@ -1,6 +1,7 @@
 import { YServer } from "y-partyserver";
 import * as Y from "yjs";
-import type { Activity, Card } from "../shared";
+import type { Activity, Card, AILinkCard } from "../shared";
+import type { Env } from "./index";
 
 export class ActivityDO extends YServer<Env> {
   static options = { hibernate: true };
@@ -21,6 +22,27 @@ export class ActivityDO extends YServer<Env> {
     this.document.transact(() => {
       const cards = this.document.getArray<Y.Map<unknown>>("cards");
       const cardMap = new Y.Map();
+
+      // Trigger workflow for AILink cards
+      if (card.type === 'ailink') {
+        const id = crypto.randomUUID();
+        // Start workflow asynchronously - don't await to avoid blocking Yjs transaction
+        this.env.AILINK_WORKFLOW.create({
+          id,
+          params: {
+            cardId: card.id,
+            url: (card as AILinkCard).url,
+            durableObjectId: this.ctx.id.toString()
+          }
+        }).then(() => {
+          console.log(`AILink workflow ${id} started for card ${card.id}`);
+        }).catch((error) => {
+          console.error(`Failed to start AILink workflow for card ${card.id}:`, error);
+        });
+
+        // Add the workflow id to the card
+        (card as AILinkCard).workflowId = id;
+      }
 
       // Set all card properties on the Y.Map, handling children specially
       Object.entries(card).forEach(([key, value]) => {
@@ -110,6 +132,26 @@ export class ActivityDO extends YServer<Env> {
         const cardMap = cards.get(i);
         if (cardMap.get("id") === cardId) {
           cards.delete(i);
+          break;
+        }
+      }
+    });
+  }
+
+  updateCardFields(cardId: string, updates: Partial<Record<string, unknown>>) {
+    this.document.transact(() => {
+      const cards = this.document.getArray<Y.Map<unknown>>("cards");
+
+      // Find the card by ID and update specific fields
+      for (let i = 0; i < cards.length; i++) {
+        const cardMap = cards.get(i);
+        if (cardMap.get("id") === cardId) {
+          // Update only the specified fields
+          Object.entries(updates).forEach(([key, value]) => {
+            cardMap.set(key, value);
+          });
+          // Always update the updatedAt timestamp
+          cardMap.set("updatedAt", new Date().toISOString());
           break;
         }
       }
