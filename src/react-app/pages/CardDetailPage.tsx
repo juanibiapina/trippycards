@@ -10,7 +10,7 @@ import CardDateSelector from "../components/CardDateSelector";
 import FloatingCardInput from "../components/FloatingCardInput";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import SubCard from "../components/cards/SubCard";
-import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
+import { useActivityRoomContext } from "../hooks/useActivityRoomContext";
 import { useLongPress } from "../hooks/useLongPress";
 import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";

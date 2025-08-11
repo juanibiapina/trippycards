@@ -14,13 +14,14 @@ function ActivityWrapper() {
   const params = useParams<{ activityId: string }>();
   const activityId = params.activityId;
 
+  // Always call the hook, but pass null when no activityId
+  // This ensures hooks are called in the same order every render
+  const roomData = useActivityRoom(activityId || null);
+
   // If we don't have an activityId, render without the provider
   if (!activityId) {
     return <Outlet />;
   }
-
-  // Only use the room hook if we have an activityId (i.e., we're in an activity route)
-  const roomData = useActivityRoom(activityId);
 
   // Provide the room data to child components
   return (
