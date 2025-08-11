@@ -1,6 +1,5 @@
 import { useState } from "react";
 import DateSelector from "./DateSelector";
-import CreateCardContextMenu from "./cards/CreateCardContextMenu";
 
 interface ActivityHeaderProps {
   activityName?: string;
@@ -9,7 +8,6 @@ interface ActivityHeaderProps {
   startTime?: string;
   onNameUpdate: (name: string) => void;
   onDateChange: (startDate: string, endDate?: string, startTime?: string) => void;
-  onCreateCard?: () => void;
   disabled?: boolean;
 }
 
@@ -20,7 +18,6 @@ const ActivityHeader = ({
   startTime,
   onNameUpdate,
   onDateChange,
-  onCreateCard,
   disabled = false
 }: ActivityHeaderProps) => {
   const [isEditingName, setIsEditingName] = useState(false);
@@ -104,11 +101,6 @@ const ActivityHeader = ({
               </div>
             )}
           </div>
-          {onCreateCard && (
-            <div className="ml-4 shrink-0">
-              <CreateCardContextMenu onCreateCard={onCreateCard} />
-            </div>
-          )}
         </div>
       </div>
     </header>

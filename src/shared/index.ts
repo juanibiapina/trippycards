@@ -3,6 +3,8 @@ export interface Card {
   type: string;
   createdAt: string;
   updatedAt: string;
+  date?: string;
+  children?: Card[];
 }
 
 export interface LinkCard extends Card {
@@ -18,6 +20,11 @@ export interface PollCard extends Card {
   question: string;
   options: string[];
   votes?: { userId: string; option: number }[];
+}
+
+export interface NoteCard extends Card {
+  type: 'note';
+  text: string;
 }
 
 export type Activity = {
@@ -40,6 +47,11 @@ export type PollCardInput = {
   type: 'poll';
   question: string;
   options: string[];
+};
+
+export type NoteCardInput = {
+  type: 'note';
+  text: string;
 };
 
 export type Message =

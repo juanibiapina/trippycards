@@ -1,8 +1,11 @@
 import React from 'react';
-import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../../shared';
+import { useNavigate, useParams } from 'react-router';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType, NoteCard as NoteCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import PollCard from './PollCard';
+import NoteCard from './NoteCard';
+import { useLongPress } from '../../hooks/useLongPress';
 
 interface CardsListProps {
   cards: Card[];
@@ -11,7 +14,80 @@ interface CardsListProps {
   onDeleteCard: (cardId: string) => void;
 }
 
+interface CardListItemProps {
+  card: Card;
+  userId: string;
+  onUpdateCard: (card: PollCardType) => void;
+  onCardClick: (cardId: string) => void;
+  onDeleteCard: (cardId: string) => void;
+}
+
+const CardListItem: React.FC<CardListItemProps> = ({ card, userId, onUpdateCard, onCardClick, onDeleteCard }) => {
+  const handleLongPress = () => {
+    if (confirm('Are you sure you want to delete this card?')) {
+      onDeleteCard(card.id);
+    }
+  };
+
+  const longPressProps = useLongPress(handleLongPress);
+
+  return (
+    <div
+      className={`${card.date ? 'relative' : ''}`}
+      {...longPressProps}
+    >
+      {/* Date indicator for cards with dates */}
+      {card.date && (
+        <div className="mb-2 text-xs text-gray-500">
+          {new Date(card.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          })}
+        </div>
+      )}
+
+      <CardComponent onClick={() => onCardClick(card.id)}>
+        {card.type === 'link' && <LinkCard card={card as LinkCardType} />}
+        {card.type === 'poll' && (
+          <PollCard
+            card={card as PollCardType}
+            userId={userId}
+            onVote={(optionIdx: number) => {
+              const pollCard = card as PollCardType;
+              const votes = pollCard.votes ? [...pollCard.votes] : [];
+              const existing = votes.findIndex(v => v.userId === userId);
+              if (existing !== -1) {
+                votes[existing] = { userId, option: optionIdx };
+              } else {
+                votes.push({ userId, option: optionIdx });
+              }
+              onUpdateCard({ ...(card as PollCardType), votes });
+            }}
+          />
+        )}
+        {card.type === 'note' && <NoteCard card={card as NoteCardType} />}
+        {!['link', 'poll', 'note'].includes(card.type) && (
+          <div className="p-4 border rounded-lg bg-gray-50">
+            <p className="text-gray-600">Unknown card type: {card.type}</p>
+          </div>
+        )}
+      </CardComponent>
+    </div>
+  );
+};
+
 export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
+  const navigate = useNavigate();
+  const params = useParams<{ activityId: string }>();
+
+  const handleCardClick = (cardId: string) => {
+    navigate(`/activities/${params.activityId}/cards/${cardId}`);
+  };
+
+  // Keep cards in original order
+  const displayedCards = cards;
+
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -25,44 +101,16 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
 
   return (
     <div className="space-y-4">
-      {cards.map((card) => {
-        switch (card.type) {
-          case 'link':
-            return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <LinkCard card={card as LinkCardType} />
-              </CardComponent>
-            );
-          case 'poll':
-            return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <PollCard
-                  card={card as PollCardType}
-                  userId={userId}
-                  onVote={(optionIdx: number) => {
-                    const pollCard = card as PollCardType;
-                    const votes = pollCard.votes ? [...pollCard.votes] : [];
-                    const existing = votes.findIndex(v => v.userId === userId);
-                    if (existing !== -1) {
-                      votes[existing] = { userId, option: optionIdx };
-                    } else {
-                      votes.push({ userId, option: optionIdx });
-                    }
-                    onUpdateCard({ ...(card as PollCardType), votes });
-                  }}
-                />
-              </CardComponent>
-            );
-          default:
-            return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <div className="p-4 border rounded-lg bg-gray-50">
-                  <p className="text-gray-600">Unknown card type: {card.type}</p>
-                </div>
-              </CardComponent>
-            );
-        }
-      })}
+      {displayedCards.map((card) => (
+        <CardListItem
+          key={card.id}
+          card={card}
+          userId={userId}
+          onUpdateCard={onUpdateCard}
+          onCardClick={handleCardClick}
+          onDeleteCard={onDeleteCard}
+        />
+      ))}
     </div>
   );
 };

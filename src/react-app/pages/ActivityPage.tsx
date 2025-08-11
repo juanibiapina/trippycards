@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
@@ -8,14 +7,14 @@ import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
-import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import FloatingCardInput from "../components/FloatingCardInput";
+import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
+import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 
 const ActivityPage = () => {
-  const params = useParams<{ activityId: string }>();
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoomContext();
 
 
   // Update document title based on activity state
@@ -36,7 +35,7 @@ const ActivityPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | NoteCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -57,7 +56,24 @@ const ActivityPage = () => {
         ...base,
       };
       createCard(newCard);
+    } else if (cardData.type === 'note') {
+      const newCard: NoteCard = {
+        ...cardData,
+        ...base,
+      };
+      createCard(newCard);
     }
+  };
+
+  const handleCreateNoteCard = (text: string) => {
+    if (!isConnected) return;
+
+    const cardData: NoteCardInput = {
+      type: 'note',
+      text,
+    };
+
+    handleCreateCard(cardData);
   };
 
   const handleUpdateCard = (card: LinkCard) => {
@@ -119,7 +135,6 @@ const ActivityPage = () => {
         startTime={activity?.startTime}
         onNameUpdate={handleNameUpdate}
         onDateChange={handleDateChange}
-        onCreateCard={() => setIsCreateModalOpen(true)}
         disabled={!isConnected}
       />
 
@@ -141,6 +156,12 @@ const ActivityPage = () => {
           editingCard={undefined}
         />
       </div>
+
+      {/* Floating Card Input */}
+      <FloatingCardInput
+        onCreateCard={handleCreateNoteCard}
+        onOpenModal={() => setIsCreateModalOpen(true)}
+      />
     </div>
   );
 };
