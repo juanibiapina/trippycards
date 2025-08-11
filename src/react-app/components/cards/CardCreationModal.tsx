@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, LinkCardInput, PollCardInput, NoteCardInput } from '../../../shared';
+import { LinkCard, LinkCardInput, PollCardInput, NoteCardInput, AILinkCardInput } from '../../../shared';
 import { validateUrl } from '../../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCard: (
-    card: LinkCardInput | PollCardInput | NoteCardInput
+    card: LinkCardInput | PollCardInput | NoteCardInput | AILinkCardInput
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
@@ -25,7 +25,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
-  const [cardType, setCardType] = useState<'link' | 'poll' | 'note'>('link');
+  const [cardType, setCardType] = useState<'link' | 'poll' | 'note' | 'ailink'>('link');
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollError, setPollError] = useState('');
@@ -61,6 +61,27 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (cardType === 'ailink') {
+      if (!url.trim()) {
+        setUrlError('URL is required');
+        return;
+      }
+
+      if (!validateUrl(url)) {
+        setUrlError('Please enter a valid URL');
+        return;
+      }
+
+      const cardData: AILinkCardInput = {
+        type: 'ailink',
+        url: url.trim(),
+      };
+
+      onCreateCard(cardData);
+      handleClose();
+      return;
+    }
 
     if (!url.trim()) {
       setUrlError('URL is required');
@@ -143,6 +164,14 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
               aria-pressed={cardType === 'note'}
             >
               Note
+            </button>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded ${cardType === 'ailink' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setCardType('ailink')}
+              aria-pressed={cardType === 'ailink'}
+            >
+              AI Link
             </button>
           </div>
 
@@ -284,6 +313,26 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
               <div className="flex justify-end space-x-2 mt-6">
                 <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              </div>
+            </form>
+          )}
+          {cardType === 'ailink' && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="ailink-url" className="block text-sm font-medium text-gray-700">URL<span className="text-red-500">*</span></label>
+                <input
+                  id="ailink-url"
+                  type="text"
+                  value={url}
+                  onChange={e => validateAndSetUrl(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                  required
+                />
+                {urlError && <p className="text-red-500 text-xs mt-1">{urlError}</p>}
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800">Create AI Link Card</button>
               </div>
             </form>
           )}
