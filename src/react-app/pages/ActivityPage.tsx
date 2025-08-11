@@ -9,7 +9,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import FloatingCardInput from "../components/FloatingCardInput";
 import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
-import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput, Card as CardType } from "../../shared";
+import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 
 const ActivityPage = () => {
   const { isLoaded, userId } = useAuth();
@@ -74,18 +74,6 @@ const ActivityPage = () => {
     };
 
     handleCreateCard(cardData);
-  };
-
-  const handleReorderCards = (reorderedCards: CardType[]) => {
-    if (!isConnected) return;
-    // For now, just update each card to maintain the order
-    // This is a simple implementation - in production you'd want a dedicated reorder message
-    reorderedCards.forEach((card) => {
-      updateCard({
-        ...card,
-        updatedAt: new Date().toISOString(),
-      });
-    });
   };
 
   const handleUpdateCard = (card: LinkCard) => {
@@ -158,7 +146,6 @@ const ActivityPage = () => {
           userId={userId}
           onUpdateCard={updateCard}
           onDeleteCard={deleteCard}
-          onReorderCards={handleReorderCards}
         />
 
         <CardCreationModal

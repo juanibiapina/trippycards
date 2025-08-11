@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { FiArrowLeft, FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
 import LoadingCard from "../components/LoadingCard";
@@ -9,7 +9,9 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardDateSelector from "../components/CardDateSelector";
 import FloatingCardInput from "../components/FloatingCardInput";
 import CardCreationModal from "../components/cards/CardCreationModal";
+import SubCard from "../components/cards/SubCard";
 import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
+import { useLongPress } from "../hooks/useLongPress";
 import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";
 import PollCardComponent from "../components/cards/PollCard";
@@ -19,29 +21,33 @@ const CardDetailPage = () => {
   const params = useParams<{ activityId: string; cardId: string }>();
   const navigate = useNavigate();
   const { isLoaded, userId } = useAuth();
-  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { activity, loading, updateName, updateDates, updateCard, deleteCard, isConnected } = useActivityRoomContext();
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const card = activity?.cards?.find(c => c.id === params.cardId);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowDeleteMenu(false);
-      }
-    };
-
-    if (showDeleteMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
+  const handleDeleteCard = () => {
+    if (!isConnected || !card) return;
+    if (confirm('Are you sure you want to delete this card?')) {
+      deleteCard(card.id);
+      navigate(`/activities/${params.activityId}`);
     }
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDeleteMenu]);
+  const handleDeleteSubcard = (subcardId: string) => {
+    if (!isConnected || !card) return;
+    if (confirm('Are you sure you want to delete this subcard?')) {
+      const updatedCard: CardType = {
+        ...card,
+        children: card.children?.filter(c => c.id !== subcardId) || [],
+        updatedAt: new Date().toISOString(),
+      };
+      updateCard(updatedCard);
+    }
+  };
+
+  // Initialize hooks before any conditional returns
+  const mainCardLongPress = useLongPress(handleDeleteCard);
 
   // Update document title
   useEffect(() => {
@@ -129,12 +135,6 @@ const CardDetailPage = () => {
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
-  };
-
-  const handleDeleteCard = () => {
-    if (!isConnected || !card) return;
-    deleteCard(card.id);
-    navigate(`/activities/${params.activityId}`);
   };
 
   const handleBack = () => {
@@ -234,7 +234,7 @@ const CardDetailPage = () => {
 
       {/* Content */}
       <div className="max-w-2xl mx-auto p-4">
-        {/* Header with back button and menu */}
+        {/* Header with back button */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={handleBack}
@@ -243,37 +243,13 @@ const CardDetailPage = () => {
             <FiArrowLeft size={20} />
             <span>Back</span>
           </button>
-
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setShowDeleteMenu(!showDeleteMenu)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="Card options"
-            >
-              <FiMoreVertical size={20} className="text-gray-600" />
-            </button>
-
-            {showDeleteMenu && (
-              <div className="absolute right-0 top-10 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[120px]">
-                <button
-                  onClick={() => {
-                    setShowDeleteMenu(false);
-                    if (confirm('Are you sure you want to delete this card?')) {
-                      handleDeleteCard();
-                    }
-                  }}
-                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <FiTrash2 size={14} />
-                  <span>Delete</span>
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Card Content */}
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-auto">
+        <div
+          className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-auto"
+          {...mainCardLongPress}
+        >
           {renderCard()}
         </div>
 
@@ -292,36 +268,14 @@ const CardDetailPage = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Subcards</h3>
             <div className="space-y-4 ml-6">
               {card.children.map((subcard) => (
-                <div key={subcard.id} className="bg-white rounded-lg shadow p-6">
-                  {subcard.type === 'link' && <LinkCardComponent card={subcard as LinkCard} />}
-                  {subcard.type === 'poll' && (
-                    <PollCardComponent
-                      card={subcard as PollCard}
-                      userId={userId}
-                      onVote={(optionIdx: number) => {
-                        const pollSubcard = subcard as PollCard;
-                        const votes = pollSubcard.votes ? [...pollSubcard.votes] : [];
-                        const existing = votes.findIndex(v => v.userId === userId);
-                        if (existing !== -1) {
-                          votes[existing] = { userId, option: optionIdx };
-                        } else {
-                          votes.push({ userId, option: optionIdx });
-                        }
-
-                        // Update subcard in parent's children array
-                        const updatedCard: CardType = {
-                          ...card,
-                          children: card.children?.map(c =>
-                            c.id === subcard.id ? { ...pollSubcard, votes } as CardType : c
-                          ),
-                          updatedAt: new Date().toISOString(),
-                        };
-                        updateCard(updatedCard);
-                      }}
-                    />
-                  )}
-                  {subcard.type === 'note' && <NoteCardComponent card={subcard as NoteCard} />}
-                </div>
+                <SubCard
+                  key={subcard.id}
+                  subcard={subcard}
+                  userId={userId}
+                  onDeleteSubcard={handleDeleteSubcard}
+                  onUpdateCard={updateCard}
+                  parentCard={card}
+                />
               ))}
             </div>
           </div>
