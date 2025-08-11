@@ -9,7 +9,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import FloatingCardInput from "../components/FloatingCardInput";
 import { useActivityRoomContext } from "../hooks/useActivityRoomContext";
-import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
+import { LinkCard, PollCard, NoteCard, AILinkCard, LinkCardInput, PollCardInput, NoteCardInput, AILinkCardInput } from "../../shared";
 
 const ActivityPage = () => {
   const { isLoaded, userId } = useAuth();
@@ -48,7 +48,7 @@ const ActivityPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | NoteCardInput) => {
+  const handleCreateCard = (cardData: LinkCardInput | PollCardInput | NoteCardInput | AILinkCardInput) => {
     if (!isConnected) return;
 
     const base = {
@@ -73,6 +73,13 @@ const ActivityPage = () => {
       const newCard: NoteCard = {
         ...cardData,
         ...base,
+      };
+      createCard(newCard);
+    } else if (cardData.type === 'ailink') {
+      const newCard: AILinkCard = {
+        ...cardData,
+        ...base,
+        status: 'processing',
       };
       createCard(newCard);
     }

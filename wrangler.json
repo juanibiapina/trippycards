@@ -4,7 +4,8 @@
   "main": "./src/worker/index.ts",
   "compatibility_date": "2025-07-09",
   "compatibility_flags": [
-    "nodejs_als"
+    "nodejs_als",
+    "nodejs_compat"
   ],
   "version_metadata": {
     "binding": "CF_VERSION_METADATA"
@@ -18,6 +19,11 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*", "/parties/*"]
   },
+  "workflows": [{
+    "name": "ailink-processor",
+    "binding": "AILINK_WORKFLOW",
+    "class_name": "AiLinkProcessor"
+  }],
   "durable_objects": {
     "bindings": [
       {
@@ -26,6 +32,12 @@
       }
     ]
   },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "a22d3dc894bb4a038cab5fb309869777"
+    }
+  ],
   "migrations": [
     {
       "tag": "v1",

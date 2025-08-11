@@ -12,7 +12,7 @@ import CardCreationModal from "../components/cards/CardCreationModal";
 import SubCard from "../components/cards/SubCard";
 import { useActivityRoomContext } from "../hooks/useActivityRoomContext";
 import { useLongPress } from "../hooks/useLongPress";
-import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
+import { Card as CardType, LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput, AILinkCardInput } from "../../shared";
 import LinkCardComponent from "../components/cards/LinkCard";
 import PollCardComponent from "../components/cards/PollCard";
 import NoteCardComponent from "../components/cards/NoteCard";
@@ -93,7 +93,7 @@ const CardDetailPage = () => {
     updateCard(updatedCard);
   };
 
-  const handleCreateSubcard = (cardData: LinkCardInput | PollCardInput | NoteCardInput) => {
+  const handleCreateSubcard = (cardData: LinkCardInput | PollCardInput | NoteCardInput | AILinkCardInput) => {
     if (!isConnected || !card) return;
 
     const base = {
@@ -109,6 +109,8 @@ const CardDetailPage = () => {
       newSubcard = { ...cardData, ...base };
     } else if (cardData.type === 'note') {
       newSubcard = { ...cardData, ...base };
+    } else if (cardData.type === 'ailink') {
+      newSubcard = { ...cardData, ...base, status: 'processing' } as CardType;
     } else {
       return;
     }

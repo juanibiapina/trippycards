@@ -1,10 +1,11 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Card, LinkCard as LinkCardType, PollCard as PollCardType, NoteCard as NoteCardType } from '../../../shared';
+import { Card, LinkCard as LinkCardType, PollCard as PollCardType, NoteCard as NoteCardType, AILinkCard as AILinkCardType } from '../../../shared';
 import LinkCard from './LinkCard';
 import CardComponent from '../Card';
 import PollCard from './PollCard';
 import NoteCard from './NoteCard';
+import AILinkCard from './AILinkCard';
 import { useLongPress } from '../../hooks/useLongPress';
 
 interface CardsListProps {
@@ -67,7 +68,8 @@ const CardListItem: React.FC<CardListItemProps> = ({ card, userId, onUpdateCard,
           />
         )}
         {card.type === 'note' && <NoteCard card={card as NoteCardType} />}
-        {!['link', 'poll', 'note'].includes(card.type) && (
+        {card.type === 'ailink' && <AILinkCard card={card as AILinkCardType} />}
+        {!['link', 'poll', 'note', 'ailink'].includes(card.type) && (
           <div className="p-4 border rounded-lg bg-gray-50">
             <p className="text-gray-600">Unknown card type: {card.type}</p>
           </div>

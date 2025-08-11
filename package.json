@@ -17,6 +17,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.40.0",
     "@hono/clerk-auth": "^3.0.3",
+    "@mendable/firecrawl-js": "^1.29.3",
     "@sentry/cloudflare": "^10.3.0",
     "@tailwindcss/vite": "^4.1.11",
     "hono": "^4.9.0",

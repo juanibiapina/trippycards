@@ -10,10 +10,13 @@ import { ActivityDO } from "./ActivityDO";
 export interface Env {
   SENTRY_DSN?: string;
   ENVIRONMENT?: string;
+  FIRECRAWL_API_KEY: string;
   CF_VERSION_METADATA?: {
     id: string;
   };
+  KV: KVNamespace;
   ACTIVITYDO: DurableObjectNamespace<ActivityDO>;
+  AILINK_WORKFLOW: Workflow;
   JWKS_PK: string; // Public key for JWT verification
 }
 
@@ -113,3 +116,4 @@ export default Sentry.withSentry(
   }
 );
 export { ActivityDO } from "./ActivityDO";
+export { default as AiLinkProcessor } from "./workflows/AiLinkProcessor";

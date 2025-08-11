@@ -27,6 +27,15 @@ export interface NoteCard extends Card {
   text: string;
 }
 
+export interface AILinkCard extends Card {
+  type: 'ailink';
+  url: string;
+  title?: string;
+  description?: string;
+  status?: 'processing' | 'completed' | 'error';
+  workflowId?: string;
+}
+
 export type Activity = {
   name?: string;
   startDate?: string;
@@ -52,4 +61,9 @@ export type PollCardInput = {
 export type NoteCardInput = {
   type: 'note';
   text: string;
+};
+
+export type AILinkCardInput = {
+  type: 'ailink';
+  url: string;
 };
