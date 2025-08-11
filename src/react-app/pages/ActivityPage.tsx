@@ -8,7 +8,7 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/cards/CardCreationModal";
 import CardsList from "../components/cards/CardsList";
 import FloatingCardInput from "../components/FloatingCardInput";
-import { useActivityRoomContext } from "../hooks/ActivityRoomContext";
+import { useActivityRoomContext } from "../hooks/useActivityRoomContext";
 import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInput } from "../../shared";
 
 const ActivityPage = () => {

@@ -71,7 +71,7 @@ describe('useLongPress', () => {
     const mockEvent = {
       preventDefault: vi.fn(),
       stopPropagation: vi.fn(),
-    } as any;
+    } as unknown as React.MouseEvent;
 
     act(() => {
       result.current.onClick(mockEvent);

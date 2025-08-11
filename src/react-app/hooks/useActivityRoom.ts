@@ -14,14 +14,14 @@ interface UseActivityRoomResult {
   loading: boolean;
 }
 
-export function useActivityRoom(activityId: string): UseActivityRoomResult {
+export function useActivityRoom(activityId: string | null): UseActivityRoomResult {
   const { getToken } = useAuth();
   const [activity, setActivity] = useState<Activity>({ cards: [] });
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const socket = usePartySocket({
-    room: activityId,
+    room: activityId || '',
     party: 'activitydo',
     query: async () => ({
       token: await getToken(),
