@@ -1,7 +1,8 @@
 import { useAuth } from '@clerk/clerk-react';
-import { useState, useCallback } from 'react';
-import { usePartySocket } from 'partysocket/react';
-import type { Activity, Message, Card } from '../../shared';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import useYProvider from 'y-partyserver/react';
+import * as Y from 'yjs';
+import type { Activity, Card } from '../../shared';
 
 interface UseActivityRoomResult {
   activity: Activity | null;
@@ -20,113 +21,147 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const socket = usePartySocket({
+  // Create Yjs document with useMemo to prevent recreation
+  const yDoc = useMemo(() => new Y.Doc(), []);
+
+  const provider = useYProvider({
     room: activityId || '',
     party: 'activitydo',
-    query: async () => ({
-      token: await getToken(),
-    }),
-    onOpen: () => {
-      setIsConnected(true);
-    },
-    onClose: () => {
-      setIsConnected(false);
-    },
-    onMessage: (event) => {
-      const message = JSON.parse(event.data) as Message;
-
-      if (message.type === 'activity') {
-        setActivity(message.activity);
-        setLoading(false);
-      } else if (message.type === 'name') {
-        setActivity(prev => {
-          return {
-            ...prev,
-            name: message.name,
-          };
-        });
-      } else if (message.type === 'dates') {
-        setActivity(prev => {
-          return {
-            ...prev,
-            startDate: message.startDate,
-            endDate: message.endDate,
-            startTime: message.startTime,
-          };
-        });
-      } else if (message.type === 'card-create') {
-        setActivity(prev => {
-          return {
-            ...prev,
-            cards: [...(prev.cards || []), message.card],
-          };
-        });
-      } else if (message.type === 'card-update') {
-        setActivity(prev => {
-          return {
-            ...prev,
-            cards: (prev.cards || []).map(card =>
-              card.id === message.card.id ? message.card : card
-            ),
-          };
-        });
-      } else if (message.type === 'card-delete') {
-        setActivity(prev => {
-          return {
-            ...prev,
-            cards: (prev.cards || []).filter(card => card.id !== message.cardId),
-          };
-        });
-      }
+    doc: yDoc,
+    options: {
+      params: async () => ({
+        token: await getToken(),
+      }),
     },
   });
 
-  const updateName = useCallback((name: string) => {
-    if (!socket || !isConnected) return;
+  // Function to extract activity state from Yjs document
+  const extractActivityFromDoc = useCallback((doc: Y.Doc): Activity => {
+    const activityMap = doc.getMap('activity');
+    const cardsArray = doc.getArray<Y.Map<unknown>>('cards');
 
-    socket.send(JSON.stringify({
-      type: 'name',
-      name,
-    } satisfies Message));
-  }, [socket, isConnected]);
+    const cards: Card[] = [];
+    for (let i = 0; i < cardsArray.length; i++) {
+      const cardMap = cardsArray.get(i);
+      const card: Record<string, unknown> = {};
+      cardMap.forEach((value, key) => {
+        card[key] = value;
+      });
+      cards.push(card as unknown as Card);
+    }
+
+    const activity: Activity = { cards };
+
+    if (activityMap.has('name')) {
+      activity.name = activityMap.get('name') as string;
+    }
+    if (activityMap.has('startDate')) {
+      activity.startDate = activityMap.get('startDate') as string;
+    }
+    if (activityMap.has('endDate')) {
+      activity.endDate = activityMap.get('endDate') as string;
+    }
+    if (activityMap.has('startTime')) {
+      activity.startTime = activityMap.get('startTime') as string;
+    }
+
+    return activity;
+  }, []);
+
+  // Setup observers for Yjs document changes
+  useEffect(() => {
+    if (!provider) return;
+
+    const updateActivity = () => {
+      const newActivity = extractActivityFromDoc(yDoc);
+      setActivity(newActivity);
+      setLoading(false);
+    };
+
+    // Initial state update
+    updateActivity();
+
+    // Listen for document changes
+    const activityMap = yDoc.getMap('activity');
+    const cardsArray = yDoc.getArray('cards');
+
+    const activityObserver = () => updateActivity();
+    const cardsObserver = () => updateActivity();
+
+    activityMap.observe(activityObserver);
+    cardsArray.observe(cardsObserver);
+
+    // Listen for provider connection status
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    provider.on('connect', handleConnect);
+    provider.on('disconnect', handleDisconnect);
+
+    return () => {
+      activityMap.unobserve(activityObserver);
+      cardsArray.unobserve(cardsObserver);
+      provider.off('connect', handleConnect);
+      provider.off('disconnect', handleDisconnect);
+    };
+  }, [provider, yDoc, extractActivityFromDoc]);
+
+  const updateName = useCallback((name: string) => {
+    const activityMap = yDoc.getMap('activity');
+    activityMap.set('name', name);
+  }, [yDoc]);
 
   const updateDates = useCallback((startDate: string, endDate?: string, startTime?: string) => {
-    if (!socket || !isConnected) return;
-
-    socket.send(JSON.stringify({
-      type: 'dates',
-      startDate,
-      endDate,
-      startTime,
-    } satisfies Message));
-  }, [socket, isConnected]);
+    const activityMap = yDoc.getMap('activity');
+    activityMap.set('startDate', startDate);
+    if (endDate !== undefined) {
+      activityMap.set('endDate', endDate);
+    }
+    if (startTime !== undefined) {
+      activityMap.set('startTime', startTime);
+    }
+  }, [yDoc]);
 
   const createCard = useCallback((card: Card) => {
-    if (!socket || !isConnected) return;
+    const cardsArray = yDoc.getArray('cards');
+    const cardMap = new Y.Map();
 
-    socket.send(JSON.stringify({
-      type: 'card-create',
-      card,
-    } satisfies Message));
-  }, [socket, isConnected]);
+    // Set all card properties on the Y.Map
+    Object.entries(card).forEach(([key, value]) => {
+      cardMap.set(key, value);
+    });
 
-  const updateCard = useCallback((card: Card) => {
-    if (!socket || !isConnected) return;
+    cardsArray.push([cardMap]);
+  }, [yDoc]);
 
-    socket.send(JSON.stringify({
-      type: 'card-update',
-      card,
-    } satisfies Message));
-  }, [socket, isConnected]);
+  const updateCard = useCallback((updatedCard: Card) => {
+    const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
+
+    // Find the card by ID and update it
+    for (let i = 0; i < cardsArray.length; i++) {
+      const cardMap = cardsArray.get(i);
+      if (cardMap.get('id') === updatedCard.id) {
+        // Update all properties
+        Object.entries(updatedCard).forEach(([key, value]) => {
+          cardMap.set(key, value);
+        });
+        break;
+      }
+    }
+  }, [yDoc]);
 
   const deleteCard = useCallback((cardId: string) => {
-    if (!socket || !isConnected) return;
+    const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
 
-    socket.send(JSON.stringify({
-      type: 'card-delete',
-      cardId,
-    } satisfies Message));
-  }, [socket, isConnected]);
+    // Find and remove the card by ID
+    for (let i = 0; i < cardsArray.length; i++) {
+      const cardMap = cardsArray.get(i);
+      if (cardMap.get('id') === cardId) {
+        cardsArray.delete(i);
+        break;
+      }
+    }
+  }, [yDoc]);
 
   return {
     activity,
