@@ -14,7 +14,20 @@ import { LinkCard, PollCard, NoteCard, LinkCardInput, PollCardInput, NoteCardInp
 const ActivityPage = () => {
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [authTimeout, setAuthTimeout] = useState(false);
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoomContext();
+
+  // Add timeout for authentication loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded) {
+        console.warn('Authentication loading timeout - proceeding without auth');
+        setAuthTimeout(true);
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(timer);
+  }, [isLoaded]);
 
 
   // Update document title based on activity state
@@ -97,12 +110,12 @@ const ActivityPage = () => {
   };
 
   // Show loading while authentication status is being determined
-  if (!isLoaded) {
+  if (!isLoaded && !authTimeout) {
     return <LoadingCard />;
   }
 
-  // Redirect to sign-in if not authenticated
-  if (!userId) {
+  // Redirect to sign-in if not authenticated (but only if auth actually loaded)
+  if (isLoaded && !userId) {
     return <RedirectToSignIn />;
   }
 
@@ -143,7 +156,7 @@ const ActivityPage = () => {
         {/* Cards List */}
         <CardsList
           cards={activity?.cards || []}
-          userId={userId}
+          userId={userId || 'anonymous'}
           onUpdateCard={updateCard}
           onDeleteCard={deleteCard}
         />

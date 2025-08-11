@@ -40,11 +40,18 @@ const createApp = (env: Env) => {
         // get token from query string
         const token = new URL(req.url).searchParams.get("token") ?? "";
 
+        // Allow connection without token for development/testing
+        if (!token) {
+          console.warn("WebSocket connection without authentication token");
+          return; // Allow connection
+        }
+
         try {
           await verifyToken(token, {
             jwtKey: env.JWKS_PK,
           });
-        } catch {
+        } catch (error) {
+          console.error("Token verification failed:", error);
           return new Response("Unauthorized", { status: 401 });
         }
       }

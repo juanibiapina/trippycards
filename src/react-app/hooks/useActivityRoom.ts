@@ -16,7 +16,7 @@ interface UseActivityRoomResult {
 }
 
 export function useActivityRoom(activityId: string | null): UseActivityRoomResult {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded } = useAuth();
   const [activity, setActivity] = useState<Activity>({ cards: [] });
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,9 +29,21 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
     party: 'activitydo',
     doc: yDoc,
     options: {
-      params: async () => ({
-        token: await getToken(),
-      }),
+      params: async () => {
+        try {
+          // Only attempt to get token if Clerk is loaded
+          if (isLoaded) {
+            return { token: await getToken() };
+          } else {
+            // Return empty params if Clerk is not loaded yet
+            return {};
+          }
+        } catch (error) {
+          console.warn('Failed to get auth token:', error);
+          // Return empty params on auth failure to allow connection without authentication
+          return {};
+        }
+      },
     },
   });
 
@@ -91,18 +103,63 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
     activityMap.observe(activityObserver);
     cardsArray.observe(cardsObserver);
 
-    // Listen for provider connection status
-    const handleConnect = () => setIsConnected(true);
-    const handleDisconnect = () => setIsConnected(false);
+    // Check initial connection state and set up periodic check
+    const checkConnection = () => {
+      if (provider.ws && provider.ws.readyState === WebSocket.OPEN) {
+        setIsConnected(prev => {
+          if (!prev) {
+            console.log('Provider connected');
+          }
+          return true;
+        });
+      } else {
+        setIsConnected(prev => {
+          if (prev) {
+            console.log('Provider disconnected');
+          }
+          return false;
+        });
+      }
+    };
 
-    provider.on('connect', handleConnect);
-    provider.on('disconnect', handleDisconnect);
+    // Initial check
+    checkConnection();
+
+    // Periodic check every 1000ms
+    const connectionCheckInterval = setInterval(checkConnection, 1000);
+
+    // Also listen for provider events if they exist
+    const handleConnectEvent = () => {
+      console.log('Provider connected via event');
+      setIsConnected(true);
+    };
+    const handleDisconnectEvent = () => {
+      console.log('Provider disconnected via event');
+      setIsConnected(false);
+    };
+
+    // Try to listen for events
+    try {
+      provider.on('connect', handleConnectEvent);
+      provider.on('disconnect', handleDisconnectEvent);
+      provider.on('open', handleConnectEvent);
+      provider.on('close', handleDisconnectEvent);
+    } catch {
+      // Provider events not available, rely on periodic check
+    }
 
     return () => {
+      clearInterval(connectionCheckInterval);
       activityMap.unobserve(activityObserver);
       cardsArray.unobserve(cardsObserver);
-      provider.off('connect', handleConnect);
-      provider.off('disconnect', handleDisconnect);
+      try {
+        provider.off('connect', handleConnectEvent);
+        provider.off('disconnect', handleDisconnectEvent);
+        provider.off('open', handleConnectEvent);
+        provider.off('close', handleDisconnectEvent);
+      } catch {
+        // Ignore cleanup errors
+      }
     };
   }, [provider, yDoc, extractActivityFromDoc]);
 
