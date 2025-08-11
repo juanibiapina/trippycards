@@ -18,60 +18,70 @@ export class ActivityDO extends YServer<Env> {
    */
 
   addCard(card: Card) {
-    const cards = this.document.getArray<Y.Map<unknown>>("cards");
-    const cardMap = new Y.Map();
+    this.document.transact(() => {
+      const cards = this.document.getArray<Y.Map<unknown>>("cards");
+      const cardMap = new Y.Map();
 
-    // Set all card properties on the Y.Map
-    Object.entries(card).forEach(([key, value]) => {
-      cardMap.set(key, value);
+      // Set all card properties on the Y.Map
+      Object.entries(card).forEach(([key, value]) => {
+        cardMap.set(key, value);
+      });
+
+      cards.push([cardMap]);
     });
-
-    cards.push([cardMap]);
   }
 
   updateCard(updatedCard: Card) {
-    const cards = this.document.getArray<Y.Map<unknown>>("cards");
+    this.document.transact(() => {
+      const cards = this.document.getArray<Y.Map<unknown>>("cards");
 
-    // Find the card by ID and update it
-    for (let i = 0; i < cards.length; i++) {
-      const cardMap = cards.get(i);
-      if (cardMap.get("id") === updatedCard.id) {
-        // Update all properties
-        Object.entries(updatedCard).forEach(([key, value]) => {
-          cardMap.set(key, value);
-        });
-        break;
+      // Find the card by ID and update it
+      for (let i = 0; i < cards.length; i++) {
+        const cardMap = cards.get(i);
+        if (cardMap.get("id") === updatedCard.id) {
+          // Update all properties
+          Object.entries(updatedCard).forEach(([key, value]) => {
+            cardMap.set(key, value);
+          });
+          break;
+        }
       }
-    }
+    });
   }
 
   deleteCard(cardId: string) {
-    const cards = this.document.getArray<Y.Map<unknown>>("cards");
+    this.document.transact(() => {
+      const cards = this.document.getArray<Y.Map<unknown>>("cards");
 
-    // Find and remove the card by ID
-    for (let i = 0; i < cards.length; i++) {
-      const cardMap = cards.get(i);
-      if (cardMap.get("id") === cardId) {
-        cards.delete(i);
-        break;
+      // Find and remove the card by ID
+      for (let i = 0; i < cards.length; i++) {
+        const cardMap = cards.get(i);
+        if (cardMap.get("id") === cardId) {
+          cards.delete(i);
+          break;
+        }
       }
-    }
+    });
   }
 
   updateName(name: string) {
-    const activity = this.document.getMap<unknown>("activity");
-    activity.set("name", name);
+    this.document.transact(() => {
+      const activity = this.document.getMap<unknown>("activity");
+      activity.set("name", name);
+    });
   }
 
   updateDates(startDate: string, endDate?: string, startTime?: string) {
-    const activity = this.document.getMap<unknown>("activity");
-    activity.set("startDate", startDate);
-    if (endDate !== undefined) {
-      activity.set("endDate", endDate);
-    }
-    if (startTime !== undefined) {
-      activity.set("startTime", startTime);
-    }
+    this.document.transact(() => {
+      const activity = this.document.getMap<unknown>("activity");
+      activity.set("startDate", startDate);
+      if (endDate !== undefined) {
+        activity.set("endDate", endDate);
+      }
+      if (startTime !== undefined) {
+        activity.set("startTime", startTime);
+      }
+    });
   }
 
   // Lifecycle methods for persistence

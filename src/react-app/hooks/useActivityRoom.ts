@@ -107,60 +107,70 @@ export function useActivityRoom(activityId: string | null): UseActivityRoomResul
   }, [provider, yDoc, extractActivityFromDoc]);
 
   const updateName = useCallback((name: string) => {
-    const activityMap = yDoc.getMap('activity');
-    activityMap.set('name', name);
+    yDoc.transact(() => {
+      const activityMap = yDoc.getMap('activity');
+      activityMap.set('name', name);
+    });
   }, [yDoc]);
 
   const updateDates = useCallback((startDate: string, endDate?: string, startTime?: string) => {
-    const activityMap = yDoc.getMap('activity');
-    activityMap.set('startDate', startDate);
-    if (endDate !== undefined) {
-      activityMap.set('endDate', endDate);
-    }
-    if (startTime !== undefined) {
-      activityMap.set('startTime', startTime);
-    }
+    yDoc.transact(() => {
+      const activityMap = yDoc.getMap('activity');
+      activityMap.set('startDate', startDate);
+      if (endDate !== undefined) {
+        activityMap.set('endDate', endDate);
+      }
+      if (startTime !== undefined) {
+        activityMap.set('startTime', startTime);
+      }
+    });
   }, [yDoc]);
 
   const createCard = useCallback((card: Card) => {
-    const cardsArray = yDoc.getArray('cards');
-    const cardMap = new Y.Map();
+    yDoc.transact(() => {
+      const cardsArray = yDoc.getArray('cards');
+      const cardMap = new Y.Map();
 
-    // Set all card properties on the Y.Map
-    Object.entries(card).forEach(([key, value]) => {
-      cardMap.set(key, value);
+      // Set all card properties on the Y.Map
+      Object.entries(card).forEach(([key, value]) => {
+        cardMap.set(key, value);
+      });
+
+      cardsArray.push([cardMap]);
     });
-
-    cardsArray.push([cardMap]);
   }, [yDoc]);
 
   const updateCard = useCallback((updatedCard: Card) => {
-    const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
+    yDoc.transact(() => {
+      const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
 
-    // Find the card by ID and update it
-    for (let i = 0; i < cardsArray.length; i++) {
-      const cardMap = cardsArray.get(i);
-      if (cardMap.get('id') === updatedCard.id) {
-        // Update all properties
-        Object.entries(updatedCard).forEach(([key, value]) => {
-          cardMap.set(key, value);
-        });
-        break;
+      // Find the card by ID and update it
+      for (let i = 0; i < cardsArray.length; i++) {
+        const cardMap = cardsArray.get(i);
+        if (cardMap.get('id') === updatedCard.id) {
+          // Update all properties
+          Object.entries(updatedCard).forEach(([key, value]) => {
+            cardMap.set(key, value);
+          });
+          break;
+        }
       }
-    }
+    });
   }, [yDoc]);
 
   const deleteCard = useCallback((cardId: string) => {
-    const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
+    yDoc.transact(() => {
+      const cardsArray = yDoc.getArray<Y.Map<unknown>>('cards');
 
-    // Find and remove the card by ID
-    for (let i = 0; i < cardsArray.length; i++) {
-      const cardMap = cardsArray.get(i);
-      if (cardMap.get('id') === cardId) {
-        cardsArray.delete(i);
-        break;
+      // Find and remove the card by ID
+      for (let i = 0; i < cardsArray.length; i++) {
+        const cardMap = cardsArray.get(i);
+        if (cardMap.get('id') === cardId) {
+          cardsArray.delete(i);
+          break;
+        }
       }
-    }
+    });
   }, [yDoc]);
 
   return {
