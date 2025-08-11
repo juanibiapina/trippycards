@@ -7,6 +7,7 @@ declare namespace Cloudflare {
 		ENVIRONMENT: string;
 		CLERK_SECRET_KEY: string;
 		CLERK_PUBLISHABLE_KEY: string;
+		FIRECRAWL_API_KEY: string;
 		ACTIVITYDO: DurableObjectNamespace<import("./src/worker/index").ActivityDO>;
 		CF_VERSION_METADATA: WorkerVersionMetadata;
 		AILINK_WORKFLOW: Workflow;
@@ -17,7 +18,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "ENVIRONMENT" | "CLERK_SECRET_KEY" | "CLERK_PUBLISHABLE_KEY">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "ENVIRONMENT" | "CLERK_SECRET_KEY" | "CLERK_PUBLISHABLE_KEY" | "FIRECRAWL_API_KEY">> {}
 }
 
 // Begin runtime types
