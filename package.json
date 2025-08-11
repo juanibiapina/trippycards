@@ -27,7 +27,9 @@
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
     "react-router": "^7.8.0",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "y-partyserver": "^0.0.46",
+    "yjs": "^13.6.27"
   },
   "devDependencies": {
     "@clerk/testing": "^1.10.11",
