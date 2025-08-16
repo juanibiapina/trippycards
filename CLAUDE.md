@@ -21,3 +21,19 @@ Structure:
 
 `npm run dev` is always running on the current tmux session (`dev tmux session-info`), window `5:dev` (http://localhost:5173).
 Read the contents of that pane to access local server logs.
+
+### Testing in production
+
+- Use `bin/deploy` to deploy the application to production
+- Access production at https://trippycards.com to verify changes
+
+### Production sign-in
+
+Production credentials are stored in `.env.local`:
+- Email: `PRODUCTION_USER_EMAIL` (juanibiapina+production@gmail.com)
+- Password: `PRODUCTION_USER_PASSWORD`
+
+To sign in to production:
+1. Navigate to https://trippycards.com
+2. Use the production credentials from `.env.local`
+3. Complete the login flow
