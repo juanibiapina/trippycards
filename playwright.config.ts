@@ -21,15 +21,6 @@ export default defineConfig({
       },
     },
     {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        // Use prepared auth state
-        storageState: 'playwright/.clerk/user.json',
-      },
-      dependencies: ['setup'],
-    },
-    {
       name: 'chrome-mobile',
       use: {
         ...devices['Pixel 5'],
