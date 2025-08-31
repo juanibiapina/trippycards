@@ -7,7 +7,7 @@ interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCard: (card: Card) => void;
-  cardType: 'link' | 'poll';
+  cardType: string;
 }
 
 export const CardCreationModal: React.FC<CardCreationModalProps> = ({

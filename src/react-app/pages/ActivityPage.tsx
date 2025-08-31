@@ -15,7 +15,7 @@ const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedCardType, setSelectedCardType] = useState<'link' | 'poll'>('link');
+  const [selectedCardType, setSelectedCardType] = useState<string>('link');
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
 
