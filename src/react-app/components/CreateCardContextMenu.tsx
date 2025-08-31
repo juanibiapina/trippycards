@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FiMoreVertical, FiPlus } from 'react-icons/fi';
 
 interface CreateCardContextMenuProps {
-  onCreateCard: () => void;
+  onCreateCard: (cardType: 'link' | 'poll') => void;
 }
 
 export const CreateCardContextMenu: React.FC<CreateCardContextMenuProps> = ({ onCreateCard }) => {
@@ -25,8 +25,8 @@ export const CreateCardContextMenu: React.FC<CreateCardContextMenuProps> = ({ on
     };
   }, [isOpen]);
 
-  const handleCreateCard = () => {
-    onCreateCard();
+  const handleCreateCard = (cardType: 'link' | 'poll') => {
+    onCreateCard(cardType);
     setIsOpen(false);
   };
 
@@ -43,11 +43,18 @@ export const CreateCardContextMenu: React.FC<CreateCardContextMenuProps> = ({ on
       {isOpen && (
         <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[120px]">
           <button
-            onClick={handleCreateCard}
+            onClick={() => handleCreateCard('link')}
             className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
           >
             <FiPlus size={14} />
-            <span>Create Card</span>
+            <span>Link Card</span>
+          </button>
+          <button
+            onClick={() => handleCreateCard('poll')}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <FiPlus size={14} />
+            <span>Poll Card</span>
           </button>
         </div>
       )}

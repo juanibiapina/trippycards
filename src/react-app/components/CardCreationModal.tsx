@@ -11,6 +11,7 @@ interface CardCreationModalProps {
   ) => void;
   onUpdateCard?: (card: LinkCard) => void;
   editingCard?: LinkCard;
+  cardType: 'link' | 'poll';
 }
 
 export const CardCreationModal: React.FC<CardCreationModalProps> = ({
@@ -19,13 +20,13 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   onCreateCard,
   onUpdateCard,
   editingCard,
+  cardType,
 }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
-  const [cardType, setCardType] = useState<'link' | 'poll'>('link');
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollError, setPollError] = useState('');
@@ -35,13 +36,10 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   // Initialize form with editing card data
   useEffect(() => {
     if (editingCard) {
-      setCardType('link'); // Only link cards can be edited for now
       setUrl(editingCard.url);
       setTitle(editingCard.title || '');
       setDescription(editingCard.description || '');
       setImageUrl(editingCard.imageUrl || '');
-    } else {
-      setCardType('link'); // Reset to default when opening for new card
     }
     setPollQuestion('');
     setPollOptions(['', '']);
@@ -60,33 +58,51 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!url.trim()) {
-      setUrlError('URL is required');
-      return;
-    }
+    if (cardType === 'link') {
+      if (!url.trim()) {
+        setUrlError('URL is required');
+        return;
+      }
 
-    if (!validateUrl(url)) {
-      setUrlError('Please enter a valid URL');
-      return;
-    }
+      if (!validateUrl(url)) {
+        setUrlError('Please enter a valid URL');
+        return;
+      }
 
-    const cardData = {
-      type: 'link' as const,
-      url: url.trim(),
-      title: title.trim() || undefined,
-      description: description.trim() || undefined,
-      imageUrl: imageUrl.trim() || undefined,
-    };
-
-    if (isEditing && editingCard && onUpdateCard) {
-      const updatedCard: LinkCard = {
-        ...editingCard,
-        ...cardData,
-        updatedAt: new Date().toISOString(),
+      const cardData = {
+        type: 'link' as const,
+        url: url.trim(),
+        title: title.trim() || undefined,
+        description: description.trim() || undefined,
+        imageUrl: imageUrl.trim() || undefined,
       };
-      onUpdateCard(updatedCard);
-    } else {
-      onCreateCard(cardData);
+
+      if (isEditing && editingCard && onUpdateCard) {
+        const updatedCard: LinkCard = {
+          ...editingCard,
+          ...cardData,
+          updatedAt: new Date().toISOString(),
+        };
+        onUpdateCard(updatedCard);
+      } else {
+        onCreateCard(cardData);
+      }
+    } else if (cardType === 'poll') {
+      if (!pollQuestion.trim()) {
+        setPollError('Poll question is required');
+        return;
+      }
+      const trimmedOptions = pollOptions.map(opt => opt.trim()).filter(Boolean);
+      if (trimmedOptions.length < 2) {
+        setPollError('At least two options are required');
+        return;
+      }
+      setPollError('');
+      onCreateCard({
+        type: 'poll',
+        question: pollQuestion.trim(),
+        options: trimmedOptions,
+      });
     }
 
     handleClose();
@@ -108,34 +124,13 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? 'Edit Link Card' : 'Create Card'}
+            {isEditing ? 'Edit Link Card' : `Create ${cardType === 'link' ? 'Link' : 'Poll'} Card`}
           </h2>
           <button onClick={handleClose} aria-label="Close" className="text-gray-400 hover:text-gray-600">
             <FiX size={24} />
           </button>
         </div>
         <div className="p-6">
-          {/* Card Type Selection */}
-          <div className="mb-4 flex space-x-2">
-            <button
-              type="button"
-              className={`px-3 py-1 rounded ${cardType === 'link' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setCardType('link')}
-              aria-pressed={cardType === 'link'}
-            >
-              Link
-            </button>
-            <button
-              type="button"
-              className={`px-3 py-1 rounded ${cardType === 'poll' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setCardType('poll')}
-              aria-pressed={cardType === 'poll'}
-            >
-              Poll
-            </button>
-          </div>
-
-          {/* Only show link card form for now */}
           {cardType === 'link' && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -186,26 +181,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
             </form>
           )}
           {cardType === 'poll' && (
-            <form className="space-y-4" onSubmit={e => {
-              e.preventDefault();
-              // Validate poll question and options
-              if (!pollQuestion.trim()) {
-                setPollError('Poll question is required');
-                return;
-              }
-              const trimmedOptions = pollOptions.map(opt => opt.trim()).filter(Boolean);
-              if (trimmedOptions.length < 2) {
-                setPollError('At least two options are required');
-                return;
-              }
-              setPollError('');
-              onCreateCard({
-                type: 'poll',
-                question: pollQuestion.trim(),
-                options: trimmedOptions,
-              });
-              handleClose();
-            }}>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="poll-question" className="block text-sm font-medium text-gray-700">Poll Question<span className="text-red-500">*</span></label>
                 <input

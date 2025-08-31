@@ -9,7 +9,7 @@ interface ActivityHeaderProps {
   startTime?: string;
   onNameUpdate: (name: string) => void;
   onDateChange: (startDate: string, endDate?: string, startTime?: string) => void;
-  onCreateCard?: () => void;
+  onCreateCard?: (cardType: 'link' | 'poll') => void;
   disabled?: boolean;
 }
 

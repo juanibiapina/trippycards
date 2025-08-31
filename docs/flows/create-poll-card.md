@@ -13,26 +13,24 @@ This flow describes how users can create a new Poll card within an activity in t
    - User visits an existing activity page (`/activities/[activity-id]`)
    - The Cards section displays with existing cards or "No cards yet" message
 
-2. **Open Card Creation Modal**
+2. **Select Poll Card Type**
    - User clicks the "Create Card" button (with plus icon)
-   - A modal opens for card creation
+   - A dropdown menu appears showing card type options
+   - User clicks "Poll Card" from the menu
+   - A modal opens specifically for poll card creation
 
-3. **Select Poll Card Type**
-   - User selects the "Poll" card type in the modal
-   - The form updates to show poll-specific fields
-
-4. **Fill Poll Information**
+3. **Fill Poll Information**
    - User enters a **Poll Question*** (required field)
    - User adds **Poll Options*** (at least two required)
      - Each option is entered in a separate input field
      - User can add or remove options (minimum two)
 
-5. **Submit or Cancel**
+4. **Submit or Cancel**
    - User clicks "Create Card" to submit the form
    - Alternatively, user can click "Cancel" or "X" to close without saving
    - Form validates that the question is not empty and at least two options are provided
 
-6. **Card Created and Displayed**
+5. **Card Created and Displayed**
    - Modal closes automatically on successful creation
    - New Poll card appears immediately in the cards list
    - Card displays:

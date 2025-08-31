@@ -15,6 +15,7 @@ const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedCardType, setSelectedCardType] = useState<'link' | 'poll'>('link');
   const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
 
 
@@ -119,7 +120,10 @@ const ActivityPage = () => {
         startTime={activity?.startTime}
         onNameUpdate={handleNameUpdate}
         onDateChange={handleDateChange}
-        onCreateCard={() => setIsCreateModalOpen(true)}
+        onCreateCard={(cardType) => {
+          setSelectedCardType(cardType);
+          setIsCreateModalOpen(true);
+        }}
         disabled={!isConnected}
       />
 
@@ -139,6 +143,7 @@ const ActivityPage = () => {
           onCreateCard={handleCreateCard}
           onUpdateCard={handleUpdateCard}
           editingCard={undefined}
+          cardType={selectedCardType}
         />
       </div>
     </div>

@@ -13,8 +13,10 @@ This flow describes how users can create a new Link card within an activity in t
    - User visits an existing activity page (`/activities/[activity-id]`)
    - The Cards section displays with existing cards or "No cards yet" message
 
-2. **Open Card Creation Modal**
+2. **Select Link Card Type**
    - User clicks the "Create Card" button (with plus icon)
+   - A dropdown menu appears showing card type options
+   - User clicks "Link Card" from the menu
    - A modal opens titled "Create Link Card"
 
 3. **Fill Card Information**

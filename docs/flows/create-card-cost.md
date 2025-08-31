@@ -25,15 +25,13 @@ When requested to implement a step, follow the following process:
    - User visits an existing activity page (`/activities/[activity-id]`)
    - The Cards section displays with existing cards or "No cards yet" message
 
-2. **Open Card Creation Modal**
+2. **Select Cost Card Type**
    - User clicks the "Create Card" button (with plus icon)
-   - A modal opens for card creation
+   - A dropdown menu appears showing card type options
+   - User clicks "Cost Card" from the menu
+   - A modal opens specifically for cost card creation
 
-3. **Select Cost Card Type**
-   - User selects the "Cost" card type in the modal
-   - The form updates to show cost-split-specific fields
-
-4. **Fill Cost Information**
+3. **Fill Cost Information**
    - User enters a **Description*** of the cost (required field)
    - User enters the **Total Amount*** (required, must be positive)
    - User selects one or more **Payers*** from the list of users in the activity (at least one required)
@@ -41,7 +39,7 @@ When requested to implement a step, follow the following process:
    - User selects one or more **Participants*** who will split the cost (at least one required, cannot be empty)
      - The system displays the calculated split for each participant (e.g. equally divided, but can be extended for custom splits in the future)
 
-5. **Submit or Cancel**
+4. **Submit or Cancel**
    - User clicks "Create Card" to submit the form
    - Form validates:
      - Description is not empty
@@ -50,7 +48,7 @@ When requested to implement a step, follow the following process:
      - At least one participant is selected
    - On validation error, display error messages accordingly
 
-6. **Card Created and Displayed**
+5. **Card Created and Displayed**
    - Modal closes automatically on successful creation
    - New Cost card appears immediately in the cards list
    - Card displays:
