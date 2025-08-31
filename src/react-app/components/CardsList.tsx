@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../shared';
 import CardWrapper from './CardWrapper';
-import LinkCard from './cards/LinkCard';
-import PollCard from './cards/PollCard';
+import LinkCard from './cards/link/LinkCard';
+import PollCard from './cards/poll/PollCard';
 
 interface CardsListProps {
   cards: Card[];

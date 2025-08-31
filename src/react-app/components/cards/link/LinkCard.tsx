@@ -1,4 +1,4 @@
-import { LinkCard as LinkCardType } from '../../../shared';
+import { LinkCard as LinkCardType } from '../../../../shared';
 
 interface LinkCardProps {
   card: LinkCardType;

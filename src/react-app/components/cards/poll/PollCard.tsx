@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { PollCard as PollCardType } from '../../../shared';
-import { useUsers } from '../../hooks/useUsers';
-import UserAvatar from '../UserAvatar';
+import { PollCard as PollCardType } from '../../../../shared';
+import { useUsers } from '../../../hooks/useUsers';
+import UserAvatar from '../../UserAvatar';
 
 interface PollCardProps {
   card: PollCardType;

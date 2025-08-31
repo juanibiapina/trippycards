@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PollCardInput } from '../../shared';
+import { PollCardInput } from '../../../../shared';
 
 interface PollCardFormProps {
   onSubmit: (cardData: PollCardInput) => void;

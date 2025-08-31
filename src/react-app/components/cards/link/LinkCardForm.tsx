@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LinkCard, LinkCardInput } from '../../shared';
-import { validateUrl } from '../utils/url';
+import { LinkCard, LinkCardInput } from '../../../../shared';
+import { validateUrl } from '../../../utils/url';
 
 interface LinkCardFormProps {
   onSubmit: (cardData: LinkCardInput) => void;

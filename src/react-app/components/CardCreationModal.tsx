@@ -1,8 +1,8 @@
 import React from 'react';
 import { FiX } from 'react-icons/fi';
 import { LinkCard, LinkCardInput, PollCardInput } from '../../shared';
-import LinkCardForm from './LinkCardForm';
-import PollCardForm from './PollCardForm';
+import LinkCardForm from './cards/link/LinkCardForm';
+import PollCardForm from './cards/poll/PollCardForm';
 
 interface CardCreationModalProps {
   isOpen: boolean;
