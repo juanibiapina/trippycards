@@ -1,6 +1,6 @@
 import { useState } from "react";
 import DateSelector from "./DateSelector";
-import CreateCardContextMenu from "./cards/CreateCardContextMenu";
+import CreateCardContextMenu from "./CreateCardContextMenu";
 
 interface ActivityHeaderProps {
   activityName?: string;

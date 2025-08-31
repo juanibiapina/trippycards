@@ -6,8 +6,8 @@ import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 import LoadingCard from "../components/LoadingCard";
 import Card from "../components/Card";
 import ActivityHeader from "../components/ActivityHeader";
-import CardCreationModal from "../components/cards/CardCreationModal";
-import CardsList from "../components/cards/CardsList";
+import CardCreationModal from "../components/CardCreationModal";
+import CardsList from "../components/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
 import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
 

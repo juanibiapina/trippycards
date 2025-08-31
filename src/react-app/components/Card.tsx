@@ -1,4 +1,4 @@
-import CardContextMenu from './cards/CardContextMenu';
+import CardContextMenu from './CardContextMenu';
 
 interface CardProps {
   children: React.ReactNode;

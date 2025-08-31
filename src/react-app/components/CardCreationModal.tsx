@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, LinkCardInput, PollCardInput } from '../../../shared';
-import { validateUrl } from '../../utils/url';
+import { LinkCard, LinkCardInput, PollCardInput } from '../../shared';
+import { validateUrl } from '../utils/url';
 
 interface CardCreationModalProps {
   isOpen: boolean;
