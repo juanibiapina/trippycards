@@ -16,7 +16,7 @@ const ActivityPage = () => {
   const { isLoaded, userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedCardType, setSelectedCardType] = useState<string>('link');
-  const { activity, loading, updateName, updateDates, createCard, updateCard, deleteCard, isConnected } = useActivityRoom(params.activityId || '');
+  const { activity, loading, updateName, updateDates, createCard, updateCard, isConnected } = useActivityRoom(params.activityId || '');
 
 
   // Update document title based on activity state
@@ -117,7 +117,6 @@ const ActivityPage = () => {
           cards={activity?.cards || []}
           userId={userId}
           onUpdateCard={updateCard}
-          onDeleteCard={deleteCard}
         />
 
         <CardCreationModal

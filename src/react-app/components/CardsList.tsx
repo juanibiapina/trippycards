@@ -7,10 +7,9 @@ interface CardsListProps {
   cards: Card[];
   userId: string;
   onUpdateCard: (card: Card) => void;
-  onDeleteCard: (cardId: string) => void;
 }
 
-export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
+export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard }) => {
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -30,7 +29,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
         if (cardDefinition) {
           const { Component } = cardDefinition;
           return (
-            <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
+            <CardWrapper key={card.id}>
               <Component
                 card={card}
                 userId={userId}
@@ -42,7 +41,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
 
         // Fallback for unknown card types
         return (
-          <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
+          <CardWrapper key={card.id}>
             <div className="p-4 border rounded-lg bg-gray-50">
               <p className="text-gray-600">Unknown card type: {card.type}</p>
             </div>
