@@ -1,16 +1,10 @@
 import React, { useMemo } from 'react';
 import type { PollCard as PollCardType } from './types';
-import { CardAction } from '../types';
+import { BaseCardProps } from '../types';
 import { useUsers } from '../../../hooks/useUsers';
 import UserAvatar from '../../UserAvatar';
 
-interface PollCardProps {
-  card: PollCardType;
-  userId?: string;
-  onAction?: (action: CardAction) => void;
-}
-
-const PollCard: React.FC<PollCardProps> = ({ card, userId, onAction }) => {
+const PollCard: React.FC<BaseCardProps<PollCardType>> = ({ card, userId, onAction }) => {
   const handleVote = (optionIdx: number) => {
     if (onAction && userId) {
       onAction({

@@ -6,6 +6,12 @@ export type CardAction = {
   payload?: unknown;
 };
 
+export interface BaseCardProps<TCard extends Card> {
+  card: TCard;
+  userId?: string;
+  onAction?: (action: CardAction) => void;
+}
+
 export type CardActionHandler<TCard extends Card> = (
   card: TCard,
   action: CardAction
