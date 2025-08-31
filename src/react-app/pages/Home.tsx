@@ -2,7 +2,7 @@ import { SignedIn, SignedOut, SignIn, UserButton, useUser } from '@clerk/clerk-r
 import { useNavigate } from 'react-router';
 
 import Button from '../components/Button.tsx';
-import Card from '../components/Card.tsx';
+import Box from '../components/Box.tsx';
 import LoadingCard from '../components/LoadingCard.tsx';
 
 function Home() {
@@ -28,7 +28,7 @@ function Home() {
 
       <SignedIn>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <Card>
+          <Box>
             <div className="text-center">
               <div className="mb-4">
                 <UserButton />
@@ -41,7 +41,7 @@ function Home() {
                 </Button>
               </div>
             </div>
-          </Card>
+          </Box>
         </div>
       </SignedIn>
     </>

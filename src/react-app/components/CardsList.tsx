@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../shared';
-import CardComponent from './Card';
+import CardWrapper from './CardWrapper';
 import LinkCard from './cards/LinkCard';
 import PollCard from './cards/PollCard';
 
@@ -29,13 +29,13 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
         switch (card.type) {
           case 'link':
             return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
+              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <LinkCard card={card as LinkCardType} />
-              </CardComponent>
+              </CardWrapper>
             );
           case 'poll':
             return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
+              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <PollCard
                   card={card as PollCardType}
                   userId={userId}
@@ -51,15 +51,15 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
                     onUpdateCard({ ...(card as PollCardType), votes });
                   }}
                 />
-              </CardComponent>
+              </CardWrapper>
             );
           default:
             return (
-              <CardComponent key={card.id} onDelete={() => onDeleteCard(card.id)}>
+              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
                 <div className="p-4 border rounded-lg bg-gray-50">
                   <p className="text-gray-600">Unknown card type: {card.type}</p>
                 </div>
-              </CardComponent>
+              </CardWrapper>
             );
         }
       })}

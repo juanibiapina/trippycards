@@ -1,12 +1,12 @@
 import CardContextMenu from './CardContextMenu';
 
-interface CardProps {
+interface CardWrapperProps {
   children: React.ReactNode;
   className?: string;
   onDelete?: () => void;
 }
 
-const Card = ({ children, className = "", onDelete }: CardProps) => {
+const CardWrapper = ({ children, className = "", onDelete }: CardWrapperProps) => {
   const baseClasses = "bg-white rounded-lg shadow-lg p-8 max-w-md w-full";
 
   return (
@@ -21,4 +21,4 @@ const Card = ({ children, className = "", onDelete }: CardProps) => {
   );
 };
 
-export default Card;
+export default CardWrapper;

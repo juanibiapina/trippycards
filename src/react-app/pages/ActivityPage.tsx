@@ -4,7 +4,7 @@ import { FiAlertTriangle } from "react-icons/fi";
 import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
 import LoadingCard from "../components/LoadingCard";
-import Card from "../components/Card";
+import Box from "../components/Box";
 import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/CardCreationModal";
 import CardsList from "../components/CardsList";
@@ -97,7 +97,7 @@ const ActivityPage = () => {
   if (!activity) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card>
+        <Box>
           <div className="text-center">
             <div className="text-red-500 mb-4">
               <FiAlertTriangle className="w-16 h-16 mx-auto" />
@@ -105,7 +105,7 @@ const ActivityPage = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
             <p className="text-gray-600">We couldn't load your activity. Please try again.</p>
           </div>
-        </Card>
+        </Box>
       </div>
     );
   }
