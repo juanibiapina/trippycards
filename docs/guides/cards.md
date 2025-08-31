@@ -73,9 +73,7 @@ export default [CardName]Card;
 
 **Key Points:**
 - Use `BaseCardProps<YourCardType>` for type safety
-- Follow the existing Tailwind CSS patterns (see [colors guide](./colors.md))
 - Keep the layout clean and consistent with other cards
-- Use `space-y-3` for consistent vertical spacing
 
 ### 4. Create Form Component
 
@@ -219,21 +217,6 @@ const cardDefinitions: CardDefinition<any>[] = [
 ];
 ```
 
-### 7. Test Your Implementation
-
-Run the full test suite to ensure everything works:
-
-```bash
-bin/ci
-```
-
-This will check:
-- TypeScript compilation
-- ESLint compliance
-- Build process
-- Unit tests
-- Integration tests
-
 ## Actions System
 
 ### Simple Cards (No Actions)
@@ -271,26 +254,6 @@ const createPollActions: CreateActionsFunction<PollCardType> = (card, onUpdateCa
 ## Design Guidelines
 
 - Use Tailwind classes from the [approved color palette](./colors.md)
-
-## Example Cards
-
-### Simple Text Card (Note)
-- **Files**: 4 (types.ts, NoteCard.tsx, NoteCardForm.tsx, index.ts)
-- **Fields**: `text: string`
-- **Actions**: None
-- **Use Case**: Simple text notes
-
-### Interactive Card (Poll)
-- **Files**: 4 (same structure)
-- **Fields**: `question: string`, `options: string[]`, `votes?: Vote[]`
-- **Actions**: `vote(userId, optionIdx)`
-- **Use Case**: Voting and data collection
-
-### Rich Media Card (Link)
-- **Files**: 4 (same structure)  
-- **Fields**: `url: string`, `title?: string`, `description?: string`, `imageUrl?: string`
-- **Actions**: None (external navigation)
-- **Use Case**: Sharing links with previews
 
 ## Benefits of This System
 
