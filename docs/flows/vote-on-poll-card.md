@@ -6,7 +6,7 @@ This flow describes how users can vote on poll cards within an activity in the T
 
 - [Authentication](authentication.md)
 - [Create Activity](create-activity.md) - User must be on an activity page
-- [Create Card - Poll](create-poll-card.md) - User must have poll cards available in the activity
+- [Create Card - Poll](create-card-poll.md) - User must have poll cards available in the activity
 - [User API](../api/users.md)
 
 ## Development Strategy
