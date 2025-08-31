@@ -1,8 +1,7 @@
 import React from 'react';
 import { FiX } from 'react-icons/fi';
 import { LinkCard, LinkCardInput, PollCardInput } from '../../shared';
-import LinkCardForm from './cards/link/LinkCardForm';
-import PollCardForm from './cards/poll/PollCardForm';
+import { getCardDefinition, getCardDisplayName } from './cards/registry';
 
 interface CardCreationModalProps {
   isOpen: boolean;
@@ -51,26 +50,42 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? 'Edit Link Card' : `Create ${cardType === 'link' ? 'Link' : 'Poll'} Card`}
+            {isEditing ? 'Edit Link Card' : `Create ${getCardDisplayName(cardType)} Card`}
           </h2>
           <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-600">
             <FiX size={24} />
           </button>
         </div>
         <div className="p-6">
-          {cardType === 'link' && (
-            <LinkCardForm
-              onSubmit={handleLinkCardSubmit}
-              onCancel={onClose}
-              editingCard={editingCard}
-            />
-          )}
-          {cardType === 'poll' && (
-            <PollCardForm
-              onSubmit={handlePollCardSubmit}
-              onCancel={onClose}
-            />
-          )}
+          {(() => {
+            const cardDefinition = getCardDefinition(cardType);
+            if (cardDefinition) {
+              const { FormComponent } = cardDefinition;
+
+              if (cardType === 'link') {
+                return (
+                  <FormComponent
+                    onSubmit={handleLinkCardSubmit}
+                    onCancel={onClose}
+                    editingCard={editingCard}
+                  />
+                );
+              } else if (cardType === 'poll') {
+                return (
+                  <FormComponent
+                    onSubmit={handlePollCardSubmit}
+                    onCancel={onClose}
+                  />
+                );
+              }
+            }
+
+            return (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <p className="text-gray-600">Unknown card type: {cardType}</p>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

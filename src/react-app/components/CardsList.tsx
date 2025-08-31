@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, LinkCard as LinkCardType, PollCard as PollCardType } from '../../shared';
+import { Card, PollCard as PollCardType } from '../../shared';
 import CardWrapper from './CardWrapper';
-import LinkCard from './cards/link/LinkCard';
-import PollCard from './cards/poll/PollCard';
+import { getCardDefinition } from './cards/registry';
 
 interface CardsListProps {
   cards: Card[];
@@ -26,42 +25,39 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
   return (
     <div className="space-y-4">
       {cards.map((card) => {
-        switch (card.type) {
-          case 'link':
-            return (
-              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <LinkCard card={card as LinkCardType} />
-              </CardWrapper>
-            );
-          case 'poll':
-            return (
-              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <PollCard
-                  card={card as PollCardType}
-                  userId={userId}
-                  onVote={(optionIdx: number) => {
-                    const pollCard = card as PollCardType;
-                    const votes = pollCard.votes ? [...pollCard.votes] : [];
-                    const existing = votes.findIndex(v => v.userId === userId);
-                    if (existing !== -1) {
-                      votes[existing] = { userId, option: optionIdx };
-                    } else {
-                      votes.push({ userId, option: optionIdx });
-                    }
-                    onUpdateCard({ ...(card as PollCardType), votes });
-                  }}
-                />
-              </CardWrapper>
-            );
-          default:
-            return (
-              <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
-                <div className="p-4 border rounded-lg bg-gray-50">
-                  <p className="text-gray-600">Unknown card type: {card.type}</p>
-                </div>
-              </CardWrapper>
-            );
+        const cardDefinition = getCardDefinition(card.type);
+
+        if (cardDefinition) {
+          const { Component } = cardDefinition;
+          return (
+            <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
+              <Component
+                card={card}
+                userId={userId}
+                onVote={card.type === 'poll' ? (optionIdx: number) => {
+                  const pollCard = card as PollCardType;
+                  const votes = pollCard.votes ? [...pollCard.votes] : [];
+                  const existing = votes.findIndex(v => v.userId === userId);
+                  if (existing !== -1) {
+                    votes[existing] = { userId, option: optionIdx };
+                  } else {
+                    votes.push({ userId, option: optionIdx });
+                  }
+                  onUpdateCard({ ...(card as PollCardType), votes });
+                } : undefined}
+              />
+            </CardWrapper>
+          );
         }
+
+        // Fallback for unknown card types
+        return (
+          <CardWrapper key={card.id} onDelete={() => onDeleteCard(card.id)}>
+            <div className="p-4 border rounded-lg bg-gray-50">
+              <p className="text-gray-600">Unknown card type: {card.type}</p>
+            </div>
+          </CardWrapper>
+        );
       })}
     </div>
   );
