@@ -1,15 +1,24 @@
 import React, { useMemo } from 'react';
 import type { PollCard as PollCardType } from './types';
+import { CardAction } from '../types';
 import { useUsers } from '../../../hooks/useUsers';
 import UserAvatar from '../../UserAvatar';
 
 interface PollCardProps {
   card: PollCardType;
   userId?: string;
-  onVote?: (optionIdx: number) => void;
+  onAction?: (action: CardAction) => void;
 }
 
-const PollCard: React.FC<PollCardProps> = ({ card, userId, onVote }) => {
+const PollCard: React.FC<PollCardProps> = ({ card, userId, onAction }) => {
+  const handleVote = (optionIdx: number) => {
+    if (onAction && userId) {
+      onAction({
+        type: 'vote',
+        payload: { userId, optionIdx }
+      });
+    }
+  };
   // Find the user's selected option
   const selectedIdx = useMemo(() => {
     if (!userId) return null;
@@ -57,9 +66,9 @@ const PollCard: React.FC<PollCardProps> = ({ card, userId, onVote }) => {
                   ? 'bg-gray-700 text-white border-gray-700 shadow-md font-semibold'
                   : 'bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200 hover:border-gray-400 focus:bg-gray-200 focus:border-gray-400')
               }
-              onClick={() => onVote?.(idx)}
+              onClick={() => handleVote(idx)}
               tabIndex={0}
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { onVote?.(idx); } }}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { handleVote(idx); } }}
               aria-pressed={isSelected}
               aria-label={`Vote for option: ${option}`}
               data-testid={`poll-option-${idx}`}

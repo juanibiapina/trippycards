@@ -6,9 +6,9 @@ import type { LinkCard as LinkCardType } from './types';
 export const linkCardDefinition: CardDefinition<LinkCardType> = {
   type: 'link',
   displayName: 'Link',
+  description: 'Share a link with title, description, and preview image',
   Component: LinkCard,
   FormComponent: LinkCardForm,
-  description: 'Share a link with title, description, and preview image'
 };
 
 export { LinkCard, LinkCardForm };

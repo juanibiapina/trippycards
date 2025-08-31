@@ -1,17 +1,26 @@
 import React from 'react';
 import { Card } from '../../shared';
-import type { PollCardType } from './cards/poll';
 import CardWrapper from './CardWrapper';
 import { getCardDefinition } from './cards/registry';
+import { CardAction } from './cards/types';
 
 interface CardsListProps {
   cards: Card[];
   userId: string;
-  onUpdateCard: (card: PollCardType) => void;
+  onUpdateCard: (card: Card) => void;
   onDeleteCard: (cardId: string) => void;
 }
 
 export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
+  const handleCardAction = (card: Card, action: CardAction) => {
+    const cardDefinition = getCardDefinition(card.type);
+
+    if (cardDefinition?.actionHandler) {
+      const updatedCard = cardDefinition.actionHandler(card, action);
+      onUpdateCard(updatedCard);
+    }
+  };
+
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -35,17 +44,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
               <Component
                 card={card}
                 userId={userId}
-                onVote={card.type === 'poll' ? (optionIdx: number) => {
-                  const pollCard = card as PollCardType;
-                  const votes = pollCard.votes ? [...pollCard.votes] : [];
-                  const existing = votes.findIndex(v => v.userId === userId);
-                  if (existing !== -1) {
-                    votes[existing] = { userId, option: optionIdx };
-                  } else {
-                    votes.push({ userId, option: optionIdx });
-                  }
-                  onUpdateCard({ ...(card as PollCardType), votes });
-                } : undefined}
+                onAction={(action: CardAction) => handleCardAction(card, action)}
               />
             </CardWrapper>
           );

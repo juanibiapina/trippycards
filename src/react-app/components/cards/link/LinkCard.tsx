@@ -1,8 +1,11 @@
 import React from 'react';
 import type { LinkCard as LinkCardType } from './types';
+import { CardAction } from '../types';
 
 interface LinkCardProps {
   card: LinkCardType;
+  userId?: string;
+  onAction?: (action: CardAction) => void;
 }
 
 export const LinkCard: React.FC<LinkCardProps> = ({ card }) => {
