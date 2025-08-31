@@ -2,7 +2,6 @@ import React from 'react';
 import { Card } from '../../shared';
 import CardWrapper from './CardWrapper';
 import { getCardDefinition } from './cards/registry';
-import { CardAction } from './cards/types';
 
 interface CardsListProps {
   cards: Card[];
@@ -12,15 +11,6 @@ interface CardsListProps {
 }
 
 export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCard, onDeleteCard }) => {
-  const handleCardAction = (card: Card, action: CardAction) => {
-    const cardDefinition = getCardDefinition(card.type);
-
-    if (cardDefinition?.actionHandler) {
-      const updatedCard = cardDefinition.actionHandler(card, action);
-      onUpdateCard(updatedCard);
-    }
-  };
-
   if (cards.length === 0) {
     return (
       <div className="text-center py-12">
@@ -44,7 +34,7 @@ export const CardsList: React.FC<CardsListProps> = ({ cards, userId, onUpdateCar
               <Component
                 card={card}
                 userId={userId}
-                onAction={(action: CardAction) => handleCardAction(card, action)}
+                onUpdateCard={onUpdateCard}
               />
             </CardWrapper>
           );

@@ -1,11 +1,10 @@
-import { CardDefinition, CardActionHandler } from '../types';
+import { CardDefinition, CreateActionsFunction } from '../types';
 import PollCard from './PollCard';
 import PollCardForm from './PollCardForm';
 import type { PollCard as PollCardType } from './types';
 
-const pollActionHandler: CardActionHandler<PollCardType> = (card, action) => {
-  if (action.type === 'vote') {
-    const { userId, optionIdx } = action.payload as { userId: string; optionIdx: number };
+const createPollActions: CreateActionsFunction<PollCardType> = (card, onUpdateCard) => ({
+  vote: (userId: string, optionIdx: number) => {
     const votes = card.votes ? [...card.votes] : [];
     const existing = votes.findIndex(v => v.userId === userId);
 
@@ -15,11 +14,10 @@ const pollActionHandler: CardActionHandler<PollCardType> = (card, action) => {
       votes.push({ userId, option: optionIdx });
     }
 
-    return { ...card, votes };
+    const updatedCard = { ...card, votes };
+    onUpdateCard(updatedCard);
   }
-
-  return card;
-};
+});
 
 export const pollCardDefinition: CardDefinition<PollCardType> = {
   type: 'poll',
@@ -27,7 +25,7 @@ export const pollCardDefinition: CardDefinition<PollCardType> = {
   description: 'Create a poll with multiple options for voting',
   Component: PollCard,
   FormComponent: PollCardForm,
-  actionHandler: pollActionHandler,
+  createActions: createPollActions,
 };
 
 export { PollCard, PollCardForm };

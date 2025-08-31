@@ -3,14 +3,14 @@ import type { PollCard as PollCardType } from './types';
 import { BaseCardProps } from '../types';
 import { useUsers } from '../../../hooks/useUsers';
 import UserAvatar from '../../UserAvatar';
+import { pollCardDefinition } from './index';
 
-const PollCard: React.FC<BaseCardProps<PollCardType>> = ({ card, userId, onAction }) => {
+const PollCard: React.FC<BaseCardProps<PollCardType>> = ({ card, userId, onUpdateCard }) => {
+  const actions = pollCardDefinition.createActions(card, onUpdateCard);
+
   const handleVote = (optionIdx: number) => {
-    if (onAction && userId) {
-      onAction({
-        type: 'vote',
-        payload: { userId, optionIdx }
-      });
+    if (userId) {
+      actions.vote(userId, optionIdx);
     }
   };
   // Find the user's selected option
