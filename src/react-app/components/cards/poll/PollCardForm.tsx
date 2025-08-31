@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { PollCardInput } from '../../../../shared';
+import React, { useState } from 'react';
+import type { PollCard } from './types';
 
 interface PollCardFormProps {
-  onSubmit: (cardData: PollCardInput) => void;
+  onSubmit: (cardData: PollCard) => void;
   onCancel: () => void;
 }
 
@@ -13,12 +13,6 @@ export const PollCardForm: React.FC<PollCardFormProps> = ({
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollError, setPollError] = useState('');
-
-  useEffect(() => {
-    setPollQuestion('');
-    setPollOptions(['', '']);
-    setPollError('');
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,10 +29,14 @@ export const PollCardForm: React.FC<PollCardFormProps> = ({
     }
 
     setPollError('');
-    const cardData: PollCardInput = {
+    const cardData: PollCard = {
       type: 'poll',
       question: pollQuestion.trim(),
       options: trimmedOptions,
+      id: '',
+      createdAt: '',
+      updatedAt: '',
+      votes: [],
     };
 
     onSubmit(cardData);

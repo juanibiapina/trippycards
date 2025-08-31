@@ -1,9 +1,9 @@
-import { PollCard as PollCardType, PollCardInput } from '../../../../shared';
 import { CardDefinition } from '../types';
 import PollCard from './PollCard';
 import PollCardForm from './PollCardForm';
+import type { PollCard as PollCardType } from './types';
 
-export const pollCardDefinition: CardDefinition<PollCardType, PollCardInput> = {
+export const pollCardDefinition: CardDefinition<PollCardType> = {
   type: 'poll',
   displayName: 'Poll',
   Component: PollCard,
@@ -12,3 +12,4 @@ export const pollCardDefinition: CardDefinition<PollCardType, PollCardInput> = {
 };
 
 export { PollCard, PollCardForm };
+export type { PollCardType };

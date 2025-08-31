@@ -3,18 +3,21 @@ import { linkCardDefinition } from './link';
 import { pollCardDefinition } from './poll';
 
 // Registry of all card definitions
-const cardDefinitions: CardDefinition<any, any>[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cardDefinitions: CardDefinition<any>[] = [
   linkCardDefinition,
   pollCardDefinition
 ];
 
 // Get a specific card definition by type
-export const getCardDefinition = (type: string): CardDefinition<any, any> | undefined => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getCardDefinition = (type: string): CardDefinition<any> | undefined => {
   return cardDefinitions.find(def => def.type === type);
 };
 
 // Get all available card definitions
-export const getAllCardDefinitions = (): CardDefinition<any, any>[] => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getAllCardDefinitions = (): CardDefinition<any>[] => {
   return cardDefinitions;
 };
 

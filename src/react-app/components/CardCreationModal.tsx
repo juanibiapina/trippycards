@@ -1,16 +1,12 @@
 import React from 'react';
 import { FiX } from 'react-icons/fi';
-import { LinkCard, LinkCardInput, PollCardInput } from '../../shared';
+import { Card } from '../../shared';
 import { getCardDefinition, getCardDisplayName } from './cards/registry';
 
 interface CardCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateCard: (
-    card: LinkCardInput | PollCardInput
-  ) => void;
-  onUpdateCard?: (card: LinkCard) => void;
-  editingCard?: LinkCard;
+  onCreateCard: (card: Card) => void;
   cardType: 'link' | 'poll';
 }
 
@@ -18,27 +14,9 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
   isOpen,
   onClose,
   onCreateCard,
-  onUpdateCard,
-  editingCard,
   cardType,
 }) => {
-  const isEditing = !!editingCard;
-
-  const handleLinkCardSubmit = (cardData: LinkCardInput) => {
-    if (isEditing && editingCard && onUpdateCard) {
-      const updatedCard: LinkCard = {
-        ...editingCard,
-        ...cardData,
-        updatedAt: new Date().toISOString(),
-      };
-      onUpdateCard(updatedCard);
-    } else {
-      onCreateCard(cardData);
-    }
-    onClose();
-  };
-
-  const handlePollCardSubmit = (cardData: PollCardInput) => {
+  const handleCardSubmit = (cardData: Card) => {
     onCreateCard(cardData);
     onClose();
   };
@@ -50,7 +28,7 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? 'Edit Link Card' : `Create ${getCardDisplayName(cardType)} Card`}
+            Create {getCardDisplayName(cardType)} Card
           </h2>
           <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-600">
             <FiX size={24} />
@@ -62,22 +40,12 @@ export const CardCreationModal: React.FC<CardCreationModalProps> = ({
             if (cardDefinition) {
               const { FormComponent } = cardDefinition;
 
-              if (cardType === 'link') {
-                return (
-                  <FormComponent
-                    onSubmit={handleLinkCardSubmit}
-                    onCancel={onClose}
-                    editingCard={editingCard}
-                  />
-                );
-              } else if (cardType === 'poll') {
-                return (
-                  <FormComponent
-                    onSubmit={handlePollCardSubmit}
-                    onCancel={onClose}
-                  />
-                );
-              }
+              return (
+                <FormComponent
+                  onSubmit={handleCardSubmit}
+                  onCancel={onClose}
+                />
+              );
             }
 
             return (

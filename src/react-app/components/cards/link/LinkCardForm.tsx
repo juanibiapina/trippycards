@@ -1,40 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { LinkCard, LinkCardInput } from '../../../../shared';
+import React, { useState } from 'react';
+import type { LinkCard } from './types';
 import { validateUrl } from '../../../utils/url';
 
 interface LinkCardFormProps {
-  onSubmit: (cardData: LinkCardInput) => void;
+  onSubmit: (cardData: LinkCard) => void;
   onCancel: () => void;
-  editingCard?: LinkCard;
 }
 
 export const LinkCardForm: React.FC<LinkCardFormProps> = ({
   onSubmit,
   onCancel,
-  editingCard,
 }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [urlError, setUrlError] = useState('');
-
-  const isEditing = !!editingCard;
-
-  useEffect(() => {
-    if (editingCard) {
-      setUrl(editingCard.url);
-      setTitle(editingCard.title || '');
-      setDescription(editingCard.description || '');
-      setImageUrl(editingCard.imageUrl || '');
-    } else {
-      setUrl('');
-      setTitle('');
-      setDescription('');
-      setImageUrl('');
-    }
-    setUrlError('');
-  }, [editingCard]);
 
   const validateAndSetUrl = (value: string) => {
     setUrl(value);
@@ -58,12 +39,15 @@ export const LinkCardForm: React.FC<LinkCardFormProps> = ({
       return;
     }
 
-    const cardData: LinkCardInput = {
+    const cardData: LinkCard = {
       type: 'link',
       url: url.trim(),
       title: title.trim() || undefined,
       description: description.trim() || undefined,
       imageUrl: imageUrl.trim() || undefined,
+      id: '',
+      createdAt: '',
+      updatedAt: '',
     };
 
     onSubmit(cardData);
@@ -114,7 +98,7 @@ export const LinkCardForm: React.FC<LinkCardFormProps> = ({
       </div>
       <div className="flex justify-end space-x-2 mt-6">
         <button type="button" onClick={onCancel} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Cancel</button>
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{isEditing ? 'Update' : 'Create'}</button>
+        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
       </div>
     </form>
   );

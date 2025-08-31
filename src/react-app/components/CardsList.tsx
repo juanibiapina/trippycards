@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, PollCard as PollCardType } from '../../shared';
+import { Card } from '../../shared';
+import type { PollCardType } from './cards/poll';
 import CardWrapper from './CardWrapper';
 import { getCardDefinition } from './cards/registry';
 

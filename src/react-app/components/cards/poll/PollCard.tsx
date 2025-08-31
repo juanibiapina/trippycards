@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { PollCard as PollCardType } from '../../../../shared';
+import type { PollCard as PollCardType } from './types';
 import { useUsers } from '../../../hooks/useUsers';
 import UserAvatar from '../../UserAvatar';
 

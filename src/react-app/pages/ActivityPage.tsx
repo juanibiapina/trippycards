@@ -9,7 +9,7 @@ import ActivityHeader from "../components/ActivityHeader";
 import CardCreationModal from "../components/CardCreationModal";
 import CardsList from "../components/CardsList";
 import { useActivityRoom } from "../hooks/useActivityRoom";
-import { LinkCard, PollCard, LinkCardInput, PollCardInput } from "../../shared";
+import { Card } from "../../shared";
 
 const ActivityPage = () => {
   const params = useParams<{ activityId: string }>();
@@ -37,33 +37,16 @@ const ActivityPage = () => {
     };
   }, [activity?.name, loading, activity]);
 
-  const handleCreateCard = (cardData: LinkCardInput | PollCardInput) => {
+  const handleCreateCard = (cardData: Card) => {
     if (!isConnected) return;
 
-    const base = {
+    const newCard = {
+      ...cardData,
       id: `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
-    if (cardData.type === 'link') {
-      const newCard: LinkCard = {
-        ...cardData,
-        ...base,
-      };
-      createCard(newCard);
-    } else if (cardData.type === 'poll') {
-      const newCard: PollCard = {
-        ...cardData,
-        ...base,
-      };
-      createCard(newCard);
-    }
-  };
-
-  const handleUpdateCard = (card: LinkCard) => {
-    if (!isConnected) return;
-    updateCard(card);
+    createCard(newCard);
   };
 
   const handleCloseModal = () => {
@@ -141,8 +124,6 @@ const ActivityPage = () => {
           isOpen={isCreateModalOpen}
           onClose={handleCloseModal}
           onCreateCard={handleCreateCard}
-          onUpdateCard={handleUpdateCard}
-          editingCard={undefined}
           cardType={selectedCardType}
         />
       </div>

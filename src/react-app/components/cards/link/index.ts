@@ -1,9 +1,9 @@
-import { LinkCard as LinkCardType, LinkCardInput } from '../../../../shared';
 import { CardDefinition } from '../types';
 import LinkCard from './LinkCard';
 import LinkCardForm from './LinkCardForm';
+import type { LinkCard as LinkCardType } from './types';
 
-export const linkCardDefinition: CardDefinition<LinkCardType, LinkCardInput> = {
+export const linkCardDefinition: CardDefinition<LinkCardType> = {
   type: 'link',
   displayName: 'Link',
   Component: LinkCard,
@@ -12,3 +12,4 @@ export const linkCardDefinition: CardDefinition<LinkCardType, LinkCardInput> = {
 };
 
 export { LinkCard, LinkCardForm };
+export type { LinkCardType };
