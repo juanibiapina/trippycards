@@ -1,3 +1,4 @@
+import React from 'react';
 import { LinkCard as LinkCardType } from '../../../../shared';
 
 interface LinkCardProps {
