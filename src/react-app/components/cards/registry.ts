@@ -2,13 +2,15 @@ import { CardDefinition } from './types';
 import { linkCardDefinition } from './link';
 import { pollCardDefinition } from './poll';
 import { noteCardDefinition } from './note';
+import { carCardDefinition } from './car';
 
 // Registry of all card definitions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cardDefinitions: CardDefinition<any>[] = [
   linkCardDefinition,
   pollCardDefinition,
-  noteCardDefinition
+  noteCardDefinition,
+  carCardDefinition
 ];
 
 // Get a specific card definition by type
